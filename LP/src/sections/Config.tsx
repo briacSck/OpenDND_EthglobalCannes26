@@ -11,7 +11,7 @@ const budgetOptions = ['$', '$$', '$$$', 'no cap']
 function ConfigToggle({
   label,
   options,
-  color = 'coral',
+  color = 'terra',
 }: {
   label: string
   options: string[]
@@ -20,36 +20,34 @@ function ConfigToggle({
   const [selected, setSelected] = useState(options[0])
 
   const colorMap: Record<string, { active: string; ring: string }> = {
-    coral: { active: 'bg-coral/15 border-coral/40 text-coral', ring: 'ring-coral/20' },
-    indigo: { active: 'bg-indigo/15 border-indigo/40 text-indigo', ring: 'ring-indigo/20' },
-    cyan: { active: 'bg-cyan/15 border-cyan/40 text-cyan', ring: 'ring-cyan/20' },
+    terra: { active: 'bg-terra/10 border-terra/40 text-terra', ring: 'ring-terra/20' },
+    sea: { active: 'bg-sea/10 border-sea/40 text-sea', ring: 'ring-sea/20' },
     gold: { active: 'bg-gold/15 border-gold/40 text-gold', ring: 'ring-gold/20' },
-    ember: { active: 'bg-ember/15 border-ember/40 text-ember', ring: 'ring-ember/20' },
-    neon: { active: 'bg-neon/15 border-neon/40 text-neon', ring: 'ring-neon/20' },
+    olive: { active: 'bg-olive/10 border-olive/40 text-olive', ring: 'ring-olive/20' },
   }
 
-  const colors = colorMap[color] || colorMap.coral
+  const colors = colorMap[color] || colorMap.terra
 
   return (
     <div>
-      <label className="block font-mono text-xs text-dim mb-2 uppercase tracking-wider">
+      <label className="block font-mono text-[10px] sm:text-xs text-muted mb-2 uppercase tracking-wider">
         {label}
       </label>
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-1.5 sm:gap-2">
         {options.map((opt) => (
           <button
             key={opt}
             onClick={() => setSelected(opt)}
-            className={`relative px-3 py-1.5 rounded-lg border font-mono text-xs transition-all duration-200 cursor-pointer ${
+            className={`relative px-2.5 sm:px-3 py-1.5 rounded-lg border font-mono text-[10px] sm:text-xs transition-all duration-200 cursor-pointer ${
               selected === opt
                 ? `${colors.active} ring-1 ${colors.ring}`
-                : 'border-elevated/40 text-muted hover:border-elevated hover:text-bone'
+                : 'border-sand/50 text-muted hover:border-sand hover:text-navy'
             }`}
           >
             {selected === opt && (
               <motion.div
                 layoutId={`config-${label}`}
-                className="absolute inset-0 rounded-lg bg-white/5"
+                className="absolute inset-0 rounded-lg bg-navy/[0.03]"
                 transition={{ type: 'spring', duration: 0.4, bounce: 0.15 }}
               />
             )}
@@ -67,24 +65,24 @@ function CityInput() {
 
   return (
     <div>
-      <label className="block font-mono text-xs text-dim mb-2 uppercase tracking-wider">
+      <label className="block font-mono text-[10px] sm:text-xs text-muted mb-2 uppercase tracking-wider">
         city
       </label>
       <div
         className={`relative flex items-center border rounded-lg transition-all duration-200 ${
           focused
-            ? 'border-coral/40 ring-1 ring-coral/20 bg-coral/5'
-            : 'border-elevated/40 bg-base/50'
+            ? 'border-terra/40 ring-1 ring-terra/20 bg-terra/5'
+            : 'border-sand/50 bg-cream/50'
         }`}
       >
-        <span className="pl-3 text-dim font-mono text-sm">&gt;</span>
+        <span className="pl-3 text-muted font-mono text-sm">&gt;</span>
         <input
           type="text"
           value={value}
           onChange={(e) => setValue(e.target.value)}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
-          className="flex-1 bg-transparent px-2 py-2.5 font-mono text-sm text-coral outline-none placeholder:text-dim/50"
+          className="flex-1 bg-transparent px-2 py-2.5 font-mono text-sm text-terra outline-none placeholder:text-muted/50"
           placeholder="enter city..."
         />
         <AnimatePresence>
@@ -93,7 +91,7 @@ function CityInput() {
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.8 }}
-              className="pr-3 text-coral/60 text-xs font-mono"
+              className="pr-3 text-olive text-xs font-mono"
             >
               locked
             </motion.span>
@@ -106,66 +104,56 @@ function CityInput() {
 
 export default function Config() {
   return (
-    <section id="config" className="relative py-28 px-6 overflow-hidden">
+    <section id="config" className="relative py-16 sm:py-28 px-4 sm:px-6">
       <div className="max-w-4xl mx-auto">
         <ScrollReveal>
-          <div className="text-center mb-14">
-            <span className="inline-block font-mono text-xs text-gold/70 tracking-widest uppercase mb-4">
+          <div className="text-center mb-10 sm:mb-14">
+            <span className="inline-block font-mono text-[10px] sm:text-xs text-terra/70 tracking-widest uppercase mb-3 sm:mb-4">
               // quest.params
             </span>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-bone mb-4">
+            <h2 className="text-2xl sm:text-4xl md:text-5xl font-display font-bold tracking-tight text-navy mb-3 sm:mb-4">
               Build config for your life
             </h2>
-            <p className="text-muted max-w-lg mx-auto">
+            <p className="text-muted text-sm sm:text-base max-w-lg mx-auto">
               Every quest is generated from your actual constraints.
-              <br />
               Think character creation screen, but for your weekend.
             </p>
           </div>
         </ScrollReveal>
 
         <ScrollReveal delay={0.15}>
-          <div className="relative">
-            {/* Glassmorphism glow — layered blobs */}
-            <div className="absolute -inset-8 pointer-events-none">
-              <div className="absolute top-0 left-1/4 w-64 h-64 bg-indigo/15 rounded-full blur-[80px]" />
-              <div className="absolute bottom-0 right-1/4 w-48 h-48 bg-coral/12 rounded-full blur-[60px]" />
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-cyan/8 rounded-full blur-[100px]" />
+          <div className="relative bg-parchment/60 border border-sand/40 rounded-2xl p-5 sm:p-8 backdrop-blur-sm shadow-xl shadow-navy/5">
+            {/* Header */}
+            <div className="flex items-center gap-2 mb-5 sm:mb-6 pb-3 sm:pb-4 border-b border-sand/40">
+              <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-terra/60" />
+              <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-gold/60" />
+              <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-olive/60" />
+              <span className="ml-2 sm:ml-3 font-mono text-[10px] sm:text-xs text-muted">
+                new_quest.config
+              </span>
+              <span className="ml-auto font-mono text-[10px] sm:text-xs text-muted/50">
+                v0.1.0
+              </span>
             </div>
 
-            <div className="relative bg-surface/60 border border-indigo/10 rounded-2xl p-8 backdrop-blur-xl shadow-2xl shadow-indigo/5">
-              {/* Header */}
-              <div className="flex items-center gap-2 mb-6 pb-4 border-b border-elevated/30">
-                <div className="w-3 h-3 rounded-full bg-coral/70" />
-                <div className="w-3 h-3 rounded-full bg-gold/70" />
-                <div className="w-3 h-3 rounded-full bg-neon/70" />
-                <span className="ml-3 font-mono text-xs text-dim">
-                  new_quest.config
-                </span>
-                <span className="ml-auto font-mono text-xs text-dim/50">
-                  v0.1.0
-                </span>
-              </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
+              <CityInput />
+              <ConfigToggle label="vibe" options={vibeOptions} color="sea" />
+              <ConfigToggle label="objective" options={objectiveOptions} color="olive" />
+              <ConfigToggle label="party" options={partyOptions} color="gold" />
+              <ConfigToggle label="time" options={timeOptions} color="terra" />
+              <ConfigToggle label="budget" options={budgetOptions} color="sea" />
+            </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <CityInput />
-                <ConfigToggle label="vibe" options={vibeOptions} color="indigo" />
-                <ConfigToggle label="objective" options={objectiveOptions} color="cyan" />
-                <ConfigToggle label="party" options={partyOptions} color="gold" />
-                <ConfigToggle label="time" options={timeOptions} color="coral" />
-                <ConfigToggle label="budget" options={budgetOptions} color="neon" />
-              </div>
-
-              {/* Generate button */}
-              <div className="mt-8 pt-6 border-t border-elevated/30 flex items-center justify-between">
-                <span className="font-mono text-xs text-dim flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-neon animate-pulse-glow" />
-                  all params set
-                </span>
-                <button className="px-6 py-2.5 bg-coral text-white font-mono text-sm font-semibold rounded-lg hover:shadow-[0_0_24px_rgba(255,107,74,0.3)] transition-all duration-300 cursor-pointer">
-                  instantiate quest &rarr;
-                </button>
-              </div>
+            {/* Generate button */}
+            <div className="mt-6 sm:mt-8 pt-5 sm:pt-6 border-t border-sand/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <span className="font-mono text-[10px] sm:text-xs text-muted flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-olive animate-pulse-glow" />
+                all params set
+              </span>
+              <button className="w-full sm:w-auto px-6 py-2.5 bg-terra text-cream font-mono text-sm font-semibold rounded-full hover:bg-terra-deep hover:shadow-lg hover:shadow-terra/20 transition-all duration-300 cursor-pointer active:scale-[0.97]">
+                instantiate quest &rarr;
+              </button>
             </div>
           </div>
         </ScrollReveal>
