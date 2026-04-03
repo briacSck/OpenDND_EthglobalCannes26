@@ -1,0 +1,256 @@
+"""Pydantic models for Quest Generation — v5 JSON output schema."""
+
+from __future__ import annotations
+
+import uuid
+from pydantic import BaseModel, Field
+
+
+# --- Quest Request (extended with tone + skill) ---
+
+class QuestRequest(BaseModel):
+    goal: str = Field(description="What the user wants: sport, culture, music, meeting people, etc.")
+    vibe: str = Field(default="", description="Desired atmosphere: mystere, aventure, chill, epic, etc.")
+    duration: str = Field(description="Quest duration: 5mn, 2h, 4h, etc.")
+    budget: float = Field(description="Budget in euros")
+    location: str = Field(description="City or neighborhood: Cannes, Paris 3eme, etc.")
+    difficulty: str = Field(default="life-maxing", description="easy-peasy | life-maxing | god-mode")
+    players: int = Field(default=1, description="Number of players")
+    datetime: str = Field(description="When the quest starts: 2026-04-05 10:00")
+    tone: str = Field(default="loufoque", description="loufoque | high_stakes")
+    skill: str = Field(default="", description="Skill to develop: exploration urbaine, cuisine, etc.")
+
+
+# --- Sub-models ---
+
+class ActivityRef(BaseModel):
+    name: str
+    address: str = ""
+    price_eur: float = 0
+    duration_minutes: int = 0
+    booking_url: str = ""
+    category: str = ""
+
+
+class Tension(BaseModel):
+    type: str = Field(default="none", description="complication | revelation | choix_sous_pression | bifurcation | risque_calcule | none")
+    description: str = ""
+    resolution: str = ""
+
+
+class CameraMode(BaseModel):
+    enabled: bool = False
+    purpose: str = ""
+
+
+class ContextualMusic(BaseModel):
+    enabled: bool = False
+    track_type: str = ""
+    duration_seconds: int = 0
+
+
+class RayBanVersion(BaseModel):
+    script: str = ""
+    duration_seconds: int = 20
+    audio_type: str = Field(default="narration", description="narration | whisper")
+    camera_mode: CameraMode = Field(default_factory=CameraMode)
+    contextual_music: ContextualMusic = Field(default_factory=ContextualMusic)
+
+
+class CharacterInteraction(BaseModel):
+    character: str = ""
+    trigger: str = ""
+    phone_version: str = ""
+    rayban_version: RayBanVersion = Field(default_factory=RayBanVersion)
+    awaits_response: bool = True
+
+
+class Verification(BaseModel):
+    method: str = Field(default="zk_location", description="zk_location | camera_ai | text_answer")
+    target: str = ""
+    success_condition: str = ""
+
+
+class Step(BaseModel):
+    step_id: int
+    is_collaborative: bool = False
+    is_skill_step: bool = False
+    title: str = ""
+    activity: ActivityRef = Field(default_factory=ActivityRef)
+    narrative_intro: str = ""
+    instruction: str = ""
+    tension: Tension = Field(default_factory=Tension)
+    character_interactions: list[CharacterInteraction] = Field(default_factory=list)
+    verification: Verification = Field(default_factory=Verification)
+    blockchain_event: str | None = None
+    unlock_message: str = ""
+    skill_xp: int = 0
+
+
+# --- Characters ---
+
+class MemoryState(BaseModel):
+    trust_level: int = 50
+    ignored_count: int = 0
+    interaction_count: int = 0
+    tone_of_responses: str = "sincere"
+    dormant: bool = False
+
+
+class Character(BaseModel):
+    name: str
+    age: int = 0
+    type: str = Field(default="principal", description="principal | secondaire | invoque")
+    archetype: str = Field(default="", description="mastermind | electron_libre | genie_arrogant | fantome | love_interest")
+    personality: str = ""
+    speech_pattern: str = Field(default="", description="Tics de langage distinctifs, exemples de répliques typiques")
+    relationship_to_player: str = Field(default="", description="Comment ce perso perçoit le joueur initialement")
+    secret: str = ""
+    voice_id: str = "elevenlabs_placeholder"
+    memory_state: MemoryState = Field(default_factory=MemoryState)
+    unlock_conditions: list[str] = Field(default_factory=list)
+    system_prompt: str = Field(default="", description="Full system prompt for Character Runtime")
+
+
+# --- Pre-Quest Bundle ---
+
+class EmailBundle(BaseModel):
+    from_character: str = ""
+    subject: str = ""
+    body: str = ""
+
+
+class VoicemailBundle(BaseModel):
+    from_character: str = ""
+    script: str = ""
+    duration_seconds: int = 30
+
+
+class PdfBundle(BaseModel):
+    type: str = ""
+    content_brief: str = ""
+
+
+class PlaylistBundle(BaseModel):
+    name: str = ""
+    mood: str = ""
+    genre_keywords: list[str] = Field(default_factory=list)
+
+
+class PreQuestBundle(BaseModel):
+    email: EmailBundle = Field(default_factory=EmailBundle)
+    voicemail: VoicemailBundle = Field(default_factory=VoicemailBundle)
+    pdf: PdfBundle = Field(default_factory=PdfBundle)
+    playlist: PlaylistBundle = Field(default_factory=PlaylistBundle)
+
+
+# --- Narrative Universe ---
+
+class NarrativeUniverse(BaseModel):
+    hook: str = Field(description="Irresistible hook — presupposes an existing role")
+    context: str = ""
+    protagonist: str = ""
+    stakes: str = ""
+
+
+# --- Budget ---
+
+class BudgetConfirmed(BaseModel):
+    total: float = 0
+    pre_quest: float = 0
+    activities: float = 0
+    reward: float = 0
+    within_budget: bool = True
+
+
+# --- Decision Tree ---
+
+class Decision(BaseModel):
+    step_id: int = 0
+    prompt: str = ""
+    options: list[str] = Field(default_factory=list)
+    consequence: str = ""
+
+
+class Ending(BaseModel):
+    condition: str = ""
+    narrative: str = ""
+    reward: str = ""
+    cost_eur: float = 0
+
+
+class DecisionTree(BaseModel):
+    decisions: list[Decision] = Field(default_factory=list)
+    endings: dict[str, Ending] = Field(default_factory=dict)
+    trust_consequences: dict[str, dict] = Field(default_factory=dict, description="Per-character trust changes based on player actions: {char_name: {obey: +10, betray: -30, flirt: +5, ignore: -10}}")
+
+
+# --- Narrative Beats (flexible story moments for the orchestrator) ---
+
+class NarrativeBeat(BaseModel):
+    beat_id: int = 0
+    description: str = Field(description="What happens narratively at this beat")
+    characters_involved: list[str] = Field(default_factory=list)
+    earliest_step: int = Field(default=0, description="Earliest step this can happen")
+    latest_step: int = Field(default=99, description="Latest step before this must happen")
+    tension_level: str = Field(default="medium", description="low | medium | high | climax")
+    can_be_skipped: bool = False
+    possible_triggers: list[str] = Field(default_factory=list, description="Player actions that could trigger this beat")
+
+
+# --- Generation Meta ---
+
+class GenerationMeta(BaseModel):
+    scout_direction_chosen: str = ""
+    storyteller_curator_iterations: int = 0
+    judge_iterations: int = 0
+    judge_final_score: int = 0
+
+
+# --- Character System ---
+
+class CharacterSystem(BaseModel):
+    max_active: int = 15
+    principals: list[str] = Field(default_factory=list)
+
+
+# --- Resolution ---
+
+class NftMetadata(BaseModel):
+    city: str = ""
+    date: str = ""
+    quest_title: str = ""
+    characters_met: list[str] = Field(default_factory=list)
+    ending_chosen: str = ""
+
+
+class Prize(BaseModel):
+    xp_total: int = 0
+    token_amount: int = 0
+    nft_metadata: NftMetadata = Field(default_factory=NftMetadata)
+
+
+class Resolution(BaseModel):
+    skill_gained: str = ""
+    prize: Prize = Field(default_factory=Prize)
+
+
+# --- Final Quest Output ---
+
+class QuestOutput(BaseModel):
+    quest_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    title: str = ""
+    tone: str = "loufoque"
+    alias: str = Field(default="", description="Player's code name — characters call them by this alias")
+    generation_meta: GenerationMeta = Field(default_factory=GenerationMeta)
+    pre_quest_bundle: PreQuestBundle = Field(default_factory=PreQuestBundle)
+    narrative_universe: NarrativeUniverse
+    character_system: CharacterSystem = Field(default_factory=CharacterSystem)
+    characters: list[Character] = Field(default_factory=list)
+    budget_confirmed: BudgetConfirmed = Field(default_factory=BudgetConfirmed)
+    decision_tree: DecisionTree = Field(default_factory=DecisionTree)
+    steps: list[Step] = Field(default_factory=list)
+    narrative_beats: list[NarrativeBeat] = Field(default_factory=list, description="Flexible story moments the orchestrator can place dynamically")
+    possible_arcs: list[str] = Field(default_factory=list, description="Possible narrative directions based on player choices")
+    trust_dynamics: dict[str, dict] = Field(default_factory=dict, description="Per-character relationship evolution rules")
+    resolution: Resolution = Field(default_factory=Resolution)
