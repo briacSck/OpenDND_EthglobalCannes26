@@ -67,6 +67,10 @@
 		<string>com.meta.ar.wearable</string>
 	</array>
 	<!-- End required section for Device Access Toolkit Apps -->
+	<key>NSCameraUsageDescription</key>
+	<string>Camera is used to verify quest steps by photographing locations and objects.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Microphone is used for voice interactions with quest characters.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>This app needs access to save photos captured from your glasses.</string>
 	<key>UIApplicationSceneManifest</key>

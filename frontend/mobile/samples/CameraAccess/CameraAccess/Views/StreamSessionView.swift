@@ -18,6 +18,7 @@ struct StreamSessionView: View {
   let wearables: WearablesInterface
   @ObservedObject private var wearablesViewModel: WearablesViewModel
   @StateObject private var viewModel: StreamSessionViewModel
+  @StateObject private var questVM = QuestCameraViewModel()
 
   init(wearables: WearablesInterface, wearablesVM: WearablesViewModel) {
     self.wearables = wearables
@@ -30,9 +31,56 @@ struct StreamSessionView: View {
       if viewModel.isStreaming {
         // Full-screen video view with streaming controls
         StreamView(viewModel: viewModel, wearablesVM: wearablesViewModel)
+
+        // Quest overlay on top of Ray-Ban stream
+        QuestCameraOverlayView(
+          vm: questVM,
+          onCapture: {
+            // Capture from Ray-Ban
+            viewModel.capturePhoto()
+          },
+          rayBanPhoto: viewModel.capturedPhoto
+        )
       } else {
-        // Pre-streaming setup view with permissions and start button
-        NonStreamView(viewModel: viewModel, wearablesVM: wearablesViewModel)
+        // Pre-streaming: show phone camera with quest overlay
+        PhoneCameraPreview()
+          .edgesIgnoringSafeArea(.all)
+
+        QuestCameraOverlayView(
+          vm: questVM,
+          onCapture: {
+            // Open phone camera capture
+            questVM.showPhoneCameraCapture = true
+          },
+          rayBanPhoto: nil
+        )
+
+        // Start streaming button if device available
+        if viewModel.hasActiveDevice {
+          VStack {
+            HStack {
+              Spacer()
+              Button {
+                Task { await viewModel.handleStartStreaming() }
+              } label: {
+                HStack(spacing: 6) {
+                  Image(systemName: "glasses")
+                    .font(.system(size: 12))
+                  Text("Ray-Ban")
+                    .font(.system(size: 11, weight: .medium))
+                }
+                .foregroundColor(.white)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(Color.black.opacity(0.6))
+                .cornerRadius(20)
+              }
+              .padding(.trailing, 16)
+              .padding(.top, 80)
+            }
+            Spacer()
+          }
+        }
       }
     }
     .alert("Error", isPresented: $viewModel.showError) {
@@ -42,5 +90,66 @@ struct StreamSessionView: View {
     } message: {
       Text(viewModel.errorMessage)
     }
+    .onChange(of: viewModel.capturedPhoto) { photo in
+      // When Ray-Ban captures a photo, send it for verification
+      if let photo = photo {
+        questVM.verifyWithRayBanPhoto(photo)
+        viewModel.dismissPhotoPreview()
+      }
+    }
+    .sheet(isPresented: $questVM.showPhoneCameraCapture) {
+      PhoneCameraView { image in
+        questVM.showPhoneCameraCapture = false
+        questVM.verifyWithImage(image)
+      }
+    }
   }
 }
+
+// MARK: - Phone Camera Preview (live viewfinder)
+
+struct PhoneCameraPreview: UIViewRepresentable {
+  func makeUIView(context: Context) -> UIView {
+    let view = UIView(frame: .zero)
+    view.backgroundColor = .black
+
+    let session = AVCaptureSession()
+    session.sessionPreset = .high
+
+    guard let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back),
+          let input = try? AVCaptureDeviceInput(device: device) else {
+      return view
+    }
+
+    if session.canAddInput(input) {
+      session.addInput(input)
+    }
+
+    let previewLayer = AVCaptureVideoPreviewLayer(session: session)
+    previewLayer.videoGravity = .resizeAspectFill
+    view.layer.addSublayer(previewLayer)
+
+    DispatchQueue.global(qos: .userInitiated).async {
+      session.startRunning()
+    }
+
+    // Store session to keep it alive
+    context.coordinator.session = session
+    context.coordinator.previewLayer = previewLayer
+
+    return view
+  }
+
+  func updateUIView(_ uiView: UIView, context: Context) {
+    context.coordinator.previewLayer?.frame = uiView.bounds
+  }
+
+  func makeCoordinator() -> Coordinator { Coordinator() }
+
+  class Coordinator {
+    var session: AVCaptureSession?
+    var previewLayer: AVCaptureVideoPreviewLayer?
+  }
+}
+
+import AVFoundation

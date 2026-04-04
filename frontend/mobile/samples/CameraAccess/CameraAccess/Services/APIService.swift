@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 
 enum APIError: Error {
   case invalidURL
@@ -69,6 +70,27 @@ final class APIService {
     return try await get("/api/quests/history/\(userId)")
   }
 
+  func generateQuest(userId: String, goal: String, location: String, duration: Int, difficulty: String) async throws -> ActiveQuestResponse {
+    guard let url = URL(string: "\(baseURL)/api/quests/generate") else { throw APIError.invalidURL }
+    var request = URLRequest(url: url)
+    request.httpMethod = "POST"
+    request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+    request.timeoutInterval = 300 // quest generation can take a while
+    let body: [String: Any] = [
+      "userId": userId,
+      "goal": goal,
+      "location": location,
+      "duration": duration,
+      "difficulty": difficulty,
+    ]
+    request.httpBody = try JSONSerialization.data(withJSONObject: body)
+    let (data, response) = try await URLSession.shared.data(for: request)
+    guard let http = response as? HTTPURLResponse, (200...299).contains(http.statusCode) else {
+      throw APIError.serverError((response as? HTTPURLResponse)?.statusCode ?? 0)
+    }
+    return try decoder.decode(ActiveQuestResponse.self, from: data)
+  }
+
   // MARK: - Wallet
 
   func fetchWallet(userId: String) async throws -> WalletResponse {
@@ -91,6 +113,66 @@ final class APIService {
 
   func fetchPersonality(userId: String) async throws -> [PersonalityTraitResponse] {
     return try await get("/api/social/personality/\(userId)")
+  }
+
+  // MARK: - Step Verification
+
+  func verifyStep(questId: String, stepOrder: Int, image: UIImage, step: QuestStepResponse) async throws -> VerifyStepResponse {
+    guard let url = URL(string: "\(baseURL)/api/quests/\(questId)/steps/\(stepOrder)/verify") else { throw APIError.invalidURL }
+    guard let imageData = image.jpegData(compressionQuality: 0.7) else { throw APIError.noData }
+
+    let base64 = imageData.base64EncodedString()
+
+    var request = URLRequest(url: url)
+    request.httpMethod = "POST"
+    request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+    request.timeoutInterval = 30
+
+    let body: [String: Any] = [
+      "imageBase64": base64,
+      "userId": currentUserId ?? "",
+      "cameraPrompt": step.cameraPrompt ?? "",
+      "successCondition": step.successCondition ?? "",
+      "playerAction": step.playerAction ?? "",
+      "stepTitle": step.title,
+    ]
+    request.httpBody = try JSONSerialization.data(withJSONObject: body)
+
+    let (data, response) = try await URLSession.shared.data(for: request)
+    guard let http = response as? HTTPURLResponse, (200...299).contains(http.statusCode) else {
+      throw APIError.serverError((response as? HTTPURLResponse)?.statusCode ?? 0)
+    }
+    return try decoder.decode(VerifyStepResponse.self, from: data)
+  }
+
+  func markStepDone(questId: String, stepOrder: Int) async throws {
+    guard let url = URL(string: "\(baseURL)/api/quests/\(questId)/steps/\(stepOrder)/done") else { throw APIError.invalidURL }
+    var request = URLRequest(url: url)
+    request.httpMethod = "POST"
+    request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+    request.httpBody = try JSONSerialization.data(withJSONObject: [:] as [String: String])
+    let (_, response) = try await URLSession.shared.data(for: request)
+    guard let http = response as? HTTPURLResponse, (200...299).contains(http.statusCode) else {
+      throw APIError.serverError((response as? HTTPURLResponse)?.statusCode ?? 0)
+    }
+  }
+
+  func completeQuest(questId: String, xpEarned: Int, durationMinutes: Int) async throws {
+    guard let url = URL(string: "\(baseURL)/api/quests/\(questId)/complete") else { throw APIError.invalidURL }
+    var request = URLRequest(url: url)
+    request.httpMethod = "POST"
+    request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+    let body: [String: Any] = [
+      "grade": "A",
+      "xpEarned": xpEarned,
+      "rewardAmount": 50,
+      "durationMinutes": durationMinutes,
+    ]
+    request.httpBody = try JSONSerialization.data(withJSONObject: body)
+    let (_, response) = try await URLSession.shared.data(for: request)
+    guard let http = response as? HTTPURLResponse, (200...299).contains(http.statusCode) else {
+      throw APIError.serverError((response as? HTTPURLResponse)?.statusCode ?? 0)
+    }
   }
 
   // MARK: - User
@@ -127,6 +209,40 @@ struct QuestStepResponse: Codable, Identifiable {
   let done: Bool
   let active: Bool
   let content: String?
+  let cameraPrompt: String?
+  let successCondition: String?
+  let playerAction: String?
+  let narrativeIntro: String?
+
+  enum CodingKeys: String, CodingKey {
+    case id, stepOrder, type, title, subtitle, icon, done, active, content
+    case cameraPrompt, successCondition, playerAction, narrativeIntro
+  }
+
+  init(from decoder: Decoder) throws {
+    let c = try decoder.container(keyedBy: CodingKeys.self)
+    id = try c.decode(Int.self, forKey: .id)
+    stepOrder = try c.decode(Int.self, forKey: .stepOrder)
+    type = try c.decode(String.self, forKey: .type)
+    title = try c.decode(String.self, forKey: .title)
+    subtitle = try c.decodeIfPresent(String.self, forKey: .subtitle)
+    icon = try c.decodeIfPresent(String.self, forKey: .icon)
+    done = try c.decode(Bool.self, forKey: .done)
+    active = try c.decode(Bool.self, forKey: .active)
+    content = try c.decodeIfPresent(String.self, forKey: .content)
+    cameraPrompt = try c.decodeIfPresent(String.self, forKey: .cameraPrompt)
+    successCondition = try c.decodeIfPresent(String.self, forKey: .successCondition)
+    playerAction = try c.decodeIfPresent(String.self, forKey: .playerAction)
+    narrativeIntro = try c.decodeIfPresent(String.self, forKey: .narrativeIntro)
+  }
+}
+
+struct VerifyStepResponse: Codable {
+  let validated: Bool
+  let confidence: Double
+  let narrativeReaction: String
+  let xpEarned: Int
+  let details: String
 }
 
 struct QuestActionResponse: Codable, Identifiable {

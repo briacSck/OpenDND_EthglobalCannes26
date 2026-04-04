@@ -1,7 +1,120 @@
 import { Router } from "express";
 import pool from "../db";
 
+const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY || "";
+
 const router = Router();
+
+// POST /api/quests/generate — generate a quest via FastAPI backend and save to DB
+router.post("/generate", async (req, res) => {
+  req.setTimeout(30000);
+  res.setTimeout(30000);
+
+  const { userId, goal, location, duration, difficulty } = req.body;
+  if (!userId) {
+    res.status(400).json({ error: "userId required" });
+    return;
+  }
+
+  const BACKEND_URL = process.env.BACKEND_URL || "https://backend-production-77f8.up.railway.app";
+
+  try {
+    const questLocation = location || "Cannes, France";
+    const questDuration = duration || 60;
+    const questDifficulty = difficulty || "medium";
+
+    console.log(`[Generate] Calling FastAPI backend for ${questLocation}...`);
+
+    const backendRes = await fetch(`${BACKEND_URL}/generate`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        location: questLocation,
+        tone: "loufoque",
+        skill: "exploration",
+        budget: 50,
+        duration: `${questDuration}m`,
+        players: 1,
+        goal: goal || "discover the city",
+        datetime: new Date().toISOString().slice(0, 16).replace("T", " "),
+      }),
+    });
+
+    if (!backendRes.ok) {
+      const errText = await backendRes.text();
+      console.error("[Generate] FastAPI error:", backendRes.status, errText);
+      res.status(502).json({ error: "Quest generation failed", detail: errText });
+      return;
+    }
+
+    const questOutput = await backendRes.json() as any;
+    console.log(`[Generate] Got quest: ${questOutput.title} with ${questOutput.steps?.length || 0} steps`);
+
+    // Save to DB
+    const client = await pool.connect();
+    try {
+      await client.query("BEGIN");
+
+      const description = questOutput.narrative_universe?.hook || questOutput.narrative_universe?.context || null;
+
+      const { rows } = await client.query(
+        `INSERT INTO quests (user_id, title, description, tone, time_limit_minutes)
+         VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+        [userId, questOutput.title, description, questOutput.tone || null, questDuration]
+      );
+      const quest = rows[0];
+
+      const steps = questOutput.steps || [];
+      for (let i = 0; i < steps.length; i++) {
+        const s = steps[i];
+        const activity = s.activity || {};
+        await client.query(
+          `INSERT INTO quest_steps (quest_id, step_order, type, title, subtitle, icon, active, content, camera_prompt, success_condition, player_action, narrative_intro)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
+          [
+            quest.id, i + 1,
+            s.is_skill_step ? "skill" : (s.is_collaborative ? "collaborative" : "action"),
+            s.title,
+            activity.name ? `${activity.name} — ${activity.address || ""}` : null,
+            "star",
+            i === 0,
+            s.instruction || s.narrative_intro || null,
+            s.camera_prompt || null,
+            s.verification?.success_condition || null,
+            s.player_action || null,
+            s.narrative_intro || null,
+          ]
+        );
+      }
+
+      await client.query("COMMIT");
+
+      const { rows: savedSteps } = await pool.query(
+        `SELECT id, step_order, type, title, subtitle, icon, done, active, content, camera_prompt, success_condition, player_action, narrative_intro
+         FROM quest_steps WHERE quest_id = $1 ORDER BY step_order`,
+        [quest.id]
+      );
+
+      res.status(201).json({
+        ...quest,
+        steps: savedSteps,
+        actions: [],
+        completedSteps: 0,
+        totalSteps: savedSteps.length,
+        progress: 0,
+      });
+    } catch (err) {
+      await client.query("ROLLBACK");
+      throw err;
+    } finally {
+      client.release();
+    }
+  } catch (err) {
+    console.error("Failed to generate quest:", err);
+    const message = err instanceof Error ? err.message : String(err);
+    res.status(500).json({ error: "Quest generation failed", detail: message });
+  }
+});
 
 // GET /api/quests/active/:userId — get active quest with steps & actions
 router.get("/active/:userId", async (req, res) => {
@@ -17,7 +130,7 @@ router.get("/active/:userId", async (req, res) => {
     const quest = quests[0];
 
     const { rows: steps } = await pool.query(
-      `SELECT id, step_order, type, title, subtitle, icon, done, active, content
+      `SELECT id, step_order, type, title, subtitle, icon, done, active, content, camera_prompt, success_condition, player_action, narrative_intro
        FROM quest_steps WHERE quest_id = $1 ORDER BY step_order`,
       [quest.id]
     );
@@ -163,6 +276,73 @@ router.post("/:questId/steps/:stepOrder/done", async (req, res) => {
   } catch (err) {
     console.error("Failed to update step:", err);
     res.status(500).json({ error: "Server error" });
+  }
+});
+
+// POST /api/quests/:questId/steps/:stepOrder/verify — verify step with camera (Claude Vision)
+router.post("/:questId/steps/:stepOrder/verify", async (req, res) => {
+  const { imageBase64, cameraPrompt, successCondition, playerAction, stepTitle } = req.body;
+  if (!imageBase64) {
+    res.status(400).json({ error: "imageBase64 required" });
+    return;
+  }
+
+  const BACKEND_URL = process.env.BACKEND_URL || "https://backend-production-77f8.up.railway.app";
+
+  try {
+    console.log(`[Verify] Step ${req.params.stepOrder} of quest ${req.params.questId} — sending to Vision...`);
+
+    const verifyRes = await fetch(`${BACKEND_URL}/verify-step`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        image_base64: imageBase64,
+        quest_id: req.params.questId,
+        step_id: parseInt(req.params.stepOrder),
+        camera_prompt: cameraPrompt || "",
+        success_condition: successCondition || "",
+        player_action: playerAction || "",
+        step_title: stepTitle || "",
+      }),
+    });
+
+    if (!verifyRes.ok) {
+      const errText = await verifyRes.text();
+      console.error("[Verify] Backend error:", verifyRes.status, errText);
+      res.status(502).json({ error: "Verification failed", detail: errText });
+      return;
+    }
+
+    const result = await verifyRes.json() as any;
+    console.log(`[Verify] Result: validated=${result.validated}, confidence=${result.confidence}`);
+
+    // If validated, mark step as done and activate next
+    if (result.validated) {
+      await pool.query(
+        `UPDATE quest_steps SET done = true, active = false WHERE quest_id = $1 AND step_order = $2`,
+        [req.params.questId, req.params.stepOrder]
+      );
+      const nextOrder = parseInt(req.params.stepOrder) + 1;
+      await pool.query(
+        `UPDATE quest_steps SET active = true WHERE quest_id = $1 AND step_order = $2`,
+        [req.params.questId, nextOrder]
+      );
+
+      // Log action
+      const { userId } = req.body;
+      if (userId) {
+        await pool.query(
+          `INSERT INTO quest_actions (quest_id, user_id, action, xp) VALUES ($1, $2, $3, $4)`,
+          [req.params.questId, userId, `Step ${req.params.stepOrder} verified via camera`, result.xp_earned || 15]
+        );
+      }
+    }
+
+    res.json(result);
+  } catch (err) {
+    console.error("Failed to verify step:", err);
+    const message = err instanceof Error ? err.message : String(err);
+    res.status(500).json({ error: "Verification failed", detail: message });
   }
 });
 

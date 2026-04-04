@@ -122,6 +122,12 @@ export async function initDb() {
     ALTER TABLE users ADD COLUMN IF NOT EXISTS level INTEGER DEFAULT 1;
     ALTER TABLE user_friends ADD COLUMN IF NOT EXISTS friend_id UUID REFERENCES users(id);
 
+    -- Quest step camera fields
+    ALTER TABLE quest_steps ADD COLUMN IF NOT EXISTS camera_prompt TEXT;
+    ALTER TABLE quest_steps ADD COLUMN IF NOT EXISTS success_condition TEXT;
+    ALTER TABLE quest_steps ADD COLUMN IF NOT EXISTS player_action TEXT;
+    ALTER TABLE quest_steps ADD COLUMN IF NOT EXISTS narrative_intro TEXT;
+
     -- Seed default badges if empty
     INSERT INTO badges (name, emoji, description) VALUES
       ('Shadow Agent', '🥷', 'Complete a quest in stealth mode'),

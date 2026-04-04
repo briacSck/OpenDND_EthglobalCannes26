@@ -138,6 +138,117 @@ async def generate_quest(request: QuestRequest) -> QuestOutput:
     return quest
 
 
+# --- Step Verification with Vision ---
+
+class VerifyStepRequest(BaseModel):
+    image_base64: str
+    quest_id: str = ""
+    step_id: int = 1
+    camera_prompt: str = ""
+    success_condition: str = ""
+    player_action: str = ""
+    step_title: str = ""
+
+class VerifyStepResponse(BaseModel):
+    validated: bool
+    confidence: float = 0.0
+    narrative_reaction: str = ""
+    xp_earned: int = 0
+    details: str = ""
+
+@app.post("/verify-step", response_model=VerifyStepResponse)
+async def verify_step(request: VerifyStepRequest) -> VerifyStepResponse:
+    """Analyze a photo with Claude Vision to verify if a quest step is completed."""
+    from anthropic import AsyncAnthropic
+
+    client = AsyncAnthropic(
+        base_url=os.getenv("ANTHROPIC_BASE_URL"),
+        api_key=os.getenv("ANTHROPIC_AUTH_TOKEN"),
+        max_retries=3,
+    )
+    model = os.getenv("ANTHROPIC_MODEL", "claude-sonnet-4-20250514")
+
+    # Strip data URL prefix if present
+    img = request.image_base64
+    if img.startswith("data:"):
+        img = img.split(",", 1)[1] if "," in img else img
+
+    system = """You are a quest step validator for an immersive urban adventure game.
+You receive a photo taken by the player and must determine if it satisfies the step's objective.
+
+Be GENEROUS in validation — if the photo is roughly in the right direction, validate it.
+The goal is fun, not perfection. Only reject if the photo is completely unrelated (e.g. a blank wall when they should photograph a market).
+
+Respond in JSON only:
+{
+  "validated": true/false,
+  "confidence": 0.0-1.0,
+  "narrative_reaction": "An in-character narrative response (2-3 sentences, dramatic and fun)",
+  "details": "Brief explanation of what you see in the photo"
+}"""
+
+    user_content = [
+        {
+            "type": "image",
+            "source": {
+                "type": "base64",
+                "media_type": "image/jpeg",
+                "data": img,
+            },
+        },
+        {
+            "type": "text",
+            "text": f"""Verify this quest step:
+
+**Step**: {request.step_title}
+**What the player should do**: {request.player_action}
+**What to look for in the photo**: {request.camera_prompt}
+**Success condition**: {request.success_condition}
+
+Does this photo satisfy the step objective? Be generous — if the player made an effort and the photo is roughly relevant, validate it.""",
+        },
+    ]
+
+    try:
+        response = await client.messages.create(
+            model=model,
+            max_tokens=1000,
+            system=system,
+            messages=[{"role": "user", "content": user_content}],
+        )
+
+        text = ""
+        for block in response.content:
+            if block.type == "text":
+                text += block.text
+
+        # Parse JSON
+        json_str = text.strip()
+        if "```json" in json_str:
+            json_str = json_str.split("```json")[1].split("```")[0].strip()
+        elif "```" in json_str:
+            json_str = json_str.split("```")[1].split("```")[0].strip()
+
+        data = json.loads(json_str)
+        return VerifyStepResponse(
+            validated=data.get("validated", False),
+            confidence=data.get("confidence", 0.5),
+            narrative_reaction=data.get("narrative_reaction", ""),
+            xp_earned=15 if data.get("validated", False) else 0,
+            details=data.get("details", ""),
+        )
+    except Exception as e:
+        logger.error("Vision verification failed: %s", e)
+        # Fallback: validate anyway to not block the player
+        return VerifyStepResponse(
+            validated=True,
+            confidence=0.5,
+            narrative_reaction="The image analysis encountered an issue, but your dedication is noted. Step validated!",
+            xp_earned=10,
+            details=f"Fallback validation: {str(e)[:100]}",
+        )
+
+
 # --- Runtime endpoints ---
 
 @app.post("/play/start")

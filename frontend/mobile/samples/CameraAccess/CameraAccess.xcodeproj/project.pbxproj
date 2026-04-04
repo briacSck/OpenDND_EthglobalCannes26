@@ -49,6 +49,8 @@
 		DD0001032F000004000DD001 /* QuestViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD0001022F000004000DD001 /* QuestViewModel.swift */; };
 		DD0001052F000004000DD001 /* HistoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD0001042F000004000DD001 /* HistoryViewModel.swift */; };
 		DD0001072F000004000DD001 /* SocialViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD0001062F000004000DD001 /* SocialViewModel.swift */; };
+		EE0001012F000005000EE001 /* QuestCameraViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE0001002F000005000EE001 /* QuestCameraViewModel.swift */; };
+		EE0001032F000005000EE001 /* QuestCameraOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE0001022F000005000EE001 /* QuestCameraOverlayView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -125,6 +127,8 @@
 		DD0001022F000004000DD001 /* QuestViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestViewModel.swift; sourceTree = "<group>"; };
 		DD0001042F000004000DD001 /* HistoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryViewModel.swift; sourceTree = "<group>"; };
 		DD0001062F000004000DD001 /* SocialViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialViewModel.swift; sourceTree = "<group>"; };
+		EE0001002F000005000EE001 /* QuestCameraViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestCameraViewModel.swift; sourceTree = "<group>"; };
+		EE0001022F000005000EE001 /* QuestCameraOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestCameraOverlayView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -194,7 +198,8 @@
 				DD0001022F000004000DD001 /* QuestViewModel.swift */,
 				DD0001042F000004000DD001 /* HistoryViewModel.swift */,
 				DD0001062F000004000DD001 /* SocialViewModel.swift */,
-			);
+				EE0001002F000005000EE001 /* QuestCameraViewModel.swift */,
+);
 			path = ViewModels;
 			sourceTree = "<group>";
 		};
@@ -279,6 +284,7 @@
 			children = (
 				AA0001002F000001000AA001 /* QuestView.swift */,
 				AA0001022F000001000AA001 /* PostQuestView.swift */,
+				EE0001022F000005000EE001 /* QuestCameraOverlayView.swift */,
 			);
 			path = Quest;
 			sourceTree = "<group>";
@@ -496,6 +502,8 @@
 				E6FD3BCE2EB4D53A00E7FE5D /* NonStreamView.swift in Sources */,
 				AA0001012F000001000AA001 /* QuestView.swift in Sources */,
 				AA0001032F000001000AA001 /* PostQuestView.swift in Sources */,
+				EE0001012F000005000EE001 /* QuestCameraViewModel.swift in Sources */,
+				EE0001032F000005000EE001 /* QuestCameraOverlayView.swift in Sources */,
 				AA0001052F000001000AA001 /* SocialView.swift in Sources */,
 				AA0001072F000001000AA001 /* WalletView.swift in Sources */,
 				AA0001092F000001000AA001 /* HistoryView.swift in Sources */,

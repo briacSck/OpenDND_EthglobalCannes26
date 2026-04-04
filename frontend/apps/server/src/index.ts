@@ -10,7 +10,7 @@ const app = express();
 const PORT = process.env.PORT || 3002;
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: "20mb" }));
 
 app.get("/health", (_req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
@@ -25,9 +25,13 @@ async function start() {
   await initDb();
   console.log("Database tables ready");
 
-  app.listen(Number(PORT), "0.0.0.0", () => {
+  const server = app.listen(Number(PORT), "0.0.0.0", () => {
     console.log(`Server running on http://0.0.0.0:${PORT}`);
   });
+  // Allow long-running requests (quest generation takes 2-3 min)
+  server.timeout = 300000;
+  server.keepAliveTimeout = 300000;
+  server.headersTimeout = 310000;
 }
 
 start().catch((err) => {
