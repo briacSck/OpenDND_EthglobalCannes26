@@ -1,0 +1,101 @@
+{
+  "step_id": 5,
+  "title": "The Notary's Ledger",
+  "activity": {
+    "name": "Marché Forville Investigation — Cross-Referencing the Castre Protocol",
+    "address": "Marché Forville, 6 Rue du Marché Forville, 06400 Cannes",
+    "price_eur": 0,
+    "duration_minutes": 25,
+    "category": "investigation"
+  },
+  "narrative_intro": "Rue d'Antibes gave you the shape of the laundering network — shell companies nesting inside luxury storefronts like parasites in marble. But shapes aren't proof. Proof is what Soren Kask built, and proof is what's disintegrating inside the Castre Protocol's countdown timer. You have fragments now — transaction hashes from the Vieux Port, property records from the Croisette corridor, the Carlton connection. But fragments don't validate. Kask's smart contract requires a specific confirmation sequence, and the final decryption seed is encoded in a pattern he called 'the notary's signature' — a cryptographic hash derived from the architectural geometry of Cannes' oldest commercial structure. The Marché Forville. Built in 1934, rebuilt after the war, its iron-and-stone arcade has served as the backbone of Cannes commerce for nearly a century. Kask visited it seventeen times in his last three months alive. He photographed it obsessively. He told Nadia it was 'the only honest building left in this city.' Now you're about to find out why he died staring at pictures of a fish market.",
+  "instruction": "Make your way to the Marché Forville — the covered market just two blocks north of Rue d'Antibes. When you arrive, Nadia Ferhat will send you a decrypted fragment of Kask's research journal. Your task: photograph the main stone archway entrance of the market, counting the number of iron support columns visible along the facade. This number is the geometric seed Kask used for the final decryption layer. Then cross-reference what Castaldi and Voss have told you about the timeline — one of them has lied about when the crypto conversion happened, and the contradiction is hidden in a property registration document Nadia will unlock. Report your column count AND which character you believe is lying to Nadia. Your answer determines which validation path the Protocol follows.",
+  "player_action": "Photograph the main entrance archway of Marché Forville, count the visible iron support columns along the facade, then cross-reference the contradictory timelines given by Castaldi and Voss to determine which character lied about the crypto conversion date. Report both the column count and your accusation to Nadia.",
+  "gps_trigger": {
+    "type": "document",
+    "character": "Nadia Ferhat",
+    "content_brief": "A decrypted page from Soren Kask's research journal — handwritten notes with architectural sketches of Marché Forville's facade, column measurements, and a margin annotation reading: 'The seed is in the structure. Count what holds the building up — not what decorates it. They'll try to make you count the wrong things. Castaldi already has.' Below: a scanned property registration from 2017 showing a MIPIM-linked shell company purchasing a building on Rue Félix Faure — timestamped March 14, 2017. This contradicts Castaldi's claim that conversions didn't begin until 2018, but aligns with Voss's timeline. However, a second notation in Kask's hand reads: 'Voss knows about Félix Faure. She buried it in her own report. Ask yourself why.'"
+  },
+  "camera_prompt": "The player photographs the stone and iron facade of Marché Forville, focusing on the entrance archway and structural columns. AI identifies the architectural elements — the post-war reconstruction ironwork, the stone arcade, the number of load-bearing columns versus decorative elements. The AI character (Nadia) uses the real architectural details to narratively confirm or challenge the player's count, weaving the actual structure into Kask's cryptographic methodology: 'Kask didn't use decoration. He used load-bearing truth. The columns that hold weight are the ones that matter — just like the evidence.'",
+  "walking_minutes_from_previous": 4,
+  "tension": {
+    "type": "intellectual_moral",
+    "description": "The player must actively cross-reference contradictory information from Castaldi and Voss to determine who lied about the crypto conversion timeline. The Kask journal fragment reveals that BOTH characters have hidden something — Castaldi lied about the date, but Voss deliberately buried evidence that would have exposed the network earlier. Accusing Castaldi is factually correct but lets Voss off the hook. Accusing Voss is factually incomplete but reveals a deeper institutional betrayal. The player's choice shapes which version of the truth the validated ledger will tell.",
+    "resolution": "Nadia receives the player's accusation and column count. She reveals that Kask designed the Protocol to accept EITHER answer — because both are partially true. But the validation path differs: accusing Castaldi triggers a full public ledger (exposing everyone, including Voss's suppression), while accusing Voss triggers a sealed judicial submission (protecting the Europol investigation but letting Castaldi's network restructure). Neither path is clean. The player has just made an irreversible choice about what kind of justice they believe in."
+  },
+  "character_interactions": [
+    {
+      "character": "Nadia Ferhat",
+      "trigger": "GPS arrival at Marché Forville unlocks Kask's journal page; Nadia messages 90 seconds later",
+      "phone_version": "Message from Nadia: 'You've seen the journal page by now. I need to tell you something I should have said at the start. I was Kask's legal counsel. Not just his contact — his lawyer. Attorney-client privilege died with him, so I'm free to speak, but that doesn't mean I'm free of guilt. I knew what he was building for eight months before he died. I told him to go to Europol. He did. Voss took his preliminary findings and sat on them for eleven weeks. ELEVEN. In that time, three properties changed hands and two witnesses relocated to Dubai. Kask never trusted institutions again after that. That's why he built the Protocol — a dead man's switch that doesn't need permission from anyone. Except you. Count the structural columns on the Forville facade. Not the decorative pilasters — the load-bearing ones. Kask was specific. And then tell me: who lied to you about the conversion date? I already know the answer. I need to know if YOU do.'",
+      "rayban_version": {
+        "script": "Nadia's voice is steady but carries the weight of someone confessing. 'You've seen his journal. I was Kask's lawyer. I should have told you sooner. He went to Europol — to Voss — eight months before he died. She sat on his evidence for eleven weeks. Three properties changed hands. Two witnesses vanished to Dubai. That's why the Protocol exists. It doesn't ask permission. It only asks you. Count the load-bearing columns on the Forville facade. Not decoration — structure. Then tell me who lied about the conversion timeline. I already know. I need to know if you do.'",
+        "audio_type": "voice_message",
+        "duration_seconds": 55,
+        "camera_mode": {
+          "enabled": true,
+          "purpose": "Player photographs the Marché Forville facade; AI counts columns and interprets structural vs decorative elements through Kask's cryptographic lens"
+        },
+        "contextual_music": {
+          "enabled": true,
+          "track_type": "minimal_piano_tension",
+          "duration_seconds": 120
+        }
+      },
+      "awaits_response": true
+    },
+    {
+      "character": "Enzo Castaldi",
+      "trigger": "Player has been at location for 4 minutes OR opens the Kask journal document",
+      "phone_version": "Message from Castaldi: 'I see you've reached the market. Lovely place — the bouillabaisse ingredients are extraordinary if you know which stall to trust. Listen, I'm hearing chatter that Nadia Ferhat has been feeding you Kask's personal documents. Be very careful with those. Kask was brilliant but paranoid. He saw conspiracies in architecture — literally. He once told me the column spacing at Forville encoded a Fibonacci sequence that proved money laundering. The man was unraveling. I respected his mind, but his methods became... unreliable. Toward the end, he accused everyone. Me, Voss, the mayor's office, a sommelier at the Majestic. If Nadia is asking you to choose who lied, consider that Kask's own framework may be the lie. The 2018 date I gave you came from verified exchange records. Whatever document Nadia is showing you, ask yourself: was it verified by anyone other than a dead man and his grieving lawyer? I'm trying to protect you from becoming a pawn in someone else's revenge fantasy. Validate the Protocol clean. Don't let Nadia poison the well.'",
+      "rayban_version": {
+        "script": "Castaldi's voice is warm, almost paternal, but there's an edge now — the first crack in the charm. 'Reached the market, have you? Beautiful place. Listen — carefully now. Nadia is showing you Kask's journal. Kask was brilliant but he was breaking apart. He saw codes in column spacing, conspiracies in architecture. He accused everyone — me, Voss, a sommelier. The 2018 date I gave you is from verified exchange records. Whatever Nadia has comes from a dead man's paranoia and his lawyer's grief. Don't become a pawn in someone's revenge. Validate clean.'",
+        "audio_type": "voice_message",
+        "duration_seconds": 45,
+        "camera_mode": {
+          "enabled": false,
+          "purpose": ""
+        },
+        "contextual_music": {
+          "enabled": false,
+          "track_type": "",
+          "duration_seconds": 0
+        }
+      },
+      "awaits_response": false
+    },
+    {
+      "character": "Specter",
+      "trigger": "Player sends their photo of the Forville facade through the app",
+      "phone_version": "Message from Specter — no text, just an image: a close-up photograph of the same Marché Forville entrance, taken at night, months ago. In the image, a figure's shadow falls across the columns. The metadata reads: 'October 2025, 02:47 AM.' A single line of text below: 'He counted them seventeen times. He always got the same number. Trust the structure.'",
+      "rayban_version": {
+        "script": "A brief audio artifact plays — the sound of footsteps on stone, then silence, then Specter's distorted voice, barely above a whisper: 'He counted seventeen times. Same number every time. Trust the structure. Not the voice that tells you the structure is wrong.'",
+        "audio_type": "audio_artifact",
+        "duration_seconds": 12,
+        "camera_mode": {
+          "enabled": false,
+          "purpose": ""
+        },
+        "contextual_music": {
+          "enabled": true,
+          "track_type": "low_drone_unsettling",
+          "duration_seconds": 30
+        }
+      },
+      "awaits_response": false
+    }
+  ],
+  "verification": {
+    "method": "photo_and_text_response",
+    "target": "Photo of Marché Forville facade showing structural columns + text message to Nadia identifying which character (Castaldi or Voss) lied about the crypto conversion timeline",
+    "success_condition": "Player submits a clear photo of the Forville entrance with visible columns AND provides a reasoned accusation naming either Castaldi or Voss, referencing specific contradictions from the Kask journal or previous character statements",
+    "success_reaction": "Nadia responds with visible emotion: 'You cross-referenced. You actually cross-referenced. Kask said the validator would be thorough — I didn't believe him. Your column count matches his seed value. The Protocol's penultimate layer is unlocked. And your choice about who lied... it shapes the validation path. I won't tell you which path is 'better.' There is no better. There's only what you can live with. One more step. The final confirmation site. Kask chose it for a reason I'm only now beginning to understand.' Player receives +150 XP, trust++ with Nadia, and a classified Europol internal memo (AI-generated) showing Voss's eleven-week delay annotated with her handwritten justification: 'Premature disclosure risks the larger network. Let them move. We track.' The memo is damning either way — it's either strategic patience or criminal negligence.",
+    "failure_fallback": "If the player's photo is unclear or they don't provide an accusation, Nadia sends: 'Time is compressing. I can work with what you've given me — the Protocol has redundancy Kask built for exactly this situation. The seed defaults to his backup value. We lose granularity in the ledger but not the core evidence. Your accusation... if you can't decide, the Protocol decides for you. It defaults to full exposure. Everyone's sins, on the public chain. Kask's dead man's switch was never subtle.' The story continues — the player moves to Step 6 with the default full-exposure validation path, losing the nuance of choosing but gaining the narrative weight of inaction having consequences.",
+    "timeout_reaction": "After 8 minutes, Nadia messages: 'The countdown doesn't care about thoroughness. I need your count and your call — Castaldi or Voss. If I don't hear from you in two minutes, the Protocol's backup seed activates and you lose the ability to choose the validation path. Kask wanted you to choose. Don't let the clock choose for you.'"
+  },
+  "blockchain_event": "Castre Protocol penultimate decryption layer unlocked — player's column count serves as geometric seed for the final validation key. The validation path (public ledger vs. sealed judicial) is now locked based on the player's accusation. A micro-transaction of 0.00001 ETH is sent to the player's wallet with memo: 'SEED CONFIRMED — FINAL VALIDATION PENDING — FORVILLE/[column_count]'",
+  "unlock_message": "A page from a dead man's journal materializes in your vault. The handwriting is meticulous, almost architectural. Soren Kask was here before you. He counted what holds this building up. Now it's your turn to count — and to decide whose lies matter more.",
+  "skill_xp": 150,
+  "is_skill_step": true,
+  "is_collaborative": false
+}

@@ -18,7 +18,7 @@ def log(msg: str):
     print(msg, flush=True)
 
 
-MAX_TOOL_ITERATIONS = 4
+MAX_TOOL_ITERATIONS = 2  # 2 rounds of search max — catalog has most data already
 
 
 class CuratorAgent:
@@ -66,34 +66,41 @@ class CuratorAgent:
             )
 
             if response.stop_reason == "tool_use":
-                # Execute search tools and continue
+                # Execute search tools (cap at 8 per round to avoid slow loops)
                 tool_results = []
-                for block in response.content:
-                    if block.type == "tool_use":
-                        log(f"  [Curator] Searching: {block.name}({json.dumps(block.input, ensure_ascii=False)[:80]})")
-                        result = await self._execute_tool(block.name, block.input)
-                        tool_results.append({
-                            "type": "tool_result",
-                            "tool_use_id": block.id,
-                            "content": result[:2000],
-                        })
+                tool_blocks = [b for b in response.content if b.type == "tool_use"]
+                for block in tool_blocks[:8]:
+                    log(f"  [Curator] Searching: {block.name}({json.dumps(block.input, ensure_ascii=False)[:80]})")
+                    result = await self._execute_tool(block.name, block.input)
+                    tool_results.append({
+                        "type": "tool_result",
+                        "tool_use_id": block.id,
+                        "content": result[:2000],
+                    })
+                # Skip excess tool calls with a dummy result
+                for block in tool_blocks[8:]:
+                    tool_results.append({
+                        "type": "tool_result",
+                        "tool_use_id": block.id,
+                        "content": "[skipped — max 8 searches per round]",
+                    })
                 messages.append({"role": "assistant", "content": response.content})
                 messages.append({"role": "user", "content": tool_results})
             else:
                 # Extract text response
                 return self._extract_text(response)
 
-        return "[Curator] Recherche terminée — voici ce que j'ai trouvé dans le catalogue existant."
+        return "[Curator] Search complete — here is what I found in the existing catalog."
 
     async def _execute_tool(self, tool_name: str, tool_input: dict) -> str:
         func = TOOL_FUNCTIONS.get(tool_name)
         if not func:
-            return f"Outil inconnu: {tool_name}"
+            return f"Unknown tool: {tool_name}"
         try:
             result = await func(**tool_input)
             return result
         except Exception as e:
-            return f"Erreur: {e}"
+            return f"Error: {e}"
 
     def _extract_text(self, response) -> str:
         parts = []

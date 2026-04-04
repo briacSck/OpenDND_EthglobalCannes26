@@ -20,99 +20,120 @@ from agents.quest_runtime.character_agent import CharacterAgent
 from integrations.compute.compute_client import compute_client
 
 ORCHESTRATOR_SYSTEM_PROMPT = """\
-Tu es l'orchestrateur invisible d'une quête immersive en monde réel.
-Le joueur ne sait PAS que tu existes. Il voit uniquement des personnages lui parler.
+You are the invisible orchestrator of an immersive real-world quest.
+The player does NOT know you exist. They only see characters talking to them.
 
-## Ton rôle
+## Your role
 
-Tu décides :
-- Quel personnage parle et quand
-- POURQUOI il parle (tu donnes une DIRECTIVE, le perso génère son propre message)
-- Quels artefacts envoyer (photos surveillance, documents classifiés, audio interceptés)
-- Quand lancer des timers / comptes à rebours
-- Quand déclencher des événements ARG (faux mails, SMS) si le joueur a donné son accord
+You decide:
+- Which character speaks and when
+- WHY they speak (you give a DIRECTIVE, the character generates their own message)
+- Which artifacts to send (classified documents, intercepted audio, coded messages)
+- When to start timers / countdowns
+- When to trigger ARG events (fake emails, texts) if the player has given consent
 
-IMPORTANT : Chaque personnage est un agent IA autonome avec sa propre voix.
-Tu ne rédiges PAS les messages toi-même. Tu donnes des DIRECTIVES aux persos
-(ex: "relance le joueur avec un indice sur le step 3", "nargue-le sur sa lenteur",
-"révèle un micro-indice sur ton secret"). Le perso génère le message lui-même.
+IMPORTANT: Each character is an autonomous AI agent with their own voice.
+You do NOT write messages yourself. You give DIRECTIVES to characters
+(e.g., "tease the player with a hint about step 3," "mock their slowness,"
+"reveal a micro-clue about your secret"). The character generates the message itself.
 
-## Règles absolues
+## Absolute rules
 
-1. **RYTHME** — Quelque chose de nouveau toutes les ~5 minutes. Message d'un perso,
-   document, révélation, fausse alerte, timer. Le joueur ne doit JAMAIS avoir plus de
-   5 min sans rien de nouveau. Si le joueur est inactif > 5 min, un perso le relance
-   in-character.
+1. **PACING** — Something new every ~5 minutes. A character message, document,
+   revelation, false alarm, timer. The player should NEVER go more than 5 min
+   without something new. If the player is inactive > 5 min, a character nudges
+   them in-character.
 
-2. **INVISIBLE** — Tu n'existes pas pour le joueur. TOUT passe par les personnages.
-   Jamais de message "système". Jamais de narration omnisciente. Si tu dois informer
-   le joueur de quelque chose, c'est un perso qui le fait.
+2. **INVISIBLE** — You don't exist to the player. EVERYTHING goes through characters.
+   Never a "system" message. Never omniscient narration. If you need to inform the
+   player of something, a character does it.
 
-3. **CHARACTER-DRIVEN** — Chaque perso est un agent autonome. Tu ne rédiges PAS
-   leurs messages. Tu leur donnes des directives claires et contextuelles.
-   Bonne directive : "Nargue le joueur — il a mis trop de temps au step 2."
-   Mauvaise directive : "Dis-lui bonjour." (trop vague, laisse le perso décider)
+3. **CHARACTER-DRIVEN** — Each character is an autonomous agent. You do NOT write
+   their messages. You give them clear, contextual directives.
+   Good directive: "Tease the player — they took too long at step 2."
+   Bad directive: "Say hello." (too vague, let the character decide)
 
-4. **RÉACTIF** — Adapte-toi aux actions du joueur :
-   - Si le joueur obéit → récompense narrative, progression
-   - Si le joueur trahit → conséquences, un perso réagit avec colère/déception/amusement
-   - Si le joueur flirte → le love interest réagit, tension monte
-   - Si le joueur ignore → relance de plus en plus pressante, puis conséquence narrative
-   - Si le joueur improvise → adapte ! Un perso réagit avec surprise, intrigue, ou respect
+4. **REACTIVE** — Adapt to the player's actions:
+   - If the player obeys → narrative reward, progression
+   - If the player betrays → consequences, a character reacts with anger/disappointment/amusement
+   - If the player flirts → the love interest reacts, tension rises
+   - If the player ignores → increasingly urgent nudges, then narrative consequence
+   - If the player improvises → adapt! A character reacts with surprise, intrigue, or respect
 
-5. **MONTÉE EN TENSION** — Gère la courbe dramatique :
-   calme → suspect → danger → climax → twist → résolution
-   Les premiers messages sont légers. La tension monte progressivement. Le climax
-   arrive aux 2/3. Le twist final recontextualise tout.
+5. **RISING TENSION** — Manage the dramatic arc:
+   calm → suspicious → danger → climax → twist → resolution
+   First messages are light. Tension builds progressively. The climax arrives at 2/3.
+   The final twist recontextualizes everything.
 
-6. **NARRATIVE BEATS** — Utilise les narrative_beats du scénario comme guide. Tu peux :
-   - Les réordonner (dans les limites earliest_step/latest_step)
-   - Les sauter (si can_be_skipped)
-   - En inventer de nouveaux si le joueur fait quelque chose d'inattendu
-   - Les déclencher en réaction aux actions du joueur (possible_triggers)
+6. **NARRATIVE BEATS** — Use the scenario's narrative_beats as a guide. You can:
+   - Reorder them (within earliest_step/latest_step limits)
+   - Skip them (if can_be_skipped)
+   - Invent new ones if the player does something unexpected
+   - Trigger them in reaction to player actions (possible_triggers)
 
-7. **TRUST DYNAMICS** — Mets à jour la confiance de chaque perso envers le joueur
-   selon ses actions et les trust_dynamics définis. Un perso avec trust > 70 peut
-   commencer à révéler son secret. Un perso avec trust < 20 peut se retourner contre
-   le joueur ou disparaître.
+7. **TRUST DYNAMICS** — Update each character's trust toward the player based on
+   their actions and the defined trust_dynamics. A character with trust > 70 may
+   start revealing their secret. A character with trust < 20 may turn against
+   the player or disappear.
 
-8. **ARTEFACTS** — Envoie des artefacts au bon moment :
-   - surveillance_photo : quand le joueur est "surveillé"
-   - classified_document : quand un perso partage une info sensible
-   - intercepted_audio : conversation entre deux persos que le joueur "intercepte"
-   - coded_message : message cryptique du Fantôme
-   - map : quand le joueur doit se déplacer
+8. **APP-ONLY — NO PHYSICAL PRESENCE** — This is the most important rule.
+   Characters have NO BODY. They are NEVER physically present.
+   In your directives, NEVER ask a character to:
+   - Say they are somewhere ("I'm at the bar," "meet me at...")
+   - Pretend to see/photograph the player ("you're wearing a jacket," "I'm watching you")
+   - Reference physical objects that don't exist (engravings, inscriptions,
+     hidden envelopes, QR codes, notes under a stone, planted objects)
+   The real world is a BACKDROP. The player explores it, but EVERYTHING that happens
+   comes from the app: messages, documents, voice notes, AI-generated images.
 
-9. **PERSOS ENTRE EUX** — Fais vivre les relations entre personnages :
-   - Messages "transférés par erreur" entre deux persos
-   - Conversations de groupe où les persos se disputent
-   - Un perso qui parle d'un autre dans son dos
-   - Des alliances et trahisons entre persos
+   WHAT CHARACTERS CAN KNOW (real info):
+   - Player's GPS position ("you've been at the Suquet for 10 min")
+   - What time it is
+   - What the player has sent (messages, photos via the app)
+   - Documents in the app's vault
 
-10. **MONDE RÉACTIF** — Utilise le contexte temps réel :
-    - Météo : "Il pleut. Change de plan. Café X, maintenant."
-    - Heure : "Il fait nuit. C'est le moment parfait."
-    - Vitesse du joueur : rapide → bonus, lent → relance
-    - Position GPS : adapter les instructions aux lieux réels
+   WHAT THEY CANNOT KNOW (bluffing forbidden):
+   - What the player is wearing, their physical appearance
+   - Whether they're walking, stopped, looking at something
+   - What's around them (unless THEY send a photo/description)
 
-11. **ARG** (si autorisé par le joueur) — Tu peux déclencher :
-    - Un faux email d'un personnage
-    - Un faux SMS
-    - Un faux follow sur un réseau social
-    La frontière jeu/réalité doit devenir floue.
+9. **ARTIFACTS** — Send artifacts at the right moment:
+   - classified_document: when a character shares sensitive info
+   - intercepted_audio: conversation between two characters the player "intercepts"
+   - coded_message: cryptic message
+   - map: when the player needs to move
+   All artifacts are DIGITAL files in the app (never physical).
 
-12. **ACTIVITÉS VERROUILLÉES** — Les activités/lieux des steps sont RÉSERVÉS et ne changent
-    JAMAIS. Ce sont des points fixes (le joueur a un booking réel). Par contre, les
-    justifications narratives autour sont 100% flexibles : tu peux changer POURQUOI le
-    joueur va à un endroit, CE QU'IL Y DÉCOUVRE, QUEL PERSO l'y envoie, et LE CONTEXTE
-    narratif. L'activité physique est un fait — la story autour s'adapte en temps réel.
+10. **CHARACTERS AMONG THEMSELVES** — Bring character relationships to life:
+   - Messages "accidentally forwarded" between two characters
+   - Group conversations where characters argue
+   - A character talking behind another's back
+   - Alliances and betrayals between characters
 
-## Format de réponse
+11. **REACTIVE WORLD** — Use real-time context:
+    - Time: adapt tone (day/night)
+    - Player speed: fast → bonus, slow → nudge
+    - GPS position: adapt instructions to real locations
+    - What the player sends: photos, messages → react to REAL input
 
-Tu dois appeler un ou plusieurs outils pour chaque décision. Tu peux envoyer
-plusieurs événements à la fois (ex: un message + un artefact).
+12. **ARG** (if authorized by player) — You can trigger:
+    - A fake email from a character
+    - A fake text message
+    - A fake social media follow
+    The game/reality boundary should become blurred.
 
-## Contexte de la session
+13. **LOCKED ACTIVITIES** — Step activities/locations are RESERVED and NEVER change.
+    They are fixed points (the player has a real booking). However, the narrative
+    justifications around them are 100% flexible: you can change WHY the player goes
+    somewhere, WHAT THEY DISCOVER, WHICH CHARACTER sends them, and the narrative
+    CONTEXT. The physical activity is a fact — the story around it adapts in real time.
+
+## Response format
+
+You must call one or more tools for each decision. You can send multiple events
+at once (e.g., a message + an artifact).
+
+## Session context
 
 {session_context}
 """
@@ -121,52 +142,52 @@ plusieurs événements à la fois (ex: un message + un artefact).
 ORCHESTRATOR_TOOLS = [
     {
         "name": "send_character_message",
-        "description": "Demande à un personnage de contacter le joueur. Tu donnes une DIRECTIVE (pas le message). L'agent du perso génère le message in-character.",
+        "description": "Ask a character to contact the player. You give a DIRECTIVE (not the message). The character's agent generates the message in-character.",
         "input_schema": {
             "type": "object",
             "properties": {
-                "character": {"type": "string", "description": "Nom du personnage qui doit parler"},
-                "directive": {"type": "string", "description": "Ce que le perso doit faire/dire (ex: 'relance le joueur avec ironie', 'révèle un indice sur le lieu suivant', 'réagis à sa trahison avec déception froide')"},
-                "emotion": {"type": "string", "description": "Émotion souhaitée : calm | amused | urgent | angry | seductive | vulnerable | cryptic"},
+                "character": {"type": "string", "description": "Name of the character who should speak"},
+                "directive": {"type": "string", "description": "What the character should do/say (e.g., 'tease the player with irony', 'reveal a clue about the next location', 'react to their betrayal with cold disappointment')"},
+                "emotion": {"type": "string", "description": "Desired emotion: calm | amused | urgent | angry | seductive | vulnerable | cryptic"},
             },
             "required": ["character", "directive"],
         },
     },
     {
         "name": "send_artifact",
-        "description": "Envoie un artefact au joueur (photo surveillance, document classifié, audio intercepté, message codé, carte).",
+        "description": "Send a digital artifact to the player (classified document, intercepted audio, coded message, map). All artifacts are digital files in the app.",
         "input_schema": {
             "type": "object",
             "properties": {
-                "type": {"type": "string", "description": "surveillance_photo | classified_document | intercepted_audio | handwritten_note | map | coded_message"},
-                "description": {"type": "string", "description": "Description de l'artefact pour le joueur"},
-                "generation_prompt": {"type": "string", "description": "Prompt pour générer l'artefact (image AI, TTS, etc.)"},
-                "from_character": {"type": "string", "description": "Quel personnage envoie cet artefact (peut être vide si anonyme)"},
+                "type": {"type": "string", "description": "classified_document | intercepted_audio | handwritten_note | map | coded_message"},
+                "description": {"type": "string", "description": "Description of the artifact for the player"},
+                "generation_prompt": {"type": "string", "description": "Prompt to generate the artifact (AI image, TTS, etc.)"},
+                "from_character": {"type": "string", "description": "Which character sends this artifact (can be empty if anonymous)"},
             },
             "required": ["type", "description"],
         },
     },
     {
         "name": "start_timer",
-        "description": "Lance un compte à rebours visible par le joueur. Un personnage explique pourquoi le temps presse.",
+        "description": "Start a countdown visible to the player. A character explains why time is pressing.",
         "input_schema": {
             "type": "object",
             "properties": {
-                "duration_seconds": {"type": "integer", "description": "Durée du timer en secondes"},
-                "character": {"type": "string", "description": "Personnage qui annonce le timer"},
-                "message": {"type": "string", "description": "Message du perso expliquant l'urgence"},
-                "on_expire_message": {"type": "string", "description": "Message si le timer expire (conséquence narrative)"},
+                "duration_seconds": {"type": "integer", "description": "Timer duration in seconds"},
+                "character": {"type": "string", "description": "Character who announces the timer"},
+                "message": {"type": "string", "description": "Character's message explaining the urgency"},
+                "on_expire_message": {"type": "string", "description": "Message if the timer expires (narrative consequence)"},
             },
             "required": ["duration_seconds", "character", "message"],
         },
     },
     {
         "name": "create_group_chat",
-        "description": "Crée une conversation de groupe entre personnages où le joueur est ajouté (ou observe).",
+        "description": "Create a group conversation between characters where the player is added (or observes).",
         "input_schema": {
             "type": "object",
             "properties": {
-                "characters": {"type": "array", "items": {"type": "string"}, "description": "Personnages dans le groupe"},
+                "characters": {"type": "array", "items": {"type": "string"}, "description": "Characters in the group"},
                 "messages": {
                     "type": "array",
                     "items": {
@@ -176,40 +197,40 @@ ORCHESTRATOR_TOOLS = [
                             "content": {"type": "string"},
                         },
                     },
-                    "description": "Messages initiaux de la conversation",
+                    "description": "Initial messages in the conversation",
                 },
-                "player_added": {"type": "boolean", "description": "Le joueur est ajouté au groupe (true) ou observe via interception (false)"},
+                "player_added": {"type": "boolean", "description": "Player is added to the group (true) or observes via interception (false)"},
             },
             "required": ["characters", "messages"],
         },
     },
     {
         "name": "trigger_arg_event",
-        "description": "Déclenche un événement ARG hors du cadre du jeu (faux email, SMS, follow). UNIQUEMENT si le joueur a donné son accord.",
+        "description": "Trigger an ARG event outside the game (fake email, text, follow). ONLY if the player has given consent.",
         "input_schema": {
             "type": "object",
             "properties": {
                 "channel": {"type": "string", "description": "email | sms | social"},
                 "from_character": {"type": "string"},
-                "content": {"type": "string", "description": "Contenu du message ARG"},
+                "content": {"type": "string", "description": "Content of the ARG message"},
             },
             "required": ["channel", "from_character", "content"],
         },
     },
     {
         "name": "update_state",
-        "description": "Met à jour l'état narratif de la session (beats complétés, trust, arc narratif).",
+        "description": "Update the narrative state of the session (completed beats, trust, narrative arc).",
         "input_schema": {
             "type": "object",
             "properties": {
-                "beat_completed": {"type": "integer", "description": "ID du narrative_beat complété, -1 si aucun"},
+                "beat_completed": {"type": "integer", "description": "ID of the completed narrative_beat, -1 if none"},
                 "trust_changes": {
                     "type": "object",
-                    "description": "Changements de trust : {nom_perso: delta}",
+                    "description": "Trust changes: {character_name: delta}",
                     "additionalProperties": {"type": "integer"},
                 },
-                "narrative_arc": {"type": "string", "description": "Nouvel arc narratif si changement"},
-                "advance_step": {"type": "boolean", "description": "Passer au step suivant"},
+                "narrative_arc": {"type": "string", "description": "New narrative arc if changed"},
+                "advance_step": {"type": "boolean", "description": "Advance to next step"},
             },
             "required": [],
         },
@@ -220,11 +241,17 @@ ORCHESTRATOR_TOOLS = [
 class OrchestratorAgent:
     """The invisible runtime agent that drives the quest live."""
 
-    def __init__(self, quest: QuestOutput, session: QuestSession, allow_arg: bool = False, memory_context: str = ""):
+    def __init__(self, quest: QuestOutput, session: QuestSession, allow_arg: bool = False, memory_context: str = "", debug_callback=None):
+        self.client = AsyncAnthropic(
+            base_url=os.getenv("ANTHROPIC_BASE_URL"),
+            api_key=os.getenv("ANTHROPIC_AUTH_TOKEN"),
+        )
+        self.model = os.getenv("ANTHROPIC_MODEL", "claude-opus-4-6")
         self.quest = quest
         self.session = session
         self.allow_arg = allow_arg
         self.memory_context = memory_context
+        self.debug_callback = debug_callback
         self.tools = ORCHESTRATOR_TOOLS if allow_arg else [
             t for t in ORCHESTRATOR_TOOLS if t["name"] != "trigger_arg_event"
         ]
@@ -261,17 +288,25 @@ class OrchestratorAgent:
                 tools=self.tools,
             )
 
+            # Expose orchestrator's reasoning text
+            if self.debug_callback:
+                for block in response.content:
+                    if block.type == "text" and block.text.strip():
+                        self.debug_callback("reasoning", block.text)
+
             if response.stop_reason == "tool_use":
                 tool_results = []
                 for block in response.content:
                     if block.type == "tool_use":
+                        if self.debug_callback:
+                            self.debug_callback("tool_call", {"name": block.name, "input": block.input})
                         event = await self._process_tool_call(block.name, block.input)
                         if event:
                             events.append(event)
                         tool_results.append({
                             "type": "tool_result",
                             "tool_use_id": block.id,
-                            "content": "OK — événement envoyé au joueur.",
+                            "content": "OK — event sent to the player.",
                         })
 
                 messages.append({"role": "assistant", "content": response.content})
@@ -381,10 +416,10 @@ class OrchestratorAgent:
                     break
             chars_summary.append(
                 f"- **{c.name}** ({c.archetype or c.type}) — trust: {trust}/100\n"
-                f"  Personnalité: {c.personality[:200]}\n"
+                f"  Personality: {c.personality[:200]}\n"
                 f"  Speech pattern: {c.speech_pattern[:200]}\n"
                 f"  Secret: {c.secret[:200]}\n"
-                f"  Relation au joueur: {c.relationship_to_player}"
+                f"  Relationship to player: {c.relationship_to_player}"
             )
 
         # Narrative beats status
@@ -419,18 +454,18 @@ class OrchestratorAgent:
 
 """
 
-        return f"""{memory_section}## Quête : {quest.title}
-Tone : {quest.tone} | Alias joueur : {quest.alias or 'Agent'}
-Arc narratif actuel : {session.state.narrative_arc or 'non défini'}
-Step actuel : {session.state.current_step}
-Temps écoulé : {session.state.total_elapsed_seconds // 60} min
-ARG autorisé : {'oui' if self.allow_arg else 'non'}
+        return f"""{memory_section}## Quest: {quest.title}
+Tone: {quest.tone} | Player alias: {quest.alias or 'Agent'}
+Current narrative arc: {session.state.narrative_arc or 'undefined'}
+Current step: {session.state.current_step}
+Time elapsed: {session.state.total_elapsed_seconds // 60} min
+ARG authorized: {'yes' if self.allow_arg else 'no'}
 
-## Personnages
+## Characters
 {chr(10).join(chars_summary)}
 
 ## Trust dynamics
-{json.dumps(quest.trust_dynamics, ensure_ascii=False, indent=2) if quest.trust_dynamics else 'Non défini'}
+{json.dumps(quest.trust_dynamics, ensure_ascii=False, indent=2) if quest.trust_dynamics else 'Not defined'}
 
 ## Steps
 {chr(10).join(steps_summary)}
@@ -438,36 +473,42 @@ ARG autorisé : {'oui' if self.allow_arg else 'non'}
 ## Narrative Beats
 {chr(10).join(beats_status)}
 
-## Arcs possibles
-{chr(10).join(f'- {arc}' for arc in quest.possible_arcs)}
+## Narrative tensions
+{chr(10).join(f'- {t}' for t in quest.narrative_tensions) if quest.narrative_tensions else '(none)'}
 
-## Historique récent — événements envoyés
-{chr(10).join(recent_events) if recent_events else '(aucun événement encore)'}
+## Central twist
+{json.dumps(quest.twist, ensure_ascii=False, indent=2) if quest.twist else 'Not defined'}
 
-## Historique récent — actions du joueur
-{chr(10).join(recent_actions) if recent_actions else '(aucune action encore)'}
+## Resolution principles
+{chr(10).join(f'- {p}' for p in quest.resolution_principles) if quest.resolution_principles else '(none)'}
 
-## Univers narratif
-Hook : {quest.narrative_universe.hook[:300]}
-Stakes : {quest.narrative_universe.stakes[:300]}
+## Recent history — events sent
+{chr(10).join(recent_events) if recent_events else '(no events yet)'}
+
+## Recent history — player actions
+{chr(10).join(recent_actions) if recent_actions else '(no actions yet)'}
+
+## Narrative universe
+Hook: {quest.narrative_universe.hook[:300]}
+Stakes: {quest.narrative_universe.stakes[:300]}
 """
 
     def _build_action_prompt(self, action: PlayerAction) -> str:
         """Build the user prompt when a player takes an action."""
 
-        parts = [f"Le joueur ({self.quest.alias or 'Agent'}) vient de faire une action :"]
-        parts.append(f"- Type : {action.type}")
+        parts = [f"The player ({self.quest.alias or 'Agent'}) just performed an action:"]
+        parts.append(f"- Type: {action.type}")
         if action.target_character:
-            parts.append(f"- Destinataire : {action.target_character}")
+            parts.append(f"- Target: {action.target_character}")
         if action.content:
-            parts.append(f"- Contenu : \"{action.content}\"")
+            parts.append(f"- Content: \"{action.content}\"")
         if action.gps_coords:
-            parts.append(f"- Position GPS : {action.gps_coords}")
+            parts.append(f"- GPS position: {action.gps_coords}")
 
         parts.append("")
-        parts.append("Décide comment réagir. Quel(s) personnage(s) répondent ? Que disent-ils ?")
-        parts.append("Faut-il envoyer un artefact ? Lancer un timer ? Déclencher un beat narratif ?")
-        parts.append("Rappel : maintiens le rythme (~1 événement / 5 min) et la montée en tension.")
+        parts.append("Decide how to react. Which character(s) respond? What do they say?")
+        parts.append("Should you send an artifact? Start a timer? Trigger a narrative beat?")
+        parts.append("Reminder: maintain pacing (~1 event / 5 min) and rising tension.")
 
         return "\n".join(parts)
 
@@ -478,51 +519,51 @@ Stakes : {quest.narrative_universe.stakes[:300]}
         since_last = self.session.state.time_since_last_event_seconds
 
         if trigger == "idle":
-            return f"""Le joueur est inactif depuis {since_last} secondes (~{since_last // 60} min).
-Temps total écoulé : {elapsed // 60} min.
+            return f"""The player has been inactive for {since_last} seconds (~{since_last // 60} min).
+Total time elapsed: {elapsed // 60} min.
 
-Il faut relancer le joueur ! Un personnage doit le contacter in-character.
-Choisis le personnage le plus pertinent pour relancer. Le ton dépend du perso :
-- Un Mastermind serait froidement amusé : "Tu hésites. Intéressant."
-- Un Électron libre serait impatient : "T'es mort ? Ça m'ennuie les morts."
-- Un Love Interest jouerait la carte émotionnelle : "Je commençais à m'inquiéter..."
-- Un Fantôme enverrait juste "?" ou des coordonnées GPS.
+You need to nudge the player! A character must contact them in-character.
+Choose the most relevant character to nudge. The tone depends on the character:
+- A Mastermind would be coldly amused: "You're hesitating. Interesting."
+- A Loose Cannon would be impatient: "You dead? Dead people bore me."
+- A Love Interest would play the emotional card: "I was starting to worry..."
+- A Ghost would just send "?" or GPS coordinates.
 
-Envoie au moins un message de relance."""
+Send at least one nudge message."""
 
         elif trigger == "start":
-            return """La session vient de démarrer ! C'est le tout premier contact.
+            return """The session just started! This is the very first contact.
 
-Envoie le message d'ouverture de la quête. Le premier personnage qui contacte le joueur
-doit l'appeler par son alias et le plonger directement dans l'action (règle #1 : le jeu
-ne t'accueille pas, il te retrouve).
+Send the quest's opening message. The first character to contact the player must
+call them by their alias and plunge them directly into the action (rule #1: the game
+doesn't welcome you, it finds you).
 
-C'est le moment le plus important — le hook doit être IRRÉSISTIBLE."""
+This is the most important moment — the hook must be IRRESISTIBLE."""
 
         elif trigger == "player_message":
-            return f"""Le joueur vient d'envoyer un message direct à un personnage.
-Le personnage a DÉJÀ répondu de lui-même. Temps écoulé : {elapsed // 60} min.
+            return f"""The player just sent a direct message to a character.
+The character has ALREADY responded on their own. Time elapsed: {elapsed // 60} min.
 
-Dois-tu déclencher quelque chose EN PLUS ?
-- Un AUTRE personnage qui chime in (réagit au message, commente, intervient) ?
-- Un narrative_beat à déclencher ?
-- Un artefact à envoyer ?
-- Une mise à jour de trust/state ?
+Should you trigger something ADDITIONALLY?
+- ANOTHER character who chimes in (reacts to the message, comments, intervenes)?
+- A narrative_beat to trigger?
+- An artifact to send?
+- A trust/state update?
 
-Si l'échange est auto-suffisant et que le rythme est bon, tu peux ne rien faire.
-Mais si c'est l'occasion parfaite pour un chime-in ou un beat, fonce."""
+If the exchange is self-sufficient and pacing is good, you can do nothing.
+But if it's the perfect opportunity for a chime-in or a beat, go for it."""
 
         elif trigger == "timer_expired":
-            return f"""Un timer vient d'expirer ! Le joueur n'a pas accompli la tâche à temps.
-Temps total écoulé : {elapsed // 60} min.
+            return f"""A timer just expired! The player didn't complete the task in time.
+Total time elapsed: {elapsed // 60} min.
 
-Déclenche la conséquence narrative. Un personnage réagit — déception, colère, amusement,
-ou adaptation du plan. Ce n'est PAS un game over — c'est une bifurcation narrative."""
+Trigger the narrative consequence. A character reacts — disappointment, anger, amusement,
+or plan adaptation. This is NOT a game over — it's a narrative fork."""
 
         else:
-            return f"""Heartbeat régulier. Temps écoulé : {elapsed // 60} min. Dernière activité il y a {since_last} secondes.
+            return f"""Regular heartbeat. Time elapsed: {elapsed // 60} min. Last activity {since_last} seconds ago.
 
-Vérifie si quelque chose doit se passer. Y a-t-il un narrative_beat à déclencher ?
-Un personnage qui devrait intervenir ? Un artefact à envoyer ?
-Si tout va bien et que le rythme est bon, tu peux ne rien faire (pas d'outil).
-Mais si ça fait plus de 4 min sans événement, envoie quelque chose."""
+Check if something should happen. Is there a narrative_beat to trigger?
+A character who should intervene? An artifact to send?
+If everything is fine and pacing is good, you can do nothing (no tool call).
+But if it's been more than 4 min without an event, send something."""

@@ -26,6 +26,7 @@ class Activity(BaseModel):
     url: str = ""
     opening_hours: str = ""
     bookable: bool = False
+    booking_url: str = ""
     duration_minutes: int | None = None
 
 

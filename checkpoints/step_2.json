@@ -1,0 +1,101 @@
+{
+  "step_id": 2,
+  "title": "The Oligarch's Shadow",
+  "activity": {
+    "name": "Vieux Port de Cannes — Quai Laubeuf Investigation",
+    "address": "Quai Laubeuf, Vieux Port, 06400 Cannes",
+    "price_eur": 0,
+    "duration_minutes": 20,
+    "category": "investigation"
+  },
+  "narrative_intro": "Your phone vibrates twice as you leave the Palais. A new contact has appeared in your app — no name, just an avatar of a chess knight in black. The message is already there, timestamped forty seconds ago:\n\n\"Port. Now. Quai Laubeuf. The yacht with the blue tarp — second berth from the fuel dock. 90 seconds of looking and you'll understand why Kask died.\"\n\nBefore you can process this, another message arrives — this one from Lena Voss, Europol liaison, her tone clipped and professional:\n\n\"We've detected movement on the Castre Protocol. Someone tried to spoof your wallet signature eleven minutes ago. Failed. They'll try physically next. I need you at the Vieux Port — I'm tracking a vessel connected to Kask's ledger. The seized assets from the Morozov sanctions case are moored there. What you see will confirm why this case is worth killing for. Move quickly — I can't protect digital ghosts.\"\n\nTwo characters. Same destination. Very different reasons for sending you there. The Vieux Port is a three-minute walk south. The masts are already visible between the buildings. Somewhere among those gleaming hulls sits the carcass of a sanctioned oligarch's yacht — and the physical proof that Kask's blockchain forensics weren't paranoid fantasy.",
+  "instruction": "Walk south to the Vieux Port, Quai Laubeuf side. When you arrive, find the largest or most conspicuous luxury yacht moored along the quay. Photograph its hull, stern, or any identifying details (name, registration port, flag). Then study the surrounding boats and the quay itself — Lena Voss needs you to count the number of superyachts (over ~20 meters) visible from your position. Report the count and your photo to confirm you're on location and observing the right area. This is where seized oligarch assets rot in plain sight — and where Kask traced the first crypto-to-real-estate conversion.",
+  "player_action": "Photograph the largest luxury yacht visible at Quai Laubeuf (hull, stern name, or identifying features) and count the total number of superyachts (20m+) visible from your position along the port. Report both the photo and count to Voss.",
+  "gps_trigger": {
+    "type": "document",
+    "character": "Lena Voss",
+    "content_brief": "A declassified Europol asset seizure report (partially redacted) appears in the vault. It details the 2022 seizure of the 73m yacht 'Seraphim' belonging to Viktor Morozov under EU sanctions regulation 269/2014. Key detail: the yacht's maintenance costs of €340,000/month are being paid by an anonymous shell company registered in Malta — the same jurisdiction where Kask traced three of the Carlton jewel-to-crypto conversion wallets. A handwritten annotation in the margin reads: 'Follow the maintenance money — it's the same pipeline. —S.K.' confirming Kask had access to this document before his death."
+  },
+  "camera_prompt": "The player photographs a luxury yacht in the Vieux Port of Cannes. AI should identify any visible yacht name, flag, registration details, and the general scale/opulence of the vessel. Narratively, the AI interprets the yacht as connected to the Morozov sanctions case — the character Voss will react to specific details visible in the photo (hull color, any visible crests or logos, the state of maintenance or neglect) and tie them to the money laundering narrative. If a tarp or covering is visible, Specter will note it as evidence of attempted concealment. Any real yacht names or ports of registration should be woven into the fiction as shell company fronts.",
+  "walking_minutes_from_previous": 3,
+  "tension": {
+    "type": "information_asymmetry",
+    "description": "Voss and Specter both sent the player to the same location but for different reasons. Voss wants the player to see the scale of the laundering operation to motivate cooperation with Europol. Specter wants the player to notice something specific Voss won't mention — that the yacht's maintenance payments prove the network is still active, not dismantled as Europol claims. The player's count of superyachts becomes a data point: if they report accurately, Specter will later use that number to reveal which other vessels are connected to the same shell company.",
+    "resolution": "The player's photo and count are received by both Voss and Specter (who intercepts). Each reacts differently — Voss praises diligence, Specter sends a cryptic one-line response referencing a specific detail in the photo the player may not have consciously noticed. The contradiction between their reactions is the first crack in the narrative."
+  },
+  "character_interactions": [
+    {
+      "character": "Lena Voss",
+      "trigger": "Player sends photo of yacht",
+      "phone_version": "Voss responds within moments, clinical and precise: 'Good eye. That's consistent with the Morozov seizure profile — 73 meters, Maltese flag of convenience, built by Lürssen in 2009. It's been sitting there since March 2022. Four years of rot at €340K a month in maintenance. Someone's still paying. Kask traced those payments to the same wallet cluster that converted the Carlton stones. This isn't ancient history — it's an active pipeline. How many large yachts can you count from your position? I need to cross-reference against our asset registry. Every discrepancy is a lead.'",
+      "rayban_version": {
+        "script": "Voss's voice is steady, professional, with an undercurrent of controlled urgency: 'That matches the Morozov seizure profile. Seventy-three meters, Maltese flag, Lürssen build. It's been rotting there since 2022 — but someone still pays three hundred forty thousand a month to keep it afloat. Kask traced those payments to the same wallets that converted the Carlton jewels. I need you to count every superyacht visible from your position. Every single one over twenty meters. Discrepancies between what you see and what's in our registry will tell me which boats are ghosts — registered under shells we haven't cracked yet. Take your time. Get it right.'",
+        "audio_type": "voice_call",
+        "duration_seconds": 45,
+        "camera_mode": {
+          "enabled": true,
+          "purpose": "AI analyzes yacht photo for identifying features — name, flag, hull details — and Voss reacts to specifics"
+        },
+        "contextual_music": {
+          "enabled": true,
+          "track_type": "ambient_tension_low_drone",
+          "duration_seconds": 120
+        }
+      },
+      "awaits_response": true
+    },
+    {
+      "character": "Specter",
+      "trigger": "Player reports yacht count to Voss",
+      "phone_version": "A single message from the chess knight avatar, no greeting, no context: 'You counted [X]. Three of those aren't in any registry. Kask knew which ones. Now you need to know why Castaldi does too.' Then silence. The message auto-deletes after 30 seconds, leaving only a screenshot prompt.",
+      "rayban_version": {
+        "script": "A distorted voice, barely above a whisper, cuts through your audio for exactly eight seconds: 'Three of the yachts you just counted don't exist in any registry. Kask knew which ones. Find out why Castaldi does too.' The audio cuts to silence.",
+        "audio_type": "intercepted_transmission",
+        "duration_seconds": 8,
+        "camera_mode": {
+          "enabled": false,
+          "purpose": ""
+        },
+        "contextual_music": {
+          "enabled": false,
+          "track_type": "",
+          "duration_seconds": 0
+        }
+      },
+      "awaits_response": false
+    },
+    {
+      "character": "Enzo Castaldi",
+      "trigger": "45 seconds after Specter's message",
+      "phone_version": "A new contact appears — Enzo Castaldi, profile photo showing a tanned man in expensive sunglasses, mid-laugh. His message is warm, conspiratorial, immediately familiar: 'So you're Kask's chosen one. I was wondering when you'd show up at the port. Don't let Voss turn you into an evidence mule — she's been circling these yachts for two years and has nothing. I actually KNEW Soren. Drinks later? I know a place on Rue Meynadier that serves a rosé he loved. First though — what did you see down there? Genuinely curious. The port tells different stories depending on who's looking.' His tone is the opposite of Voss's sterile professionalism — it's the warmth of someone who wants to be your friend. Dangerously likable.",
+      "rayban_version": {
+        "script": "A rich baritone, the kind of voice that orders for the table without asking: 'Ah, so you're the one Soren picked. Welcome to the circus. Listen — ignore whatever Voss just told you. She's been counting yachts for two years and she's no closer to anything. I actually knew Kask. Liked him. He was paranoid, but he was right. I can help you understand what you're looking at down there, but I need to know — what did you see? What caught your eye? The port tells very different stories depending on who's listening.' A pause, then softer: 'I'll be in touch. Don't freeze me out — you'll regret it.'",
+        "audio_type": "voice_message",
+        "duration_seconds": 35,
+        "camera_mode": {
+          "enabled": false,
+          "purpose": ""
+        },
+        "contextual_music": {
+          "enabled": false,
+          "track_type": "",
+          "duration_seconds": 0
+        }
+      },
+      "awaits_response": true
+    }
+  ],
+  "verification": {
+    "method": "photo_ai_and_text_response",
+    "target": "Luxury yacht at Quai Laubeuf + superyacht count",
+    "success_condition": "Player sends a clear photo of a yacht showing identifiable features (name, flag, hull details, or general profile) AND provides a numerical count of superyachts visible from their position",
+    "success_reaction": "Voss grants elevated access: 'Your count matches our satellite data within one. You're observant — that's rare. Uploading Kask's port analysis to your vault. He mapped every vessel here to a wallet address. You're going to need this.' A detailed document appears showing Kask's yacht-to-wallet mapping for the Cannes Vieux Port. +30 XP investigation bonus. Specter's next message arrives faster and with more detail than it would otherwise.",
+    "failure_fallback": "If the photo is unclear or the count is missing, Voss adapts: 'I can work with partial data. The important thing is you're there, you've seen the scale of this. I'm sending you Kask's port analysis anyway — you'll need it for what comes next. But next time, precision matters. These people don't make mistakes, and neither can we.' The document still appears in the vault but with additional redactions. Specter's message is delayed and terser.",
+    "timeout_reaction": "After 6 minutes, Voss messages: 'We're burning daylight — literally. The Protocol auto-destructs at 16:00 and I still need you moving. If you couldn't get a clear shot, fine. But I need you headed to your next position. Sending coordinates now. The port told you what it needed to — money doesn't just disappear, it changes shape. Remember that.'"
+  },
+  "blockchain_event": "Castre Protocol status update: validator proximity confirmed at Vieux Port coordinates. Second of six geolocation proofs logged to the contract. Network alert triggered — an unknown wallet attempted to register a competing validator address 4 minutes ago. Attempt rejected. Clock reads 14:23. Time remaining: 1h 37m.",
+  "unlock_message": "VAULT UPDATED — Europol Asset Seizure Report #EU-2022-MOROZOV-0041 declassified. Kask's margin annotations visible. The maintenance payments on the seized yacht trace to the same Maltese shell cluster that converted the Carlton jewels. The pipeline is still flowing. Someone is still feeding it.",
+  "skill_xp": 50,
+  "is_skill_step": true,
+  "is_collaborative": false
+}

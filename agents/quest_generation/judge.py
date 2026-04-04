@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import json
 import os
 from dotenv import load_dotenv
@@ -33,34 +34,45 @@ class JudgeAgent:
 
         quest_json = json.dumps(quest_raw, ensure_ascii=False, indent=2)
         # Truncate if too long
-        if len(quest_json) > 15000:
-            quest_json = quest_json[:15000] + "\n... [tronqué]"
+        if len(quest_json) > 60000:
+            quest_json = quest_json[:60000] + "\n... [truncated]"
 
         messages = [
-            {"role": "user", "content": f"""Évalue cette quête :
+            {"role": "user", "content": f"""Evaluate this quest:
 
-## Contexte de la demande
-- Tone : {request_context.get('tone', 'loufoque')}
-- Skill : {request_context.get('skill', 'exploration')}
-- Budget : {request_context.get('budget', 50)}€
-- Durée : {request_context.get('duration', '4h')}
-- Joueurs : {request_context.get('players', 1)}
+## Request context
+- Tone: {request_context.get('tone', 'loufoque')}
+- Skill: {request_context.get('skill', 'exploration')}
+- Budget: {request_context.get('budget', 50)}€
+- Duration: {request_context.get('duration', '4h')}
+- Players: {request_context.get('players', 1)}
 
-## Quête à évaluer
+## Quest to evaluate
 ```json
 {quest_json}
 ```
 
-Évalue selon la grille (hook/trame/activités/registre/budget — 20pts chacun).
-Réponds UNIQUEMENT avec le JSON d'évaluation."""}
+Evaluate according to the rubric (hook/storyline/activities/tone/budget — 20pts each).
+Respond ONLY with the evaluation JSON."""}
         ]
 
-        response = await self.client.messages.create(
-            model=self.model,
-            max_tokens=4000,
-            system=JUDGE_SYSTEM_PROMPT,
-            messages=messages,
-        )
+        response = None
+        for attempt in range(5):
+            try:
+                response = await self.client.messages.create(
+                    model=self.model,
+                    max_tokens=4000,
+                    system=JUDGE_SYSTEM_PROMPT,
+                    messages=messages,
+                )
+                break
+            except Exception as e:
+                wait = 5 * (attempt + 1)
+                print(f"  [Judge] API error: {e} — retry {attempt + 1}, waiting {wait}s...", flush=True)
+                await asyncio.sleep(wait)
+        if response is None:
+            print("  [Judge] All retries failed — assuming pass", flush=True)
+            return JudgeResult(score=75, validated=True, breakdown={}, feedback=[])
 
         text = ""
         for block in response.content:

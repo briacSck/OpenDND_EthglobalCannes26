@@ -1,0 +1,101 @@
+{
+  "step_id": 4,
+  "title": "The Laundry Architecture",
+  "activity": {
+    "name": "MIPIM Real Estate Corridor Investigation — Rue d'Antibes",
+    "address": "Rue d'Antibes, 06400 Cannes, France",
+    "price_eur": 0,
+    "duration_minutes": 20,
+    "category": "exploration"
+  },
+  "narrative_intro": "Three blocks behind the Croisette's golden facade lies Cannes' real circulatory system — Rue d'Antibes, where luxury real estate agencies cluster like barnacles on a hull. Every March during MIPIM, this street becomes a corridor of handshakes worth nine figures. Kask's ledger mapped twelve properties purchased between 2016 and 2023 using layered shell companies — all managed through agencies on this street. The jewels became Bitcoin. The Bitcoin became Ethereum. The Ethereum became seafront penthouses. You're standing in the washing machine. Castaldi just sent you an address and a name — the agency that brokered the largest transaction. He says it'll crack the ledger wide open. But Specter's last message was three words: 'Castaldi brokers too.' You have forty-seven minutes until the Protocol burns. The contradictions are piling up faster than the evidence.",
+  "instruction": "Walk from La Croisette up to Rue d'Antibes (3 minutes). Find a luxury real estate agency storefront — the kind that displays seafront properties with seven-figure price tags in the window. Photograph the property listings displayed in the agency window. Castaldi needs you to find a specific detail: any listing that references the neighborhoods of Le Suquet or La Californie, the two zones where Kask's ledger flagged laundered purchases. Count how many listings in the window exceed €2 million and report this to Maro, who is cross-referencing against Kask's transaction map. Then describe what you see in the window to Nadia — she'll tell you something nobody else will.",
+  "player_action": "Photograph a luxury real estate agency window display on Rue d'Antibes showing high-end property listings. Count the number of listings priced above €2 million. Look for any properties in Le Suquet or La Californie neighborhoods specifically. Send the photo and your count to the characters through the app.",
+  "gps_trigger": {
+    "type": "document",
+    "character": "Specter",
+    "content_brief": "A partial page from Kask's ledger appears in the vault — a transaction map showing twelve property purchases between 2016-2023, each linked to a shell company. Three addresses are on Rue d'Antibes. One shell company name is highlighted in red: 'Adriatic Horizon SCI' — the same name Castaldi casually mentioned in Step 2 as 'a client.' The document is timestamped with Kask's digital signature, dated two days before his death."
+  },
+  "camera_prompt": "The player photographs a real estate agency window display on Rue d'Antibes. AI identifies the agency name, visible property listings, price ranges, neighborhood names, and architectural style of displayed properties. The AI character weaves these real details into the money-laundering narrative — connecting specific price ranges or neighborhoods to Kask's ledger entries. If Le Suquet or La Californie properties are visible, this is treated as a direct hit on the laundering map.",
+  "walking_minutes_from_previous": 3,
+  "tension": {
+    "type": "revelation_and_betrayal",
+    "description": "The Specter document that auto-unlocks on arrival directly contradicts Castaldi's story — Adriatic Horizon SCI, which Castaldi mentioned as a legitimate client, appears on Kask's ledger as a laundering vehicle. The player now holds proof that their most helpful ally has been steering them. Simultaneously, Maro pushes the player to focus only on properties that could exonerate her father, while Voss demands the full picture. The player's photo of real listings becomes a Rorschach test — each character interprets it differently based on their agenda.",
+    "resolution": "The player decides how much of what they've found to share with whom. Sharing the Adriatic Horizon connection with Castaldi tests whether he deflects or confesses. Sharing the full count with Maro reveals whether she suppresses data points. Sharing everything with Nadia triggers her first moment of genuine honesty about the irreversible consequences of validation."
+  },
+  "character_interactions": [
+    {
+      "character": "Enzo Castaldi",
+      "trigger": "Player sends photo of real estate agency window",
+      "phone_version": "Castaldi responds with infectious enthusiasm: 'Magnificent work. See the listings in the €3-5M range? That's the sweet spot — high enough to move serious volume, low enough to avoid the Tracfin triggers. Kask mapped every single one.' He then casually asks the player to focus on a specific agency name, steering them AWAY from Adriatic Horizon SCI. If the player mentions Adriatic Horizon (from Specter's document), there's a two-second pause before Castaldi smoothly replies: 'Ah. You've been reading ahead. Yes, I consulted for them — years ago, purely architectural assessments. Kask misread the connection. It happens when you're paranoid enough to build a dead man's switch.' His charm doesn't waver, but the explanation is one beat too rehearsed.",
+      "rayban_version": {
+        "script": "Castaldi's voice is warm, rapid, seductive — the sound of someone who's never been caught off-guard. He narrates the real estate window like a sommelier describing a wine list, identifying price brackets and neighborhoods with unsettling expertise. If the player mentions Adriatic Horizon, his rhythm breaks for exactly one breath before recovering. 'You've been reading ahead. Impressive. And dangerous.'",
+        "audio_type": "voice_message",
+        "duration_seconds": 45,
+        "camera_mode": {
+          "enabled": true,
+          "purpose": "AI analyzes the real estate window display and Castaldi references specific visible listings by price or location, weaving them into the laundering narrative with disturbing specificity"
+        },
+        "contextual_music": {
+          "enabled": true,
+          "track_type": "minimal_piano_tension",
+          "duration_seconds": 30
+        }
+      },
+      "awaits_response": true
+    },
+    {
+      "character": "Maro Dušić",
+      "trigger": "Player reports the count of listings over €2M",
+      "phone_version": "Maro's response is terse, urgent: 'How many above two million? Good. Now listen — my father was a jeweler in Split before all this. The Panthers used his shop as a front without his knowledge. Three of the properties on Kask's ledger were purchased to frame him as a beneficiary. I need you to tell me: are any of those listings in Le Suquet? Because those are the ones that prove his innocence. The others... the others can wait.' She's asking you to prioritize HER truth over the complete picture. If the player pushes back, she snaps: 'Voss doesn't care about collateral damage. She'll burn my father to catch bigger fish. Is that justice?' If the player complies, she softens: 'Thank you. You're the first person in three years who listened.'",
+      "rayban_version": {
+        "script": "Maro speaks fast, clipped, a woman running out of time and patience. Her accent thickens when she's emotional. She asks specifically about Le Suquet listings. If the player hesitates, her voice drops: 'I'm not asking you to lie. I'm asking you to look in the right direction first.' The desperation is real. The manipulation might be too.",
+        "audio_type": "voice_call_simulation",
+        "duration_seconds": 40,
+        "camera_mode": {
+          "enabled": false,
+          "purpose": ""
+        },
+        "contextual_music": {
+          "enabled": false,
+          "track_type": "",
+          "duration_seconds": 0
+        }
+      },
+      "awaits_response": true
+    },
+    {
+      "character": "Nadia Ferhat",
+      "trigger": "Player describes the agency window or shares any findings with Nadia",
+      "phone_version": "Nadia responds differently from everyone else — she doesn't react to the listings at all. Instead: 'Before you go further, I need to tell you something no one else will. When Kask built the Castre Protocol, the validation doesn't just preserve the ledger. It triggers automatic filings with the Tribunal de Grande Instance in Paris, the Estonian Financial Intelligence Unit, and Europol's SIENA network. Your wallet address — YOUR address — becomes part of the permanent evidentiary chain. You will be subpoenaable. In every jurisdiction. Voss knows this. Castaldi definitely knows this. I'm telling you because in thirty-nine minutes you're going to make a decision, and you deserve to make it with open eyes.' A pause. 'I liked Soren. He was brilliant and paranoid and kind. But he chose you without asking. That's not fair. So I'm asking: do you still want to do this?'",
+      "rayban_version": {
+        "script": "Nadia's voice is steady, almost clinical, but cracks once on the word 'kind' when describing Kask. She lays out the legal consequences of validation with the precision of someone who's read the smart contract line by line. No manipulation, no urgency games — just the truth, delivered like a surgeon describing a procedure. 'Your wallet becomes evidence. Permanently. In every jurisdiction Kask flagged. I'm telling you because nobody else will.'",
+        "audio_type": "voice_message",
+        "duration_seconds": 55,
+        "camera_mode": {
+          "enabled": false,
+          "purpose": ""
+        },
+        "contextual_music": {
+          "enabled": true,
+          "track_type": "ambient_drone_low_tension",
+          "duration_seconds": 40
+        }
+      },
+      "awaits_response": true
+    }
+  ],
+  "verification": {
+    "method": "photo_ai_analysis",
+    "target": "Luxury real estate agency window display on Rue d'Antibes with visible property listings",
+    "success_condition": "Photo shows a real estate agency storefront with visible property listings, prices, or neighborhood references. AI can identify agency name, price ranges, or location details.",
+    "success_reaction": "Castaldi sends a follow-up: 'You have a forensic eye. Kask would've liked you.' +15 XP. Maro unlocks a supplementary document in the vault: a side-by-side comparison of three shell company purchase dates matched to MIPIM conference dates 2017-2022, proving the laundering was seasonal and systematic. The player's trust with Nadia increases — she sends a brief addendum: 'You're still here. That tells me something about you.'",
+    "failure_fallback": "If the player can't find or photograph a suitable agency window, Maro sends a screenshot from Google Street View of Rue d'Antibes agencies: 'Can't stop. Use this. The third agency from the left — that's the one Kask flagged. Keep moving.' The story continues with the same revelations, delivered through Maro's impatience rather than the player's discovery. Nadia's warning about validation consequences still arrives on schedule.",
+    "timeout_reaction": "After 6 minutes, Voss breaks radio silence with a clipped message: 'We're monitoring the Protocol timer. Thirty-two minutes. Whatever you're doing on Rue d'Antibes, do it faster or move on. The next location matters more than this one.' Castaldi follows fifteen seconds later, more casually: 'She's right, for once. The real prize is ahead. Don't get lost in the shop windows.'"
+  },
+  "blockchain_event": "Kask's smart contract emits a 'VALIDATOR_PROXIMATE' event as the player's GPS coordinates align with one of the twelve flagged property addresses on Rue d'Antibes. The player's wallet receives a micro-transaction of 0.00001 ETH with the memo: 'Node 7/12 confirmed. Spatial proximity validated. Castre Protocol integrity: 74%. Time remaining: recalculating.' This is the first indication that Kask's system is tracking the player's physical movements against the ledger's geographic data.",
+  "unlock_message": "A new file appears in your vault: KASK_LEDGER_PARTIAL_07.pdf — twelve transactions, twelve properties, twelve shell companies. One name glows like a lit fuse: Adriatic Horizon SCI. You've seen that name before. Castaldi mentioned it. He said it was nothing. Kask thought it was everything. One of them is lying. In thirty-nine minutes, it won't matter — unless you validate.",
+  "skill_xp": 20,
+  "is_skill_step": true,
+  "is_collaborative": false
+}
