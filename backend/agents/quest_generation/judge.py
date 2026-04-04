@@ -27,7 +27,7 @@ class JudgeAgent:
             base_url=os.getenv("ANTHROPIC_BASE_URL"),
             api_key=os.getenv("ANTHROPIC_AUTH_TOKEN"),
         )
-        self.model = os.getenv("ANTHROPIC_MODEL", "claude-opus-4-6")
+        self.model = os.getenv("ANTHROPIC_MODEL", "claude-sonnet-4-20250514")
 
     async def evaluate(self, quest_raw: dict, request_context: dict) -> JudgeResult:
         """Evaluate a quest and return score + feedback."""

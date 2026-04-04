@@ -133,7 +133,7 @@ class CharacterInitializer:
             base_url=os.getenv("ANTHROPIC_BASE_URL"),
             api_key=os.getenv("ANTHROPIC_AUTH_TOKEN"),
         )
-        self.model = os.getenv("ANTHROPIC_MODEL", "claude-opus-4-6")
+        self.model = os.getenv("ANTHROPIC_MODEL", "claude-sonnet-4-20250514")
         self.tone = tone
         self.quest_context = quest_context
 

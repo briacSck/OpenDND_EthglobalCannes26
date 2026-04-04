@@ -366,7 +366,7 @@ class StorytellerAgent:
             base_url=os.getenv("ANTHROPIC_BASE_URL"),
             api_key=os.getenv("ANTHROPIC_AUTH_TOKEN"),
         )
-        self.model = os.getenv("ANTHROPIC_MODEL", "claude-opus-4-6")
+        self.model = os.getenv("ANTHROPIC_MODEL", "claude-sonnet-4-20250514")
         self.request = request
         self.city_context = city_context
         self.curator = CuratorAgent(city_context, request.budget)
