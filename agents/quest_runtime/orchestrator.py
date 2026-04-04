@@ -451,7 +451,7 @@ class OrchestratorAgent:
             steps_summary.append(f"{marker} Step {s.step_id}: {s.title} ({s.activity.name}) — {s.activity.duration_minutes}min")
 
         return f"""## Quest: {quest.title}
-Tone: {quest.tone} | Player alias: {quest.alias or 'Agent'}
+Tone: {quest.tone} | Player name: {quest.player_name or 'Player'}
 Current narrative arc: {session.state.narrative_arc or 'undefined'}
 Current step: {session.state.current_step}
 Time elapsed: {session.state.total_elapsed_seconds // 60} min
@@ -492,7 +492,7 @@ Stakes: {quest.narrative_universe.stakes[:300]}
     def _build_action_prompt(self, action: PlayerAction) -> str:
         """Build the user prompt when a player takes an action."""
 
-        parts = [f"The player ({self.quest.alias or 'Agent'}) just performed an action:"]
+        parts = [f"The player ({self.quest.player_name or 'Player'}) just performed an action:"]
         parts.append(f"- Type: {action.type}")
         if action.target_character:
             parts.append(f"- Target: {action.target_character}")
@@ -531,7 +531,7 @@ Send at least one nudge message."""
             return """The session just started! This is the very first contact.
 
 Send the quest's opening message. The first character to contact the player must
-call them by their alias and plunge them directly into the action (rule #1: the game
+call them by their first name and plunge them directly into the action (rule #1: the game
 doesn't welcome you, it finds you).
 
 This is the most important moment — the hook must be IRRESISTIBLE."""

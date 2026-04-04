@@ -66,7 +66,7 @@ class DeepgramSTT:
         # Queue for yielding final transcripts back to the caller
         transcript_queue: asyncio.Queue[str | None] = asyncio.Queue()
 
-        async with websockets.connect(url, extra_headers=headers) as ws:
+        async with websockets.connect(url, additional_headers=headers) as ws:
 
             async def send_audio():
                 """Forward audio chunks to Deepgram."""

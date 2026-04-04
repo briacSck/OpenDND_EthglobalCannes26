@@ -128,7 +128,7 @@ class ElevenLabsTTS:
                 },
                 json={
                     "voice_description": description,
-                    "text": "Hello, this is a test of my voice. I hope you find it convincing.",
+                    "text": "Hello, this is a test of my voice. I hope you find it convincing and natural. Let me tell you something important about what happened yesterday evening near the old harbour.",
                 },
             )
             response.raise_for_status()

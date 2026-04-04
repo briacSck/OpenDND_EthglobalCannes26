@@ -1,57 +1,57 @@
 {
   "step_id": 4,
-  "title": "The Laundry Architecture",
+  "title": "The Iron Saint's Face",
   "activity": {
-    "name": "MIPIM Real Estate Corridor Investigation — Rue d'Antibes",
-    "address": "Rue d'Antibes, 06400 Cannes, France",
+    "name": "Le Suquet — Église Notre-Dame d'Espérance Facade Investigation",
+    "address": "1 Place de la Castre, 06400 Cannes, France",
     "price_eur": 0,
     "duration_minutes": 20,
     "category": "exploration"
   },
-  "narrative_intro": "Three blocks behind the Croisette's golden facade lies Cannes' real circulatory system — Rue d'Antibes, where luxury real estate agencies cluster like barnacles on a hull. Every March during MIPIM, this street becomes a corridor of handshakes worth nine figures. Kask's ledger mapped twelve properties purchased between 2016 and 2023 using layered shell companies — all managed through agencies on this street. The jewels became Bitcoin. The Bitcoin became Ethereum. The Ethereum became seafront penthouses. You're standing in the washing machine. Castaldi just sent you an address and a name — the agency that brokered the largest transaction. He says it'll crack the ledger wide open. But Specter's last message was three words: 'Castaldi brokers too.' You have forty-seven minutes until the Protocol burns. The contradictions are piling up faster than the evidence.",
-  "instruction": "Walk from La Croisette up to Rue d'Antibes (3 minutes). Find a luxury real estate agency storefront — the kind that displays seafront properties with seven-figure price tags in the window. Photograph the property listings displayed in the agency window. Castaldi needs you to find a specific detail: any listing that references the neighborhoods of Le Suquet or La Californie, the two zones where Kask's ledger flagged laundered purchases. Count how many listings in the window exceed €2 million and report this to Maro, who is cross-referencing against Kask's transaction map. Then describe what you see in the window to Nadia — she'll tell you something nobody else will.",
-  "player_action": "Photograph a luxury real estate agency window display on Rue d'Antibes showing high-end property listings. Count the number of listings priced above €2 million. Look for any properties in Le Suquet or La Californie neighborhoods specifically. Send the photo and your count to the characters through the app.",
+  "narrative_intro": "The climb up Le Suquet feels like leaving one century for another. The narrow streets tighten around you — limestone walls, shuttered windows, laundry lines casting shadows like prison bars. Your calves burn. Good. Pain means you're still ahead of whoever else is climbing.\\n\\nLe Pharmacien's coordinates didn't lead to a building. They led to a face. Specifically, to the carved stone facade of Notre-Dame d'Espérance, the church that has watched over Cannes since 1648 — thirty years before the Man in the Iron Mask was moved from Île Sainte-Marguerite. The cipher map's second reference point isn't a street or a monument. It's an architectural detail on this church. A saint's face. According to Le Pharmacien's fragment, the jailer encoded the next bearing using the direction a particular carved figure is looking.\\n\\nBut your phone buzzes as you climb. It's Noor. She sounds different now — urgent, the intellectual coolness cracking. She says Marco Delvecchio just contacted the buyer's network directly. She intercepted the message. He's offering to authenticate the reliquary himself — cutting you out entirely. He's telling them you're compromised. She wants to know: did you share anything with Capitaine Morin?\\n\\nYou haven't even caught your breath.",
+  "instruction": "Climb to the Place de la Castre at the top of Le Suquet. Find the facade of Église Notre-Dame d'Espérance. Photograph the carved stone figures above the main entrance — focus on any saint or figure whose face is turned to one side rather than facing forward. Send the photo to Noor, who claims she can cross-reference the figure's gaze direction with the cipher map fragment. But be aware: Vera will also contact you, and her instructions will contradict Noor's.",
+  "player_action": "Photograph the carved stone figures on the facade of Église Notre-Dame d'Espérance, specifically any figure whose head or gaze is turned to one side. Examine the direction the figure faces and report it (left, right, upward) to the characters who request it.",
   "gps_trigger": {
     "type": "document",
-    "character": "Specter",
-    "content_brief": "A partial page from Kask's ledger appears in the vault — a transaction map showing twelve property purchases between 2016-2023, each linked to a shell company. Three addresses are on Rue d'Antibes. One shell company name is highlighted in red: 'Adriatic Horizon SCI' — the same name Castaldi casually mentioned in Step 2 as 'a client.' The document is timestamped with Kask's digital signature, dated two days before his death."
+    "character": "Le Pharmacien",
+    "content_brief": "A high-resolution scan of a 1698 prison inventory from Île Sainte-Marguerite appears in the vault. One entry is circled in red digital ink: 'Une figure de saint, en pierre, transportée de l'île à la chapelle du Suquet, sur ordre du gouverneur.' A stone saint figure, transported from the island to the Le Suquet chapel on the governor's order. Le Pharmacien's annotation reads: 'The jailer didn't draw a map. He built one. Into the city itself. The saint's gaze is the compass bearing. —Ph.' Below is a partial overlay showing how three reference points (the Carlton's original site, the port, and this church) form a triangle whose center falls inside the Musée des Explorations du Monde, 90 meters from where you stand."
   },
-  "camera_prompt": "The player photographs a real estate agency window display on Rue d'Antibes. AI identifies the agency name, visible property listings, price ranges, neighborhood names, and architectural style of displayed properties. The AI character weaves these real details into the money-laundering narrative — connecting specific price ranges or neighborhoods to Kask's ledger entries. If Le Suquet or La Californie properties are visible, this is treated as a direct hit on the laundering map.",
-  "walking_minutes_from_previous": 3,
+  "camera_prompt": "The player photographs the stone carvings on the facade of Notre-Dame d'Espérance. AI should identify carved figures, saints, or reliefs above the entrance. Narratively interpret the direction any figure's gaze points as a compass bearing that, combined with previous reference points (the Carlton and the Vieux Port), triangulates a specific room inside the nearby Musée des Explorations du Monde. If the photo shows the church clearly, confirm the bearing. If unclear or wrong building, have Noor express doubt and ask for another angle.",
+  "walking_minutes_from_previous": 5,
   "tension": {
-    "type": "revelation_and_betrayal",
-    "description": "The Specter document that auto-unlocks on arrival directly contradicts Castaldi's story — Adriatic Horizon SCI, which Castaldi mentioned as a legitimate client, appears on Kask's ledger as a laundering vehicle. The player now holds proof that their most helpful ally has been steering them. Simultaneously, Maro pushes the player to focus only on properties that could exonerate her father, while Voss demands the full picture. The player's photo of real listings becomes a Rorschach test — each character interprets it differently based on their agenda.",
-    "resolution": "The player decides how much of what they've found to share with whom. Sharing the Adriatic Horizon connection with Castaldi tests whether he deflects or confesses. Sharing the full count with Maro reveals whether she suppresses data points. Sharing everything with Nadia triggers her first moment of genuine honesty about the irreversible consequences of validation."
+    "type": "betrayal_reveal",
+    "description": "Marco has gone directly to the buyer's network, offering to replace the player as authenticator. Noor reveals this but her motives are suspect — she may be manufacturing urgency to control the player's next move. Simultaneously, Vera contacts the player with a contradictory instruction: do NOT send the photo to Noor, send it only to her. The player must choose who to trust with the critical compass bearing, knowing that sharing it determines who reaches the Musée first.",
+    "resolution": "The player sends the photo to one or both parties. If they send to Noor, she provides a detailed but slightly altered bearing (protecting her own interest in reaching the documents first). If they send to Vera, she gives the accurate bearing but reveals nothing about why she needs it so badly. If they send to both, the contradictions between their interpretations become visible — a clue that one of them is lying. The story continues regardless, but the player's information flow determines alliance positioning for the climax."
   },
   "character_interactions": [
     {
-      "character": "Enzo Castaldi",
-      "trigger": "Player sends photo of real estate agency window",
-      "phone_version": "Castaldi responds with infectious enthusiasm: 'Magnificent work. See the listings in the €3-5M range? That's the sweet spot — high enough to move serious volume, low enough to avoid the Tracfin triggers. Kask mapped every single one.' He then casually asks the player to focus on a specific agency name, steering them AWAY from Adriatic Horizon SCI. If the player mentions Adriatic Horizon (from Specter's document), there's a two-second pause before Castaldi smoothly replies: 'Ah. You've been reading ahead. Yes, I consulted for them — years ago, purely architectural assessments. Kask misread the connection. It happens when you're paranoid enough to build a dead man's switch.' His charm doesn't waver, but the explanation is one beat too rehearsed.",
+      "character": "Noor Kazan",
+      "trigger": "GPS arrival at Place de la Castre",
+      "phone_version": "Noor calls immediately, voice tight with controlled anger: 'I intercepted a message from Delvecchio to the buyer's broker. He's telling them you've been talking to the police. He's offering himself as replacement authenticator. That snake — he did the same thing in Istanbul.' She catches herself. Pauses. 'Forget I said that. Listen, I need you to photograph the carved figures on the church facade. My father's research predicted that the jailer used architectural landmarks as cipher points. The direction the saint faces gives us the final bearing. Send me the photo. Only me. Can you do that?' If the player asks about Istanbul or Marco, she deflects: 'Later. We're losing time. The bearing first.'",
       "rayban_version": {
-        "script": "Castaldi's voice is warm, rapid, seductive — the sound of someone who's never been caught off-guard. He narrates the real estate window like a sommelier describing a wine list, identifying price brackets and neighborhoods with unsettling expertise. If the player mentions Adriatic Horizon, his rhythm breaks for exactly one breath before recovering. 'You've been reading ahead. Impressive. And dangerous.'",
-        "audio_type": "voice_message",
+        "script": "Noor's voice comes through the glasses, clipped and urgent: 'Delvecchio just betrayed you to the buyer's network. He's offering to replace you. I intercepted the message. I need you to look at the church facade — the carved figures above the entrance. Find the one whose face is turned. That's our compass point. My father spent years on this. Describe what you see.'",
+        "audio_type": "voice_call",
         "duration_seconds": 45,
         "camera_mode": {
           "enabled": true,
-          "purpose": "AI analyzes the real estate window display and Castaldi references specific visible listings by price or location, weaving them into the laundering narrative with disturbing specificity"
+          "purpose": "Player looks at the church facade through Ray-Ban camera; AI identifies carved figures and their gaze direction, feeding this into Noor's real-time analysis"
         },
         "contextual_music": {
           "enabled": true,
-          "track_type": "minimal_piano_tension",
-          "duration_seconds": 30
+          "track_type": "tense_ambient_strings",
+          "duration_seconds": 120
         }
       },
       "awaits_response": true
     },
     {
-      "character": "Maro Dušić",
-      "trigger": "Player reports the count of listings over €2M",
-      "phone_version": "Maro's response is terse, urgent: 'How many above two million? Good. Now listen — my father was a jeweler in Split before all this. The Panthers used his shop as a front without his knowledge. Three of the properties on Kask's ledger were purchased to frame him as a beneficiary. I need you to tell me: are any of those listings in Le Suquet? Because those are the ones that prove his innocence. The others... the others can wait.' She's asking you to prioritize HER truth over the complete picture. If the player pushes back, she snaps: 'Voss doesn't care about collateral damage. She'll burn my father to catch bigger fish. Is that justice?' If the player complies, she softens: 'Thank you. You're the first person in three years who listened.'",
+      "character": "Vera Solari",
+      "trigger": "30 seconds after Noor's call ends",
+      "phone_version": "A text from Vera, all caps: 'DO NOT SEND THAT PHOTO TO NOOR. She is not who she says she is. Her father didn't just study the Iron Mask — he was hired by the same network that bought the reliquary. His research was funded by laundered money from the 2013 heist. She's not seeking academic vindication. She's completing a transaction her father started. Send the photo to me. I will explain everything at the next location. You have earned that much.' A pause. Then: 'I know I'm asking you to trust me. I know I haven't given you enough reason. But Noor has given you less. Think about what she's actually told you versus what she's asked you to do.'",
       "rayban_version": {
-        "script": "Maro speaks fast, clipped, a woman running out of time and patience. Her accent thickens when she's emotional. She asks specifically about Le Suquet listings. If the player hesitates, her voice drops: 'I'm not asking you to lie. I'm asking you to look in the right direction first.' The desperation is real. The manipulation might be too.",
-        "audio_type": "voice_call_simulation",
-        "duration_seconds": 40,
+        "script": "Vera's message appears as text overlay in the glasses: 'STOP. Do not share the facade photo with Noor. Her father was funded by the same network behind the Carlton heist. She is finishing his transaction, not his research. Send the bearing to me. I will explain at the museum. You have earned that.'",
+        "audio_type": "text_notification",
+        "duration_seconds": 15,
         "camera_mode": {
           "enabled": false,
           "purpose": ""
@@ -65,37 +65,37 @@
       "awaits_response": true
     },
     {
-      "character": "Nadia Ferhat",
-      "trigger": "Player describes the agency window or shares any findings with Nadia",
-      "phone_version": "Nadia responds differently from everyone else — she doesn't react to the listings at all. Instead: 'Before you go further, I need to tell you something no one else will. When Kask built the Castre Protocol, the validation doesn't just preserve the ledger. It triggers automatic filings with the Tribunal de Grande Instance in Paris, the Estonian Financial Intelligence Unit, and Europol's SIENA network. Your wallet address — YOUR address — becomes part of the permanent evidentiary chain. You will be subpoenaable. In every jurisdiction. Voss knows this. Castaldi definitely knows this. I'm telling you because in thirty-nine minutes you're going to make a decision, and you deserve to make it with open eyes.' A pause. 'I liked Soren. He was brilliant and paranoid and kind. But he chose you without asking. That's not fair. So I'm asking: do you still want to do this?'",
+      "character": "Capitaine Yael Morin",
+      "trigger": "Player sends photo to either Noor or Vera (or 3 minutes after arrival if no action)",
+      "phone_version": "A terse audio message from Morin: 'This is Capitaine Morin. I'll be brief because I don't know who else is listening. Delvecchio was just seen at the Palais des Festivals talking to a man matching the description of the buyer's broker. He had documents. If your so-called colleagues are telling you to rush, ask yourself who benefits from you not stopping to think. The yacht hasn't moved. Its engine hasn't started. Someone is lying to you about the clock. I don't need your photo. I need you to keep your eyes open at the museum. Morin out.'",
       "rayban_version": {
-        "script": "Nadia's voice is steady, almost clinical, but cracks once on the word 'kind' when describing Kask. She lays out the legal consequences of validation with the precision of someone who's read the smart contract line by line. No manipulation, no urgency games — just the truth, delivered like a surgeon describing a procedure. 'Your wallet becomes evidence. Permanently. In every jurisdiction Kask flagged. I'm telling you because nobody else will.'",
+        "script": "Morin's voice, low and steady through the glasses: 'Capitaine Morin. Delvecchio was seen at the Palais talking to the buyer's broker. He had documents. Your friends are pushing you to rush — ask who benefits. The yacht hasn't moved. Someone is lying about the deadline. I don't need your photo. I need your eyes at the museum. Morin out.'",
         "audio_type": "voice_message",
-        "duration_seconds": 55,
+        "duration_seconds": 30,
         "camera_mode": {
           "enabled": false,
           "purpose": ""
         },
         "contextual_music": {
-          "enabled": true,
-          "track_type": "ambient_drone_low_tension",
-          "duration_seconds": 40
+          "enabled": false,
+          "track_type": "",
+          "duration_seconds": 0
         }
       },
-      "awaits_response": true
+      "awaits_response": false
     }
   ],
   "verification": {
-    "method": "photo_ai_analysis",
-    "target": "Luxury real estate agency window display on Rue d'Antibes with visible property listings",
-    "success_condition": "Photo shows a real estate agency storefront with visible property listings, prices, or neighborhood references. AI can identify agency name, price ranges, or location details.",
-    "success_reaction": "Castaldi sends a follow-up: 'You have a forensic eye. Kask would've liked you.' +15 XP. Maro unlocks a supplementary document in the vault: a side-by-side comparison of three shell company purchase dates matched to MIPIM conference dates 2017-2022, proving the laundering was seasonal and systematic. The player's trust with Nadia increases — she sends a brief addendum: 'You're still here. That tells me something about you.'",
-    "failure_fallback": "If the player can't find or photograph a suitable agency window, Maro sends a screenshot from Google Street View of Rue d'Antibes agencies: 'Can't stop. Use this. The third agency from the left — that's the one Kask flagged. Keep moving.' The story continues with the same revelations, delivered through Maro's impatience rather than the player's discovery. Nadia's warning about validation consequences still arrives on schedule.",
-    "timeout_reaction": "After 6 minutes, Voss breaks radio silence with a clipped message: 'We're monitoring the Protocol timer. Thirty-two minutes. Whatever you're doing on Rue d'Antibes, do it faster or move on. The next location matters more than this one.' Castaldi follows fifteen seconds later, more casually: 'She's right, for once. The real prize is ahead. Don't get lost in the shop windows.'"
+    "method": "photo_ai",
+    "target": "Carved stone figures on the facade of Église Notre-Dame d'Espérance, focusing on gaze direction",
+    "success_condition": "Photo clearly shows the church facade with identifiable carved figures or architectural reliefs. AI can determine which direction a figure's head or gaze is oriented.",
+    "success_reaction": "Whichever character receives the photo responds with a triangulation analysis. The three reference points — the Carlton (Step 1), the Vieux Port (Step 3), and the saint's gaze bearing — converge on a specific wing of the Musée des Explorations du Monde. The player receives +15 XP and an exclusive vault document: a superimposed map showing the triangulation with a red circle marking the exact room. The character who received the photo addresses the player with new respect: 'You see it now, don't you? The jailer hid the answer in plain sight for three hundred years. And you just read it.'",
+    "failure_fallback": "If the photo is unclear or of the wrong building, Noor (or Vera) expresses frustration but pivots: 'The angle isn't right, but it doesn't matter — Le Pharmacien's overlay already narrowed it to the museum's west gallery. We go with what we have. Move to the Musée now.' The player still progresses but without the precise room location, making the next step slightly harder. Dimitri sends a mocking voice note: 'Couldn't find the church? It's the big stone thing. With the cross. On top of the hill you're standing on.'",
+    "timeout_reaction": "After 5 minutes of inaction, Dimitri sends a message: 'Standing on a hilltop staring at a church. Very spiritual. Very useless. Delvecchio is already at the Palais selling your credentials to the buyer. Move or be moved.' Simultaneously, Vera sends coordinates for the museum directly: 'Forget the bearing. I have enough. Meet me at the next point. We're out of time — or we're not. Either way, standing still is the one thing that definitely doesn't help.'"
   },
-  "blockchain_event": "Kask's smart contract emits a 'VALIDATOR_PROXIMATE' event as the player's GPS coordinates align with one of the twelve flagged property addresses on Rue d'Antibes. The player's wallet receives a micro-transaction of 0.00001 ETH with the memo: 'Node 7/12 confirmed. Spatial proximity validated. Castre Protocol integrity: 74%. Time remaining: recalculating.' This is the first indication that Kask's system is tracking the player's physical movements against the ledger's geographic data.",
-  "unlock_message": "A new file appears in your vault: KASK_LEDGER_PARTIAL_07.pdf — twelve transactions, twelve properties, twelve shell companies. One name glows like a lit fuse: Adriatic Horizon SCI. You've seen that name before. Castaldi mentioned it. He said it was nothing. Kask thought it was everything. One of them is lying. In thirty-nine minutes, it won't matter — unless you validate.",
-  "skill_xp": 20,
-  "is_skill_step": true,
-  "is_collaborative": false
+  "blockchain_event": "cipher_bearing_captured",
+  "unlock_message": "A 1698 prison inventory document has appeared in your vault. Le Pharmacien has marked an entry about a stone saint transported from Île Sainte-Marguerite to Le Suquet. The jailer didn't just draw a map — he built it into the architecture of Cannes itself.",
+  "skill_xp": 15,
+  "is_collaborative": false,
+  "is_skill_step": true
 }

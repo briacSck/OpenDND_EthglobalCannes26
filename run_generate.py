@@ -69,7 +69,7 @@ All steps should stay within the Palais/Suquet/Forville/Vieux Port area for a 30
             Shop(name="Marché aux Puces Forville", description="Flea market on Mondays. Antiques, vinyl records, vintage objects.", category="market", address="Marché Forville, Cannes"),
         ],
         events=[
-            Event(name="ETH Global Cannes 2026", description="International blockchain/web3 hackathon", source="luma", date="2026-04-03 to 2026-04-06", address="Palais des Festivals, Cannes"),
+            Event(name="ETH Global Cannes 2026", description="International tech conference at the Palais des Festivals. The player is attending this event — use it ONLY as the reason they are in Cannes, NOT as a plot element. The quest story must have NOTHING to do with crypto, blockchain, or technology. The quest should be about art, history, espionage, or mystery.", source="luma", date="2026-04-03 to 2026-04-06", address="Palais des Festivals, Cannes"),
             Event(name="Photography Exhibition — Riviera Noir", description="Black and white photos of the Côte d'Azur from the 1950s-60s. Cold War espionage atmosphere.", source="google", date="April 2026", address="Espace Miramar, 35 Rue Pasteur, Cannes", price=8),
         ],
         points_of_interest=[
@@ -89,7 +89,7 @@ All steps should stay within the Palais/Suquet/Forville/Vieux Port area for a 30
         current_news=[
             NewsItem(name="Carlton Heist 2013 — trial ongoing", summary="The trial of accomplices in the Carlton heist (€103M in jewels stolen in 2013) continues. Alleged links to the Pink Panthers, an international jewel thief network operating from the Balkans.", source="Nice-Matin / AFP", date="2025", relevance_for_narrative="France's biggest jewel heist, right in Cannes. Perfect for anchoring an espionage plot."),
             NewsItem(name="Russian oligarch yacht seizures on the Côte d'Azur", summary="Since 2022, several Russian oligarch yachts have been seized in Côte d'Azur ports (Antibes, Cannes, Nice) under international sanctions. Some remain docked, awaiting court decisions.", source="Le Monde / Reuters", date="2024-2025", relevance_for_narrative="Ghost yachts in the port, mysterious owners, international sanctions — perfect for high_stakes."),
-            NewsItem(name="MIPIM 2026 — International real estate summit", summary="MIPIM (International Market for Real Estate Professionals) is held annually at the Palais des Festivals. Billion-dollar deals, lobbying, recurring suspicions of money laundering through luxury real estate.", source="Les Échos", date="March 2026", relevance_for_narrative="Real event where politicians, developers, and potentially dirty money cross paths."),
+            NewsItem(name="MIPIM 2026 — International real estate summit (ended March)", summary="MIPIM ended 2 weeks ago at the Palais des Festivals. Billion-dollar deals, lobbying, recurring suspicions of money laundering through luxury real estate. Some exhibitor infrastructure is still being dismantled — remnants of corporate banners, temporary installations.", source="Les Échos", date="March 2026", relevance_for_narrative="MIPIM already happened but its traces remain. Perfect for 'something happened here recently' atmosphere. Do NOT use MIPIM as a current/active event — it's over."),
             NewsItem(name="Drug trafficking on the Côte d'Azur — network dismantled", summary="The Alpes-Maritimes is a transit point for drug trafficking between Italy, France, and Spain. Several networks dismantled in 2024-2025, using go-fast cars and pleasure yachts.", source="France 3 PACA", date="2025", relevance_for_narrative="Drug trafficking via luxury yachts = perfect cover for a thriller plot."),
             NewsItem(name="The Man in the Iron Mask — new historical hypotheses", summary="New archival research reignites debate over the identity of the Man in the Iron Mask, imprisoned at Fort Royal on Île Sainte-Marguerite from 1687 to 1698. Was he Louis XIV's twin brother? An Italian spy? A disgraced minister?", source="Historia / Le Point", date="2024", relevance_for_narrative="Real historical mystery, visitable site 15min from Cannes. Perfect link between past and present."),
             NewsItem(name="ETH Global Cannes 2026 — Blockchain Hackathon", summary="International tech event at the Palais des Festivals. Cryptocurrencies, smart contracts, DeFi. Attracts an international community of developers and investors.", source="ETH Global", date="April 2026", relevance_for_narrative="The player is already there for this — perfect meta-anchoring."),
@@ -104,7 +104,7 @@ async def run():
 
     request = QuestRequest(
         goal="investigation and cultural discovery",
-        vibe="espionage, thriller, intense mystery",
+        vibe="espionage, thriller, intense mystery — NO crypto, NO blockchain, NO tech jargon. The story must be accessible to anyone: art theft, jewel heist, espionage, historical mystery, etc. Think James Bond meets Da Vinci Code, not Silicon Valley.",
         duration="1h",
         budget=250,
         location="Cannes — starting point: Palais des Festivals, final destination: Musée des Explorations du Monde (Le Suquet)",
@@ -129,7 +129,7 @@ async def run():
     print(f"\n{'=' * 60}", flush=True)
     print(f"DONE — saved to quest_highstakes.json", flush=True)
     print(f"Title: {quest.title}", flush=True)
-    print(f"Alias: {quest.alias}", flush=True)
+    print(f"Player name: {quest.player_name}", flush=True)
     print(f"Characters ({len(quest.characters)}):", flush=True)
     for c in quest.characters:
         rtp = c.relationship_to_player[:80] if c.relationship_to_player else ""
