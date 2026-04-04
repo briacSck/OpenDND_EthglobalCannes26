@@ -150,6 +150,17 @@ async def generate_quest(request: QuestRequest, city_context: CityContext) -> Qu
             log(f"  Character {idx} ({enriched.name}): enriched & saved")
     log(f"  Total: {len(characters)} characters")
 
+    # --- Phase 3b: Generate ElevenLabs voices for characters without one ---
+    needs_voice = [c for c in characters if not c.voice_id or c.voice_id == "elevenlabs_placeholder"]
+    if needs_voice and os.getenv("ELEVENLABS_API_KEY"):
+        log(f"\n[Phase 3b] Generating ElevenLabs voices for {len(needs_voice)} characters...")
+        await char_init._generate_voices(needs_voice)
+        # Re-save checkpoints with voice_id
+        for idx, char in enumerate(characters):
+            if char in needs_voice:
+                _save_checkpoint(f"character_{idx}", char)
+                log(f"  Character {idx} ({char.name}): voice_id = {char.voice_id}")
+
     # --- Phase 4: Assemble final QuestOutput ---
     log("\n[Phase 4] Assembling final output...")
     quest_output = _assemble_quest(quest_raw, request, characters, curator_iterations, judge_iterations, judge_score)
@@ -279,7 +290,7 @@ def _assemble_quest(
         quest_id=str(uuid.uuid4()),
         title=raw.get("title", "Unnamed Quest"),
         tone=request.tone,
-        alias=raw.get("alias", ""),
+        player_name=raw.get("player_name", ""),
         generation_meta=meta,
         pre_quest_bundle=pre_quest,
         narrative_universe=narrative,

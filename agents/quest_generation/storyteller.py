@@ -3,7 +3,7 @@
 Phased generation: instead of one massive submit_quest tool call,
 the Storyteller submits in 3 smaller pieces so the API proxy doesn't choke.
   Phase 1: Curator dialogue (ask_curator)
-  Phase 2: submit_concept (title, alias, narrative_universe, pre_quest_bundle, characters, narrative_tensions, twist)
+  Phase 2: submit_concept (title, player_name, narrative_universe, pre_quest_bundle, characters, narrative_tensions, twist)
   Phase 3: submit_step x N (one step at a time for speed)
   Phase 4: submit_meta (narrative_beats, resolution_principles, trust_dynamics, resolution)
 """
@@ -69,7 +69,7 @@ ASK_CURATOR_TOOL = {
 
 SUBMIT_CONCEPT_TOOL = {
     "name": "submit_concept",
-    "description": "Phase 1/3 — Submit the concept: title, alias, narrative universe, pre-quest bundle, characters, narrative tensions, and twist.",
+    "description": "Phase 1/3 — Submit the concept: title, player_name, narrative universe, pre-quest bundle, characters, narrative tensions, and twist.",
     "input_schema": {
         "type": "object",
         "properties": {
@@ -486,7 +486,7 @@ class StorytellerAgent:
                 messages.append({"role": "assistant", "content": response.content})
                 messages.append({
                     "role": "user",
-                    "content": "Excellent! Now call submit_concept with: title, alias, narrative_universe, pre_quest_bundle, characters (minimum 5), narrative_tensions, and twist.",
+                    "content": "Excellent! Now call submit_concept with: title, player_name, narrative_universe, pre_quest_bundle, characters (minimum 5), narrative_tensions, and twist.",
                 })
 
             elif response.stop_reason == "max_tokens":
@@ -508,7 +508,7 @@ class StorytellerAgent:
         num_steps = 6  # Target number of steps
 
         concept_summary = f"""**Title**: {concept.get('title', '')}
-**Alias**: {concept.get('alias', '')}
+**Player name**: {concept.get('player_name', '')}
 **Hook**: {concept.get('narrative_universe', {}).get('hook', '')}
 **Context**: {concept.get('narrative_universe', {}).get('context', '')}
 **Stakes**: {concept.get('narrative_universe', {}).get('stakes', '')}
@@ -559,6 +559,7 @@ IMPORTANT CONSTRAINTS:
 - Include a GPS trigger that unlocks content when the player arrives
 {"- This step must be COLLABORATIVE (is_collaborative=true)." if step_num == 3 else ""}
 {"- This step must be a SKILL STEP (is_skill_step=true)." if step_num in (2, 5) else ""}
+{"- THIS IS THE FINAL STEP. It MUST take place INSIDE the Musée des Explorations du Monde (Place de la Castre, Le Suquet). The player enters the museum — tickets are provided by the app (OpenClaw). The action happens inside: the player explores the Mediterranean antiquities collection, finds specific artifacts, photographs them. The museum's medieval tower panorama can be a bonus. Activity price_eur=6, booking_url='https://www.cannesticket.com/offres/musee-des-explorations-du-monde-cannes-fr-5366287/'." if step_num == num_steps else ""}
 Be detailed and immersive."""}]
 
             for attempt in range(5):
@@ -771,7 +772,7 @@ to google these elements and find real articles.
 - Transport: {self.city_context.transport.notes}
 {news_section}
 Generation happens in 3 phases:
-1. First, dialogue with the Curator to find activities. Then call **submit_concept** with title, alias, narrative_universe, pre_quest_bundle, characters (minimum 5), narrative_tensions, and twist.
+1. First, dialogue with the Curator to find activities. Then call **submit_concept** with title, player_name, narrative_universe, pre_quest_bundle, characters (minimum 5), narrative_tensions, and twist.
 2. Next you'll be asked for detailed steps.
 3. Then narrative beats, resolution principles, and trust dynamics.
 

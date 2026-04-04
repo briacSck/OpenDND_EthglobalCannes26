@@ -1,40 +1,101 @@
 {
   "step_id": 3,
-  "title": "The Carlton's Memory",
+  "title": "The Pharmacist's Price",
   "activity": {
-    "name": "Carlton Hotel Facade Investigation — La Croisette",
-    "address": "58 Boulevard de la Croisette, 06400 Cannes",
+    "name": "Vieux Port de Cannes — Quai Saint-Pierre Investigation",
+    "address": "Quai Saint-Pierre, 06400 Cannes",
     "price_eur": 0,
     "duration_minutes": 20,
     "category": "exploration"
   },
-  "narrative_intro": "Maro's voice is still in your head — the tremor when she said her father's name, the steel underneath it. She sent you a fragment of Kask's ledger: a column of Ethereum wallet addresses, each one tagged with a date and a property sale in Cannes. The first entry is dated July 28, 2013 — the same day armed men walked into the Carlton InterContinental and walked out with €103 million in jewels. That's not a coincidence. That's a genesis block.\\n\\nThe Carlton sits on La Croisette like a gilded jaw. You've seen it in photographs — the Belle Époque cupolas, the white facade, the kind of architecture that makes theft feel theatrical. But Kask didn't care about theatre. He cared about what happened AFTER. According to his partial ledger, within 72 hours of the heist, three shell companies were registered in Cyprus. Within six months, those companies purchased apartments visible from where you're about to stand. The jewels became crypto became concrete. And right now, Enzo Castaldi — the man who knows every stone on this boulevard — is offering to walk you through exactly which buildings. He's been texting you since the port. Charming. Knowledgeable. Eager.\\n\\nSpecter just sent a single line: 'Count the cupolas. Not the ones you see.'\\n\\nYou have no idea what that means. Yet.",
-  "instruction": "Walk east along La Croisette from the Vieux Port toward the Carlton Hotel (3-4 minutes). When you arrive at the Carlton facade, photograph the building's distinctive twin cupolas from across the boulevard. Then: both you AND another player in the quest must independently count the number of balcony levels visible on the central facade between the two cupolas and report the same number to Maro via the app. Kask embedded a two-validator consensus check — if two independent observers confirm the same architectural detail, it unlocks the next ledger fragment. This is blockchain logic applied to the real world. Maro is waiting.",
-  "player_action": "Photograph the Carlton Hotel's twin cupolas and central facade from across Boulevard de la Croisette. Count the exact number of distinct balcony levels visible between the two cupolas on the main facade. Report this number through the app. Your count must match another player's independent observation to unlock the next ledger fragment — Kask designed a real-world consensus mechanism.",
+  "narrative_intro": "The esplanade geometry gave you three coordinates. Two match locations on the modern Cannes grid. The third doesn't exist — it points to open water, roughly where a 68-meter seized superyacht named *Seraphim* has been anchored in the Vieux Port since February, frozen by a French court order tied to EU sanctions. Skeleton crew. Legal limbo. And according to Vera, the anonymous buyer's extraction vehicle.\\n\\nBut as you cut south toward the old port, your phone buzzes twice in rapid succession. The first message is from a number you don't recognize — a single image: a pharmaceutical label from 1887, handwritten in Latin, with the word PERSONA scratched into the margin. Le Pharmacien has found you.\\n\\nThe second message is from Noor Kazan. She's tracked the same coordinates you have. She wants to collaborate — pool what you've decoded from the esplanade with what she pulled from the auction's provenance files. She's offering her father's research on the Iron Mask jailer's cipher system in exchange. But she wants to meet you at the port. Not in person — she'll be watching the yacht from somewhere along the quay, and she needs your eyes on something she can't see from her position.\\n\\nThe Vieux Port is busy. Fishing boats, charter yachts, the ferry terminal to the Lérins Islands. Somewhere along Quai Saint-Pierre, between the fish market and the harbor master's office, you need to find the *Seraphim* — or at least confirm it's really there. Because Le Pharmacien's message implies something Vera hasn't told you: the yacht may have already moved once this week.",
+  "instruction": "Head to Quai Saint-Pierre at the Vieux Port. When you arrive, locate and photograph any large yacht or vessel moored in the port — Noor needs visual confirmation of what's anchored there. While you photograph, count the number of visible surveillance cameras along the quay between the fish market stalls and the port authority building. Report the count to Le Pharmacien — he claims it will tell him whether the port's security grid has been \"adjusted\" for the buyer's departure. This is a collaborative step: share your camera feed and findings with your quest partner to cross-reference observations.",
+  "player_action": "Photograph the largest yacht or vessel visible in the Vieux Port from Quai Saint-Pierre and send it to Noor. Then count the surveillance cameras visible along the quay between the fish market area and the port authority office, and report the number to Le Pharmacien.",
   "gps_trigger": {
     "type": "document",
-    "character": "Specter",
-    "content_brief": "A partial page from Kask's forensic ledger auto-unlocks in the vault. It shows three Ethereum wallet addresses tagged 'CARLTON-GENESIS' with timestamps from July 2013, each linked to a Cyprus shell company name and a Cannes property address on or near La Croisette. One address is redacted — the validator fragment needed to reveal it is locked behind the consensus check. A handwritten annotation in Kask's writing reads: 'The cupolas are a lie. One was rebuilt in 2009. Ask yourself who paid for the renovation and why their name appears on line 7.'"
+    "character": "Le Pharmacien",
+    "content_brief": "A scanned image appears in the vault: a 19th-century pharmaceutical inventory page from a Cannes apothecary, with three entries circled in red ink. The circled entries are all compounds used in period-accurate iron gall ink — the same ink type that would have been used for any 1698 document. A handwritten annotation in modern pen reads: 'She mixed it herself. Ask her which century.' This is Le Pharmacien's first direct accusation that Vera forged the cipher map."
   },
-  "camera_prompt": "The player photographs the Carlton InterContinental Hotel's iconic facade, focusing on the twin Belle Époque cupolas and the balconied central section. AI vision identifies the cupolas, balcony levels, architectural details, and any renovation differences between the two domes. The AI character (Castaldi) uses real architectural features to weave in narrative about which apartments visible from this vantage point were purchased with laundered crypto-converted jewel proceeds, making the real Croisette skyline feel like a crime scene map.",
+  "camera_prompt": "The player photographs a yacht or large vessel in the Vieux Port of Cannes. AI interprets the vessel's details — size, flag, deck equipment, any visible name — and Noor reacts narratively, comparing what she sees to the known profile of the seized superyacht Seraphim. If the yacht matches (large, white, multiple decks), Noor confirms the extraction vehicle is still in port. If it's a different vessel, Noor notes the Seraphim may have been moved to the outer anchorage — raising the stakes on the timeline.",
   "walking_minutes_from_previous": 4,
-  "is_collaborative": true,
-  "is_skill_step": false,
   "tension": {
-    "type": "trust_test",
-    "description": "Castaldi floods the player with useful-seeming architectural intel about the Carlton and surrounding buildings, naming real streets and dates, building trust rapidly. Meanwhile Specter's cryptic cupola message and the vault document hint that Castaldi's knowledge is suspiciously precise — how does a 'local historian' know the exact renovation timeline of a hotel cupola linked to money laundering? The collaborative consensus requirement forces the player to commit to an observation, creating the first irreversible data point in the ledger reconstruction.",
-    "resolution": "Whether the player's count matches or not, Maro unlocks a partial ledger fragment. If it matches, the fragment is complete and reveals the redacted address — which turns out to be a building Castaldi personally brokered the sale of in 2017. If it fails, the fragment is partial but Maro manually overrides with a comment: 'Close enough. My father taught me that consensus is a negotiation, not a religion.'"
+    "type": "alliance_dilemma",
+    "description": "Noor and Le Pharmacien both want the player's observations but for opposing reasons. Noor needs yacht confirmation to time her own move on the reliquary. Le Pharmacien is building a case that Vera's entire operation is a fabrication — and the camera count is his way of testing whether the player will share raw intelligence with him or filter it through Vera first. Sharing with both means neither fully trusts you. Choosing one burns the other.",
+    "resolution": "The player's choice of who receives the most detailed information shifts alliance dynamics. Le Pharmacien rewards honesty with a critical revelation about the ink forgery. Noor rewards cooperation with her father's cipher key fragment. Both paths advance the story but reconfigure trust."
   },
-  "character_interactions": "[{\"character\": \"Enzo Castaldi\", \"trigger\": \"Player sends photo of Carlton facade\", \"phone_version\": \"Castaldi responds within seconds, voice note style text: 'Magnificent, isn't it? Built 1911, designed by Charles Dalmas — same architect as the Negresco in Nice. Now look at the cupolas. The left one — that's the original copper underneath the zinc cladding. The right one was rebuilt after storm damage in 2009. Cost €2.3 million. The renovation contract went through a company called Méditerranée Prestige Holdings. Completely legitimate firm. Registered in... well. You'll find out. Now — see the building three doors east? The white one with the black railings? Apartment 4B sold in March 2017 for €4.7 million to a Cypriot trust. I should know. I found the buyer.' He adds a winking emoji, then: 'I'm kidding. Mostly.'\", \"rayban_version\": {\"script\": \"Castaldi's voice purrs through the earpiece with the cadence of a man who has told these stories at dinner parties and knows exactly which details to pause on. 'Built 1911. Charles Dalmas. Same architect as the Negresco — he liked cupolas, clearly. Now here's what nobody tells tourists: the right cupola? Rebuilt in 2009. Two-point-three million euros. The contract went through a firm called Méditerranée Prestige Holdings. Sounds boring. It's not. And that white building three doors east with the black railings — apartment 4B sold in 2017 for four-point-seven million to a Cypriot trust. I should know.' A pause. 'I found the buyer. Kidding. Mostly.'\", \"audio_type\": \"voice_message\", \"duration_seconds\": 45, \"camera_mode\": {\"enabled\": true, \"purpose\": \"AI analyzes the Carlton facade photo to identify specific architectural features Castaldi references, grounding his narration in what the player actually sees\"}, \"contextual_music\": {\"enabled\": true, \"track_type\": \"ambient_tension\", \"duration_seconds\": 120}}, \"awaits_response\": true}, {\"character\": \"Maro Dušić\", \"trigger\": \"Player submits balcony count via app\", \"phone_version\": \"Maro texts: 'Got your count. Waiting on the second validator to confirm. This is how Kask designed it — no single point of trust. He called it \"meatspace consensus.\" Paranoid, brilliant, probably both.' A beat. Then: 'While we wait — Castaldi just sent you a whole architecture lecture, didn't he? He does that. Very generous with information. Ask yourself: why does a real estate consultant know the exact cost of a hotel cupola renovation? I looked up Méditerranée Prestige Holdings. It was dissolved in 2019. Its registered director was a man named Grigori Volkov. That name is on line 12 of the ledger Kask built. Castaldi didn't mention that part, did he?'\", \"rayban_version\": {\"script\": \"Maro's voice is quieter than Castaldi's, but it cuts deeper. 'Got your count. Second validator hasn't confirmed yet. This is how Kask built it — no single point of trust. He called it meatspace consensus. Paranoid and brilliant, which is the same thing if you're right.' She pauses. 'Castaldi gave you the history lesson, yes? Très charmant. But I looked up the company he mentioned — Méditerranée Prestige Holdings. Dissolved 2019. Registered director: Grigori Volkov. That name sits on line twelve of Kask's ledger. Enzo didn't mention that. Ask yourself why.'\", \"audio_type\": \"voice_message\", \"duration_seconds\": 35, \"camera_mode\": {\"enabled\": false, \"purpose\": \"\"}, \"contextual_music\": {\"enabled\": false, \"track_type\": \"\", \"duration_seconds\": 0}}, \"awaits_response\": false}, {\"character\": \"Specter\", \"trigger\": \"Consensus check completes (match or mismatch)\", \"phone_version\": \"If match — a single message appears: 'Consensus achieved. Fragment 3 unlocked. Kask trusted geometry over people. Smart. You now have the Volkov-Croisette connection. Follow the renovation money, not the jewels. The jewels are noise. —S' If mismatch — the message reads: 'Consensus failed. Overriding with Kask's backup key. He anticipated disagreement. Fragment 3 partial. You're missing one address. It will cost you later. —S'\", \"rayban_version\": {\"script\": \"A digitally processed voice, barely above a whisper, the kind of voice that sounds like it's being routed through three countries: 'Consensus achieved. Fragment three is yours. Kask trusted geometry over people. Smarter than most. Follow the renovation money. Not the jewels. The jewels are noise.' The audio cuts with a sharp click — no goodbye, no signature, like a door closing in another room.\", \"audio_type\": \"processed_voice\", \"duration_seconds\": 15, \"camera_mode\": {\"enabled\": false, \"purpose\": \"\"}, \"contextual_music\": {\"enabled\": true, \"track_type\": \"digital_glitch_ambient\", \"duration_seconds\": 30}}, \"awaits_response\": false}]",
+  "character_interactions": [
+    {
+      "character": "Noor Kazan",
+      "trigger": "Player sends photo of yacht/vessel in the port",
+      "phone_version": "Noor responds with a voice message, her tone measured but urgent: 'That's... not the Seraphim. Or it's been repainted — the Seraphim had a dark blue hull when my contact photographed it in Monaco last month. Either they've disguised it or Vera's been lying about the extraction timeline. I'm sending you a fragment of my father's cipher analysis — he spent eleven years on the Iron Mask correspondence before the university stripped his tenure. Page 7 is the one that matters. The jailer used a rotating key based on liturgical calendar dates. If the reliquary map is authentic, the cipher resets on saint's days. If it doesn't... it's modern. Check it against what Vera gave you.' A 3-page academic PDF appears in the vault.",
+      "rayban_version": {
+        "script": "Noor's voice comes through your frames, low and controlled, as if she's speaking from somewhere nearby but refuses to say where. 'Look at the hull color. Does that match a vessel that's been sitting in legal seizure since February? Paint oxidizes. Salt air does things. If that hull is pristine, someone's maintaining it — or it arrived recently. Send me the photo. I'm giving you my father's cipher work in exchange. Page seven. The liturgical key. It's how we prove whether Vera's map is real or manufactured.'",
+        "audio_type": "voice_message",
+        "duration_seconds": 35,
+        "camera_mode": {
+          "enabled": true,
+          "purpose": "AI analyzes the photographed vessel's hull condition, size, visible flags or registration, and deck configuration to determine if it matches the profile of a seized oligarch yacht"
+        },
+        "contextual_music": {
+          "enabled": false,
+          "track_type": "",
+          "duration_seconds": 0
+        }
+      },
+      "awaits_response": true
+    },
+    {
+      "character": "Le Pharmacien",
+      "trigger": "Player reports camera count or sends any observation about port security",
+      "phone_version": "A text message, no greeting: 'Fourteen was the number last Tuesday. If you counted fewer, they've been disabled. If more, new ones were installed for the departure. Either way, someone with port authority access is facilitating. — You found the document I left in your vault. The ink compounds. Vera Solari purchased iron gall ink reagents from a specialty supplier in Grasse eight weeks ago. I have the receipt. She built that cipher map in her apartment. The question isn't whether it's a forgery. The question is whether what the forgery points to is still real. Ask yourself: why would she forge a map to a location that contains nothing?' A purchase receipt image appears in the vault.",
+      "rayban_version": {
+        "script": "Le Pharmacien's voice is synthetic, digitally altered, gender-indeterminate. A whisper that sounds like it's being read from notes. 'The cameras. How many. This matters more than you think. Port surveillance in Cannes runs through a municipal system that was upgraded after twenty-fifteen. Any deviation from baseline means someone paid for a gap. Count carefully. And while you're counting — did you read what I sent you? The ink compounds. She bought them in Grasse. Eight weeks ago. Vera made that map herself. But here is what I cannot determine from where I sit: does the location the map points to actually contain something? That is why I need you. You are my eyes in the geometry.'",
+        "audio_type": "voice_message",
+        "duration_seconds": 30,
+        "camera_mode": {
+          "enabled": false,
+          "purpose": ""
+        },
+        "contextual_music": {
+          "enabled": false,
+          "track_type": "",
+          "duration_seconds": 0
+        }
+      },
+      "awaits_response": true
+    },
+    {
+      "character": "Vera Solari",
+      "trigger": "Time elapsed: 6 minutes after GPS arrival, or immediately if player shares Le Pharmacien's accusations",
+      "phone_version": "Vera calls. She sounds like she's walking fast, slightly out of breath. 'I know Le Pharmacien contacted you. I know what he sent. He's not wrong about the ink — I'm not going to insult you by denying it. Yes. I drew the map. But I drew it from memory, Player. I saw the original in 2019, in a private collection in Beirut, for eleven seconds before the owner's security removed me from the room. Eleven seconds. I have an eidetic memory for spatial layouts — it's why I was good at what I did before all this. The map I recreated is accurate to within millimeters. The forgery is the medium, not the content. What's inside that museum is real. And if you let Le Pharmacien's obsession with process destroy the only chance we have of reaching it before the buyer's network — then we all lose. Including Noor's father, who deserved better than what the academic establishment did to him. You have the cipher key fragment from her now. Use it. The next location is in Le Suquet. I need you to trust me for twenty more minutes.'",
+      "rayban_version": {
+        "script": "Vera's voice cuts in, raw, no preamble, the sound of wind and traffic behind her. 'Stop. Before you decide I'm the villain — yes. I made the map. The physical object is mine. But the information on it is real. I saw the original for eleven seconds in Beirut in twenty-nineteen. I have eidetic spatial memory. That is not a boast, it is a diagnosis. What I drew is accurate. Le Pharmacien wants to discredit me because I wouldn't share my source with him three years ago. He's brilliant and he's petty and he's not wrong about the ink and he's completely wrong about what matters. The documents inside that museum are real. Noor's father knew it. Use her cipher key. Get to Le Suquet. Trust me for twenty more minutes. That's all I'm asking.'",
+        "audio_type": "phone_call",
+        "duration_seconds": 45,
+        "camera_mode": {
+          "enabled": false,
+          "purpose": ""
+        },
+        "contextual_music": {
+          "enabled": true,
+          "track_type": "ambient_tension",
+          "duration_seconds": 45
+        }
+      },
+      "awaits_response": false
+    }
+  ],
   "verification": {
-    "method": "collaborative_count",
-    "target": "Number of distinct balcony levels on the Carlton's central facade between the twin cupolas",
-    "success_condition": "Player's count matches the second validator's independent count (the real answer is 7 distinct balcony levels on the central facade)",
-    "success_reaction": "Full ledger fragment 3 unlocks in the vault, revealing the redacted Croisette property address — which is a building Castaldi brokered. Maro's trust increases significantly. Specter sends a rare second message: 'You see clearly. That matters more than you know.' +15 XP bonus.",
-    "failure_fallback": "Maro manually overrides the consensus with Kask's backup key, unlocking a partial fragment missing one property address. She texts: 'Consensus is a negotiation. We keep moving. But you're flying with one eye closed now — that missing address will matter at the end.' Story continues with slightly less information available for the final validation decision.",
-    "timeout_reaction": "After 6 minutes, Castaldi texts: 'Still admiring the view? I don't blame you. But time is a factor today, remember? Send Maro your count — any count. Kask's system accepts approximations if you're honest about your confidence level. That's the difference between blockchain and bureaucracy.'"
+    "method": "photo_and_text",
+    "target": "Yacht/vessel photo sent to Noor + surveillance camera count sent to Le Pharmacien",
+    "success_condition": "Player sends a clear photo of a vessel in the Vieux Port AND provides a specific number for camera count",
+    "success_reaction": "Both Noor and Le Pharmacien reward the player with critical intel. Noor's cipher fragment unlocks the liturgical key needed to validate the map. Le Pharmacien's ink receipt proves Vera's forgery but his final question — 'why forge a map to nothing?' — plants the seed that Vera may be telling the truth about the underlying discovery. Player gains trust with both characters and receives +40 XP. Vera's subsequent call feels more desperate and honest because the player now holds leverage.",
+    "failure_fallback": "If the player sends only the photo or only the count, the character who received nothing sends a curt message: Noor says 'I gave you my father's work. You gave me silence. Fine. But you'll need page seven eventually.' Le Pharmacien says 'Incomplete data is worse than no data. I'll assume you're working for her now.' The missing intel piece is provided anyway after 3 minutes via a 'consolation' message from the overlooked character, but trust is reduced. Story continues to Step 4.",
+    "timeout_reaction": "After 8 minutes, Marco Delvecchio sends an unsolicited message: 'Still at the port? Bad idea to linger. The harbor master's office logs foot traffic near restricted berths. I can see you've been stationary too long on the GPS. Move toward Le Suquet. I'll explain when you're walking.' This nudges the player toward Step 4 while adding Marco's surveillance layer to the tension."
   },
-  "blockchain_event": "FRAGMENT_3_CONSENSUS — Ledger fragment 3 (Volkov-Croisette property chain) unlocked via meatspace consensus protocol. Two independent validators confirmed matching architectural observation. Smart contract state: 3/6 fragments recovered. Castre Protocol auto-destruct timer: 2h47m remaining.",
-  "unlock_message": "CONSENSUS PROTOCOL ACTIVE — Kask's ledger requires two independent validators to confirm the same real-world observation. Your count has been submitted. Waiting for second confirmation. Fragment 3 of the Castre Protocol is assembling.",
-  "skill_xp": 0
+  "blockchain_event": "port_intelligence_gathered",
+  "unlock_message": "A pharmaceutical inventory from 1887 has appeared in your vault. Someone called Le Pharmacien wants you to see what Vera has been buying.",
+  "skill_xp": 40,
+  "is_collaborative": true,
+  "is_skill_step": false
 }

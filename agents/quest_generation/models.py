@@ -251,7 +251,7 @@ class QuestOutput(BaseModel):
     quest_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     title: str = ""
     tone: str = "loufoque"
-    alias: str = Field(default="", description="Player's code name — characters call them by this alias")
+    player_name: str = Field(default="", description="Player's first name — characters call them by their real first name")
     generation_meta: GenerationMeta = Field(default_factory=GenerationMeta)
     pre_quest_bundle: PreQuestBundle = Field(default_factory=PreQuestBundle)
     narrative_universe: NarrativeUniverse
