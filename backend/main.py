@@ -8,7 +8,7 @@ from datetime import datetime
 from fastapi import FastAPI, HTTPException
 from agents.city_research.models import QuestRequest as ResearchRequest, CityContext
 from agents.city_research.agent import CityResearchAgent
-from agents.quest_generation.models import QuestRequest, QuestOutput
+from agents.quest_generation.models import QuestRequest, QuestOutput, Character, MemoryState
 from agents.quest_generation import pipeline
 from agents.quest_runtime.models import (
     QuestSession, SessionState, CharacterTrust, PlayerAction,
@@ -28,7 +28,83 @@ from config import DEMO_MODE
 from blockchain import blockchain_router
 from agents.voice.router import router as voice_router, init_stores as init_voice_stores
 
+import os
+
 logger = logging.getLogger(__name__)
+
+
+def _load_pregenerated_quest(request: QuestRequest) -> QuestOutput:
+    """Load the pre-generated quest from checkpoints and assemble a QuestOutput."""
+    import uuid as _uuid
+
+    base = os.path.join(os.path.dirname(__file__), "data")
+    concept_path = os.path.join(base, "pregenerated_concept.json")
+    steps_path = os.path.join(base, "pregenerated_steps.json")
+
+    with open(concept_path, "r", encoding="utf-8") as f:
+        concept = json.load(f)
+    with open(steps_path, "r", encoding="utf-8") as f:
+        steps_data = json.load(f)
+
+    # Merge concept + steps + default meta
+    quest_raw = {**concept, **steps_data}
+
+    # Add default meta fields that would normally come from phase 3
+    quest_raw.setdefault("narrative_beats", [
+        {"beat_id": 1, "description": "First contact with M. Critique sets the tone", "characters_involved": ["M. Critique"], "earliest_step": 1, "latest_step": 1, "tension_level": "medium", "can_be_skipped": False, "possible_triggers": ["start"]},
+        {"beat_id": 2, "description": "Margot reveals her academic obsession with the critics", "characters_involved": ["Margot"], "earliest_step": 1, "latest_step": 2, "tension_level": "low", "can_be_skipped": True, "possible_triggers": ["player asks about critics"]},
+        {"beat_id": 3, "description": "Underground discovery — the scope of the critics' network becomes clear", "characters_involved": ["Jean-Claude", "Margot"], "earliest_step": 2, "latest_step": 3, "tension_level": "high", "can_be_skipped": False, "possible_triggers": ["photo_sent", "gps_arrival"]},
+        {"beat_id": 4, "description": "Clémentine's first contact — star ratings as communication", "characters_involved": ["Clémentine"], "earliest_step": 3, "latest_step": 4, "tension_level": "medium", "can_be_skipped": False, "possible_triggers": ["collaborative_step"]},
+        {"beat_id": 5, "description": "Philippe's coffee philosophy reveals deeper truth about the critics", "characters_involved": ["Philippe"], "earliest_step": 3, "latest_step": 5, "tension_level": "medium", "can_be_skipped": True, "possible_triggers": ["player visits café", "player messages Philippe"]},
+        {"beat_id": 6, "description": "M. Critique's mask slips — hints at being the founder", "characters_involved": ["M. Critique", "Jean-Claude"], "earliest_step": 4, "latest_step": 5, "tension_level": "high", "can_be_skipped": False, "possible_triggers": ["trust > 70"]},
+        {"beat_id": 7, "description": "The ancient truth — rating systems predate cinema", "characters_involved": ["M. Critique", "Margot", "Philippe"], "earliest_step": 6, "latest_step": 6, "tension_level": "climax", "can_be_skipped": False, "possible_triggers": ["museum_entry"]},
+    ])
+    quest_raw.setdefault("resolution_principles", [
+        "If player earned M. Critique's trust > 70 → he reveals himself as founder directly",
+        "If player bonded with Margot → she publishes her book with player as co-author",
+        "If player dismissed the critics → ending focuses on surface world victory",
+        "If player embraced the critics' philosophy → invited to join as ambassador",
+        "If player balanced both worlds → becomes bridge between surface and underground",
+    ])
+    quest_raw.setdefault("trust_dynamics", {
+        "M. Critique": {"low": "Speaks only in cryptic film references, withholds key information", "medium": "Shares mission details but keeps his identity secret", "high": "Reveals himself as the founder, offers genuine mentorship"},
+        "Margot": {"low": "Pure academic detachment, treats player as research subject", "medium": "Shares theories openly, hints at her book project", "high": "Confides about the book, becomes genuine ally and friend"},
+        "Jean-Claude": {"low": "Gruff security guard persona, minimal help", "medium": "Shares historical anecdotes, opens some doors", "high": "Reveals he's been feeding info to critics, becomes protective"},
+        "Clémentine": {"low": "Only communicates in star ratings, dismissive", "medium": "Begins using words, shows grudging respect", "high": "Reveals homesickness, drops the arrogant act"},
+        "Philippe": {"low": "Polite but guarded café owner, no personal details", "medium": "Flirtatious film/coffee metaphors, shares intelligence", "high": "Reveals Hollywood past, deep emotional connection"},
+    })
+    quest_raw.setdefault("resolution", {
+        "skill_gained": "urban exploration",
+        "prize": {"xp_total": 500, "token_amount": 50},
+    })
+
+    # Build characters with basic system prompts (skip AI enrichment)
+    characters = []
+    for raw_char in quest_raw.get("characters", []):
+        characters.append(Character(
+            name=raw_char.get("name", "Unknown"),
+            age=raw_char.get("age", 0),
+            type=raw_char.get("type", "secondary"),
+            archetype=raw_char.get("archetype", ""),
+            personality=raw_char.get("personality", ""),
+            speech_pattern=raw_char.get("speech_pattern", ""),
+            relationship_to_player=raw_char.get("relationship_to_player", ""),
+            secret=raw_char.get("secret", ""),
+            evolution_rules=raw_char.get("evolution_rules", ""),
+            reactions_imprevues=raw_char.get("reactions_imprevues", ""),
+            voice_id="elevenlabs_placeholder",
+            memory_state=MemoryState(),
+            system_prompt=f"You are {raw_char.get('name', 'a character')}. {raw_char.get('personality', '')} Your speech style: {raw_char.get('speech_pattern', '')}",
+        ))
+
+    return pipeline._assemble_quest(
+        raw=quest_raw,
+        request=request,
+        characters=characters,
+        curator_iterations=0,
+        judge_iterations=0,
+        judge_score=85,
+    )
 
 app = FastAPI(title="OpenD&D", description="AI-powered real-life quest system")
 app.include_router(blockchain_router)
@@ -55,10 +131,8 @@ async def research_city(request: ResearchRequest) -> CityContext:
 
 @app.post("/generate", response_model=QuestOutput)
 async def generate_quest(request: QuestRequest) -> QuestOutput:
-    """Full pipeline: research city + generate quest."""
-    agent = CityResearchAgent()
-    context = await agent.research(request.model_dump())
-    quest = await pipeline.generate_quest(request, context)
+    """Return pre-generated quest instantly (no AI pipeline)."""
+    quest = _load_pregenerated_quest(request)
     # Store for runtime
     _quests[quest.quest_id] = quest
     return quest
