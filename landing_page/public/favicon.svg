@@ -1,4 +1,60 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <rect width="32" height="32" rx="6" fill="#07070a"/>
-  <text x="16" y="22" text-anchor="middle" font-family="monospace" font-weight="bold" font-size="16" fill="#00ff88">D&amp;D</text>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">Favicon D&amp;D Cannes</title>
+  <desc id="desc">Icône favicon inspirée de Cannes avec lunettes rondes, lumière azurée, d20 discret et palette méditerranéenne.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#d6e5ec"/>
+      <stop offset="55%" stop-color="#aacee1"/>
+      <stop offset="100%" stop-color="#efeae4"/>
+    </linearGradient>
+    <linearGradient id="sunset" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0%" stop-color="#d5cfb5"/>
+      <stop offset="100%" stop-color="#caa77a"/>
+    </linearGradient>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="1.4" stdDeviation="1.6" flood-color="#877051" flood-opacity="0.26"/>
+    </filter>
+    <clipPath id="roundRect">
+      <rect x="0" y="0" width="64" height="64" rx="13" ry="13"/>
+    </clipPath>
+  </defs>
+
+  <g clip-path="url(#roundRect)">
+    <rect width="64" height="64" rx="13" fill="url(#bg)"/>
+
+    <path d="M0 47 C14 41, 26 44, 37 38 C47 33, 55 33, 64 36 L64 64 L0 64 Z" fill="#d5cfb5" opacity="0.9"/>
+    <path d="M38 36 C45 31, 53 30, 64 33 L64 64 L44 64 C42 55, 40 45, 38 36 Z" fill="#caa77a" opacity="0.42"/>
+    <path d="M46 35 C53 34, 58 36, 64 40 L64 64 L49 64 C48 54, 47 45, 46 35 Z" fill="#877051" opacity="0.18"/>
+
+    <circle cx="50.5" cy="12.5" r="5.2" fill="#efeae4" opacity="0.68"/>
+    <path d="M46 19.5 C49 17.7, 53.4 17.7, 56.8 19.6" stroke="#efeae4" stroke-width="1.2" stroke-linecap="round" opacity="0.75"/>
+
+    <g filter="url(#softShadow)">
+      <circle cx="23" cy="33" r="10.8" fill="#efeae4" fill-opacity="0.18" stroke="#515c43" stroke-width="3.8"/>
+      <circle cx="41" cy="33" r="10.8" fill="#efeae4" fill-opacity="0.18" stroke="#515c43" stroke-width="3.8"/>
+      <path d="M30.2 33 H33.8" stroke="#515c43" stroke-width="3.8" stroke-linecap="round"/>
+      <path d="M11.5 31.8 C13.6 30.2, 15.4 29.5, 17.8 29.3" stroke="#515c43" stroke-width="2.7" stroke-linecap="round" fill="none"/>
+      <path d="M46.2 29.3 C48.6 29.5, 50.4 30.2, 52.5 31.8" stroke="#515c43" stroke-width="2.7" stroke-linecap="round" fill="none"/>
+    </g>
+
+    <path d="M32 19.6 L36.3 23.2 L34.8 28.6 L29.2 28.6 L27.7 23.2 Z" fill="url(#sunset)" stroke="#877051" stroke-width="1.1" stroke-linejoin="round"/>
+    <circle cx="32" cy="24.2" r="1.25" fill="#efeae4" opacity="0.9"/>
+
+    <path d="M18 47 C23 43.4, 29.2 41.7, 35 42.2 C41.5 42.7, 47.6 45.6, 53 50.8" stroke="#515c43" stroke-width="2.3" stroke-linecap="round" fill="none" opacity="0.9"/>
+    <path d="M20 48.5 C26 44.4, 34.2 43.8, 41 46.1" stroke="#caa77a" stroke-width="1.5" stroke-linecap="round" fill="none" opacity="0.95"/>
+
+    <g transform="translate(11.5 42.5)">
+      <path d="M0 8 C1.5 5.5, 2 3.6, 1.8 0.5 C4.6 2.7, 6 5.8, 5.4 9.2 Z" fill="#515c43"/>
+      <path d="M5.1 7.6 C7.4 5.4, 8.8 2.8, 9.3 0 C11.7 2.4, 12.5 5.5, 11.4 8.8 Z" fill="#515c43" opacity="0.92"/>
+      <rect x="5.2" y="8.2" width="1.4" height="5.6" rx="0.7" fill="#877051"/>
+    </g>
+
+    <g transform="translate(47 17)" stroke="#caa77a" stroke-width="1.9" stroke-linecap="round">
+      <path d="M0 -3.2 V3.2"/>
+      <path d="M-3.2 0 H3.2"/>
+      <path d="M-2.25 -2.25 L2.25 2.25" opacity="0.78"/>
+      <path d="M2.25 -2.25 L-2.25 2.25" opacity="0.78"/>
+    </g>
+  </g>
 </svg>
