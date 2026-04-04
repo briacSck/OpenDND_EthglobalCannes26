@@ -1,24 +1,19 @@
-"""Hedera reward — submit HCS message anchoring quest completion on-chain."""
+"""Hedera reward — on-chain quest completion via blockchain/ module.
+
+Wraps the blockchain module (real Hedera SDK) while keeping the same
+interface that main.py expects: trigger_reward() → RewardTx.
+"""
 
 from __future__ import annotations
 
-import hashlib
-import json
 import logging
-import uuid
 from datetime import datetime, timezone
 
-import httpx
 from pydantic import BaseModel, Field
 
-from config import DEMO_MODE, HEDERA_ACCOUNT_ID, HEDERA_PRIVATE_KEY, HEDERA_NETWORK
+from config import DEMO_MODE
 
 logger = logging.getLogger(__name__)
-
-_MIRROR_URLS = {
-    "testnet": "https://testnet.mirrornode.hedera.com",
-    "mainnet": "https://mainnet.mirrornode.hedera.com",
-}
 
 
 class RewardTx(BaseModel):
@@ -43,20 +38,25 @@ async def trigger_reward(
     grade: str,
     memory_root_hash: str,
 ) -> RewardTx:
-    """Submit an HCS message with quest reward payload and return a RewardTx.
+    """Submit on-chain proof of quest completion and return a RewardTx.
+
+    Uses the blockchain/ module (real Hedera SDK) for:
+    - HBAR reward transfer to the player
+    - NFT badge mint with quest metadata
+    - HCS event log with memory_root_hash as on-chain anchor
 
     In DEMO_MODE: returns a mock RewardTx instantly.
-    In real mode: submits to Hedera Consensus Service via the Mirror REST API.
     """
-    payload = {
-        "quest_id": quest_id,
-        "player_wallet": player_wallet,
-        "grade": grade,
-        "memory_root_hash": memory_root_hash,
-        "timestamp": datetime.now(timezone.utc).isoformat(),
-    }
+    import hashlib
+    import json
 
     if DEMO_MODE:
+        payload = {
+            "quest_id": quest_id,
+            "player_wallet": player_wallet,
+            "grade": grade,
+            "memory_root_hash": memory_root_hash,
+        }
         fake_hash = "0.0.demo-" + hashlib.sha256(
             json.dumps(payload, sort_keys=True).encode()
         ).hexdigest()[:16]
@@ -69,35 +69,50 @@ async def trigger_reward(
             memory_root_hash=memory_root_hash,
         )
 
-    if not HEDERA_ACCOUNT_ID or not HEDERA_PRIVATE_KEY:
-        raise RuntimeError(
-            "HEDERA_ACCOUNT_ID and HEDERA_PRIVATE_KEY must be set for real rewards"
-        )
+    # Real Hedera reward via blockchain/ module
+    from blockchain import reward_player, log_quest_event
 
-    mirror_url = _MIRROR_URLS.get(HEDERA_NETWORK, _MIRROR_URLS["testnet"])
-
-    # Submit HCS message via Hedera REST API
-    async with httpx.AsyncClient(timeout=30.0) as client:
-        resp = await client.post(
-            f"{mirror_url}/api/v1/transactions",
-            json={
-                "operatorAccountId": HEDERA_ACCOUNT_ID,
-                "type": "consensusSubmitMessage",
-                "params": {
-                    "message": json.dumps(payload, ensure_ascii=False),
-                },
+    try:
+        # 1. Transfer HBAR + mint NFT badge
+        tx = await reward_player(
+            quest_id=quest_id,
+            player_account_id=player_wallet,
+            token_amount=1,
+            nft_metadata={
+                "quest_id": quest_id,
+                "grade": grade,
+                "memory_root_hash": memory_root_hash,
             },
-            headers={"Content-Type": "application/json"},
         )
-        resp.raise_for_status()
-        result = resp.json()
-        tx_hash = result.get("transactionId", str(uuid.uuid4()))
 
-    logger.info("Hedera reward submitted: quest=%s tx=%s", quest_id, tx_hash)
-    return RewardTx(
-        tx_hash=tx_hash,
-        status="CONFIRMED",
-        quest_id=quest_id,
-        player_wallet=player_wallet,
-        memory_root_hash=memory_root_hash,
-    )
+        # 2. Log the memory_root_hash on HCS as on-chain anchor
+        await log_quest_event(
+            quest_id=quest_id,
+            event_type="reward.confirmed",
+            payload={
+                "player": player_wallet,
+                "grade": grade,
+                "memory_root_hash": memory_root_hash,
+                "tx_hash": tx.tx_hash,
+                "nft_serial": tx.nft_serial,
+            },
+        )
+
+        logger.info("Hedera reward confirmed: quest=%s tx=%s", quest_id, tx.tx_hash)
+        return RewardTx(
+            tx_hash=tx.tx_hash or "",
+            status="CONFIRMED",
+            quest_id=quest_id,
+            player_wallet=player_wallet,
+            memory_root_hash=memory_root_hash,
+        )
+
+    except Exception as exc:
+        logger.error("Hedera reward failed: quest=%s error=%s", quest_id, exc)
+        return RewardTx(
+            tx_hash="",
+            status="FAILED",
+            quest_id=quest_id,
+            player_wallet=player_wallet,
+            memory_root_hash=memory_root_hash,
+        )
