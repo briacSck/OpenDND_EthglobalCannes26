@@ -104,7 +104,7 @@ class CityResearchAgent:
         city = quest_request.get("location", "Unknown")
         context = self._aggregate(city, raw_results)
         print(f"Done: {len(context.activities)} activities, {len(context.restaurants)} restaurants, "
-              f"{len(context.pois)} POIs, {len(context.current_news)} news", flush=True)
+              f"{len(context.points_of_interest)} POIs, {len(context.current_news)} news", flush=True)
         return context
 
     async def _execute_tool(self, tool_name: str, tool_input: dict) -> str:
