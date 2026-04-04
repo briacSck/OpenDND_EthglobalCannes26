@@ -6,6 +6,7 @@ import json
 import logging
 from datetime import datetime
 from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel as PydanticBaseModel
 from agents.city_research.models import QuestRequest as ResearchRequest, CityContext
 from agents.city_research.agent import CityResearchAgent
 from agents.quest_generation.models import QuestRequest, QuestOutput, Character, MemoryState
@@ -140,7 +141,7 @@ async def generate_quest(request: QuestRequest) -> QuestOutput:
 
 # --- Step Verification with Vision ---
 
-class VerifyStepRequest(BaseModel):
+class VerifyStepRequest(PydanticBaseModel):
     image_base64: str
     quest_id: str = ""
     step_id: int = 1
@@ -149,7 +150,7 @@ class VerifyStepRequest(BaseModel):
     player_action: str = ""
     step_title: str = ""
 
-class VerifyStepResponse(BaseModel):
+class VerifyStepResponse(PydanticBaseModel):
     validated: bool
     confidence: float = 0.0
     narrative_reaction: str = ""
