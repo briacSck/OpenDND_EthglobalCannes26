@@ -2,7 +2,11 @@
 
 import asyncio
 import os
+import sys
 import pytest
+
+_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(_root, "backend"))
 
 # Force DEMO_MODE so config.py doesn't require real secrets
 os.environ.setdefault("DEMO_MODE", "true")

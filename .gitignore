@@ -5,3 +5,6 @@ __pycache__/
 .0g-skills/
 CLAUDE.md
 data/
+artifacts/
+checkpoints/
+.venv/

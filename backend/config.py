@@ -3,10 +3,13 @@
 from __future__ import annotations
 
 import os
+from pathlib import Path
 
 from dotenv import load_dotenv
 
-load_dotenv()
+# Load .env from project root (one level up from backend/)
+_root = Path(__file__).resolve().parent.parent
+load_dotenv(_root / ".env")
 
 
 # ---------------------------------------------------------------------------

@@ -1,10 +1,15 @@
 """Hedera testnet client configuration."""
 
 import os
+from pathlib import Path
 from dotenv import load_dotenv
 from hiero_sdk_python import Network, Client, AccountId, PrivateKey
 
-load_dotenv()
+# Load .env from project root (two levels up from blockchain/)
+_root = Path(__file__).resolve().parent.parent.parent
+load_dotenv(_root / ".env")
+# Also try local blockchain/.env as fallback
+load_dotenv(Path(__file__).resolve().parent / ".env")
 
 _client: Client | None = None
 _operator_id: AccountId | None = None

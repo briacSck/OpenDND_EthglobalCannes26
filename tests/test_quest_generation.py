@@ -2,6 +2,11 @@
 
 import asyncio
 import json
+import sys
+import os
+
+_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(_root, "backend"))
 from agents.city_research.models import CityContext
 from agents.quest_generation.models import QuestRequest
 from agents.quest_generation.pipeline import generate_quest

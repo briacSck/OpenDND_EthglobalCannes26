@@ -1,0 +1,44 @@
+﻿Onboarding:
+
+
+1. Ecran onboarding: création de compte/connexion
+
+
+1. Création de compte: 
+
+
+* prénom
+* Goal général
+* email + mot de passe / numéro de téléphone
+* budget pour les quêtes
+* niveau de difficulté
+* fréquence
+* combien d’argent tu met dans la pool (hedera)
+* les amis avec qui tu veux jouer (tu rentres leur numéro de téléphone) => création groupex/ rejoindre un groupe (tu rentres le nom du groupe)
+* création d’account wallet (dynamic)
+
+
+2. Connexion:
+* email + mdp/tel
+
+
+
+
+Déclenchement de quête: notification + tu arrives sur un écran, gros bouton commencer la quête 
+
+
+
+
+
+
+Premier gros bout: quête en cours/ qui vient juste de finir
+* les éléments d’une quête en cours (documents, vidéo, conversion écrite avec les perso, actions réalisées précédemment …
+* écran post quête : System displays: - completion status ; - grade / after-action review ; - best clip; - reward/payment status ; - optional preview of next quest (spotify wrapper like)
+
+
+
+
+Deuxième gros bout: historique
+* historique des quêtes et achievement, en badge + personnalité
+* wallet => budget à dépenser pour les quêtes + l’argent bloqué
+* what have your friends have been up to - leader score
