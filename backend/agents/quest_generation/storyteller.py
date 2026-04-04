@@ -365,6 +365,7 @@ class StorytellerAgent:
         self.client = AsyncAnthropic(
             base_url=os.getenv("ANTHROPIC_BASE_URL"),
             api_key=os.getenv("ANTHROPIC_AUTH_TOKEN"),
+            max_retries=5,
         )
         self.model = os.getenv("ANTHROPIC_MODEL", "claude-sonnet-4-20250514")
         self.request = request
