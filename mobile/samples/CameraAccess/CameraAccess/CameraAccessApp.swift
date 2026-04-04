@@ -18,6 +18,7 @@
 import Foundation
 import MWDATCore
 import SwiftUI
+import DynamicSDKSwift
 
 #if DEBUG
 import MWDATMockDevice
@@ -40,6 +41,18 @@ struct CameraAccessApp: App {
       NSLog("[CameraAccess] Failed to configure Wearables SDK: \(error)")
       #endif
     }
+
+    // Initialize Dynamic SDK for wallet authentication
+    _ = DynamicSDK.initialize(
+      props: ClientProps(
+        environmentId: "YOUR_DYNAMIC_ENVIRONMENT_ID",
+        appLogoUrl: nil,
+        appName: "OpenDND",
+        redirectUrl: "opendnd://",
+        appOrigin: nil,
+        logLevel: .debug
+      )
+    )
 
     #if DEBUG
     // Auto-configure MockDeviceKit when launched by XCUITests

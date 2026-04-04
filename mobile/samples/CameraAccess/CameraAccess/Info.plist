@@ -28,6 +28,7 @@
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>cameraaccess</string>
+				<string>opendnd</string>
 			</array>
 		</dict>
 	</array>
