@@ -20,6 +20,8 @@ from agents.memory.player_profile import (
     PlayerProfile, QuestSummary,
     save_quest_memory, update_player_profile, load_player_profile,
 )
+from agents.reward.hedera_reward import RewardTx, trigger_reward
+from agents.memory import index as memory_index
 from config import DEMO_MODE
 
 logger = logging.getLogger(__name__)
@@ -298,6 +300,46 @@ async def play_status(session_id: str) -> dict:
         "actions_count": len(session.actions_log),
         "last_event": session.events_log[-1].model_dump() if session.events_log else None,
     }
+
+
+# --- Reward endpoint ---
+
+
+@app.post("/quests/{quest_id}/reward", response_model=RewardTx)
+async def quest_reward(quest_id: str, player_wallet: str = "", grade: str = "") -> RewardTx:
+    """Trigger an on-chain reward for a completed quest.
+
+    Reads the memory_root_hash from the local index to anchor the off-chain
+    quest memory on Hedera, then returns the RewardTx receipt.
+    """
+    # Look up the most recent memory root_hash for this quest
+    root_hashes = memory_index.get_quest_root_hashes_for_quest(quest_id)
+    if not root_hashes:
+        raise HTTPException(
+            status_code=404,
+            detail=f"No quest memory found for quest {quest_id}. Complete the quest first.",
+        )
+    memory_root_hash = root_hashes[-1]  # most recent run
+
+    reward_tx = await trigger_reward(
+        quest_id=quest_id,
+        player_wallet=player_wallet,
+        grade=grade,
+        memory_root_hash=memory_root_hash,
+    )
+
+    # Find the session for this quest and mark reward confirmed
+    for session in _sessions.values():
+        if session.quest_id == quest_id and session.completed_at is not None:
+            session.events_log.append(
+                OrchestratorEvent(
+                    type="quest.reward.confirmed",
+                    content=f"Reward confirmed: tx={reward_tx.tx_hash}",
+                )
+            )
+            break
+
+    return reward_tx
 
 
 # --- Memory / completion helpers ---
