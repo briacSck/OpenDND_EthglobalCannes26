@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import logging
 from datetime import datetime
 from fastapi import FastAPI, HTTPException
 from agents.city_research.models import QuestRequest as ResearchRequest, CityContext
@@ -15,6 +16,12 @@ from agents.quest_runtime.models import (
     PlayMessageRequest, OrchestratorEvent,
 )
 from agents.quest_runtime.orchestrator import OrchestratorAgent
+from agents.memory.player_profile import (
+    PlayerProfile, QuestSummary,
+    save_quest_memory, update_player_profile, load_player_profile,
+)
+
+logger = logging.getLogger(__name__)
 
 app = FastAPI(title="OpenD&D", description="AI-powered real-life quest system")
 
@@ -113,7 +120,10 @@ async def play_action(request: PlayActionRequest) -> dict:
 
     events = await orchestrator.react(trigger="action", player_action=request.action)
 
-    return {
+    quest = _quests.get(session.quest_id)
+    completion = await _check_quest_completion(session, quest) if quest else None
+
+    response: dict = {
         "session_id": session.session_id,
         "events": [e.model_dump() for e in events],
         "state": {
@@ -125,6 +135,9 @@ async def play_action(request: PlayActionRequest) -> dict:
             },
         },
     }
+    if completion:
+        response["completion"] = completion
+    return response
 
 
 @app.post("/play/message")
@@ -174,7 +187,10 @@ async def play_message(request: PlayMessageRequest) -> dict:
 
     all_events = [char_response] + followup_events
 
-    return {
+    quest = _quests.get(session.quest_id)
+    completion = await _check_quest_completion(session, quest) if quest else None
+
+    response: dict = {
         "session_id": session.session_id,
         "character": request.character_name,
         "response": char_response.content,
@@ -188,6 +204,9 @@ async def play_message(request: PlayMessageRequest) -> dict:
             },
         },
     }
+    if completion:
+        response["completion"] = completion
+    return response
 
 
 @app.post("/play/heartbeat")
@@ -222,7 +241,10 @@ async def play_heartbeat(request: PlayHeartbeatRequest) -> dict:
 
     events = await orchestrator.react(trigger=trigger)
 
-    return {
+    quest = _quests.get(session.quest_id)
+    completion = await _check_quest_completion(session, quest) if quest else None
+
+    response: dict = {
         "session_id": session.session_id,
         "events": [e.model_dump() for e in events],
         "state": {
@@ -231,6 +253,9 @@ async def play_heartbeat(request: PlayHeartbeatRequest) -> dict:
             "idle_seconds": session.state.time_since_last_event_seconds,
         },
     }
+    if completion:
+        response["completion"] = completion
+    return response
 
 
 @app.get("/play/status/{session_id}")
@@ -253,6 +278,64 @@ async def play_status(session_id: str) -> dict:
         "actions_count": len(session.actions_log),
         "last_event": session.events_log[-1].model_dump() if session.events_log else None,
     }
+
+
+# --- Memory / completion helpers ---
+
+
+async def _check_quest_completion(
+    session: QuestSession, quest: QuestOutput
+) -> dict | None:
+    """Persist quest memory + update player profile when the quest is done.
+
+    Returns a completion dict on success, None if not yet complete or already
+    persisted.  Retry-safe: partial failures leave ``completed_at`` as None so
+    the next request retries from wherever it left off.
+    """
+    if session.completed_at is not None:
+        return None
+    if session.state.current_step < len(quest.steps):
+        return None
+
+    try:
+        quest_root_hash = await save_quest_memory(quest, session)
+
+        started = datetime.fromisoformat(session.started_at)
+        duration_min = int((datetime.now() - started).total_seconds() / 60)
+        player_id = session.player_alias or session.session_id
+
+        summary = QuestSummary(
+            quest_id=quest.quest_id,
+            run_id=session.session_id,
+            root_hash=quest_root_hash,
+            theme=quest.tone,
+            duration_minutes=duration_min,
+        )
+
+        await update_player_profile(player_id, summary)
+
+        # Both steps succeeded — mark session as completed.
+        session.completed_at = datetime.now().isoformat()
+        session.active = False
+
+        return {
+            "quest_completed": True,
+            "quest_root_hash": quest_root_hash,
+            "duration_minutes": duration_min,
+            "player_id": player_id,
+        }
+    except Exception:
+        logger.exception("Quest completion persistence failed for session %s", session.session_id)
+        return None
+
+
+@app.get("/memory/{player_id}")
+async def get_player_memory(player_id: str) -> dict:
+    """Retrieve a player's persistent profile from 0G Storage."""
+    profile = await load_player_profile(player_id)
+    if profile is None:
+        raise HTTPException(status_code=404, detail=f"No profile found for player {player_id}")
+    return profile.model_dump()
 
 
 @app.get("/health")

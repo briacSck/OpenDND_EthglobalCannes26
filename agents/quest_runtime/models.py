@@ -74,6 +74,7 @@ class QuestSession(BaseModel):
     conversations: dict[str, list[ConversationEntry]] = Field(default_factory=dict, description="Per-character conversation history: {character_name: [entries]}")
     started_at: str = Field(default_factory=lambda: datetime.now().isoformat())
     active: bool = True
+    completed_at: str | None = Field(default=None, description="ISO timestamp set once when quest completion is persisted")
 
 
 class PlayStartRequest(BaseModel):
