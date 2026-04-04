@@ -9,3 +9,4 @@ artifacts/
 checkpoints/
 .venv/
 node_modules/
+landing_page/
