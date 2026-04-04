@@ -7,3 +7,8 @@ pydantic==2.9.0
 python-dotenv==1.0.1
 hiero-sdk-python>=0.2
 openai>=1.0.0
+websockets>=12.0
+deepgram-sdk>=3.0.0
+elevenlabs>=1.0.0
+sounddevice>=0.4.6
+pydub>=0.25.1
