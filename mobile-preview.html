@@ -1,0 +1,2171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpenD&D — Mobile Preview</title>
+<style>
+/* ══════════════════════════════════════════
+   VARIABLES & RESET
+══════════════════════════════════════════ */
+:root {
+  --bg:        #0a0c14;
+  --surface:   #111827;
+  --surface2:  #161e2e;
+  --border:    #1e2a3a;
+  --border2:   #2a3a4a;
+  --gold:      #c9a84c;
+  --gold-bright:#f0c040;
+  --gold-dim:  #7a6030;
+  --crimson:   #c0392b;
+  --green:     #27ae60;
+  --blue:      #3b82f6;
+  --text:      #e8e0d0;
+  --text2:     #7a8a9a;
+  --text3:     #4a5568;
+  --silver:    #a8b4c0;
+  --bronze:    #c87941;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+svg.icon { display: inline-block; vertical-align: middle; flex-shrink: 0; color: white; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 2px; }
+
+body {
+  background: #050710;
+  background-image:
+    radial-gradient(ellipse at 20% 20%, rgba(201,168,76,0.04) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 80%, rgba(59,130,246,0.04) 0%, transparent 60%);
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  padding: 36px 20px 60px;
+  gap: 18px;
+}
+
+/* ══════════════════════════════════════════
+   KEYFRAMES
+══════════════════════════════════════════ */
+@keyframes pulse-gold {
+  0%, 100% { opacity: 1; box-shadow: 0 0 6px var(--gold); }
+  50%       { opacity: 0.6; box-shadow: 0 0 2px var(--gold); }
+}
+@keyframes pulse-green {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.5; transform: scale(0.8); }
+}
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-8px); }
+}
+@keyframes glow-border {
+  0%, 100% { box-shadow: 0 0 8px rgba(201,168,76,0.3), inset 0 0 8px rgba(201,168,76,0.05); }
+  50%       { box-shadow: 0 0 20px rgba(201,168,76,0.6), inset 0 0 12px rgba(201,168,76,0.1); }
+}
+@keyframes scanlines {
+  0%   { background-position: 0 0; }
+  100% { background-position: 0 100px; }
+}
+@keyframes rotate-ring {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+@keyframes rotate-ring-reverse {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(-360deg); }
+}
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-12px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; } to { opacity: 1; }
+}
+@keyframes grade-glow {
+  0%, 100% { text-shadow: 0 0 20px rgba(240,192,64,0.8), 0 0 40px rgba(240,192,64,0.4); }
+  50%       { text-shadow: 0 0 40px rgba(240,192,64,1), 0 0 80px rgba(240,192,64,0.6); }
+}
+@keyframes reticle-pulse {
+  0%, 100% { opacity: 0.6; }
+  50%       { opacity: 1; }
+}
+
+/* ══════════════════════════════════════════
+   TOP NAV
+══════════════════════════════════════════ */
+.app-header {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+}
+.app-title {
+  font-size: 11px; font-weight: 600; color: var(--gold);
+  letter-spacing: 3px; text-transform: uppercase;
+}
+.app-subtitle { font-size: 10px; color: var(--text3); letter-spacing: 1px; }
+
+.nav-tabs {
+  display: flex; gap: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 4px;
+  border-radius: 10px;
+}
+.nav-tabs button {
+  padding: 6px 14px;
+  border: none; border-radius: 6px;
+  background: transparent;
+  font-size: 11px; font-weight: 500;
+  color: var(--text2); cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.5px;
+}
+.nav-tabs button.active {
+  background: linear-gradient(135deg, #1a1400, #2a2000);
+  color: var(--gold);
+  border: 1px solid var(--gold-dim);
+  box-shadow: 0 0 8px rgba(201,168,76,0.2);
+}
+
+/* ══════════════════════════════════════════
+   IPHONE SHELL
+══════════════════════════════════════════ */
+.iphone {
+  width: 390px;
+  background: var(--surface);
+  border-radius: 54px;
+  box-shadow:
+    0 0 0 1px #1a1a2e,
+    0 0 0 2px #0d0f1f,
+    0 0 60px rgba(201,168,76,0.08),
+    0 30px 80px rgba(0,0,0,0.8),
+    inset 0 1px 0 rgba(201,168,76,0.1);
+  overflow: hidden;
+  position: relative;
+}
+
+/* Notch */
+.iphone-notch {
+  height: 48px;
+  background: linear-gradient(180deg, #050710 0%, var(--surface) 100%);
+  display: flex; align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  position: relative;
+  z-index: 10;
+}
+.iphone-notch::after {
+  content: '';
+  width: 126px; height: 34px;
+  background: #000;
+  border-radius: 0 0 26px 26px;
+  position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+}
+.status-time {
+  font-size: 11px; font-weight: 600;
+  color: var(--gold); letter-spacing: 1px; z-index: 1;
+}
+.status-icons {
+  display: flex; gap: 5px; align-items: center; z-index: 1;
+}
+.status-icons span { font-size: 10px; color: var(--gold); }
+
+/* Screen */
+.iphone-screen {
+  height: 700px; overflow-y: auto;
+  background: var(--bg);
+  scrollbar-width: thin; scrollbar-color: var(--gold-dim) var(--bg);
+}
+.iphone-screen::-webkit-scrollbar { width: 3px; }
+.iphone-screen::-webkit-scrollbar-thumb { background: var(--gold-dim); }
+
+.screen { display: none; }
+.screen.active { display: block; animation: fadeIn 0.2s ease; }
+
+/* Tab bar */
+.iphone-tabbar {
+  height: 84px;
+  background: linear-gradient(180deg, #080b12 0%, #050710 100%);
+  border-top: 1px solid var(--gold-dim);
+  box-shadow: 0 -4px 20px rgba(201,168,76,0.08);
+  display: flex; align-items: flex-start; padding-top: 10px;
+  position: relative; z-index: 10;
+}
+.tab-item {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; gap: 3px; cursor: pointer;
+  padding-top: 2px; color: var(--text3);
+  font-size: 9px; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase;
+  transition: color 0.2s; border: none; background: none;
+  position: relative;
+}
+.tab-item.active {
+  color: var(--gold);
+  filter: drop-shadow(0 0 6px rgba(201,168,76,0.6));
+}
+.tab-item svg { width: 22px; height: 22px; }
+
+/* ══════════════════════════════════════════
+   SHARED COMPONENTS
+══════════════════════════════════════════ */
+.screen-header {
+  padding: 18px 20px 16px;
+  background: linear-gradient(180deg, #0d111c 0%, var(--bg) 100%);
+  border-bottom: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+.screen-header::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+}
+.screen-eyebrow {
+  font-size: 9px; font-weight: 600; color: var(--gold);
+  text-transform: uppercase; letter-spacing: 2px; margin-bottom: 4px;
+}
+.screen-title {
+  font-size: 20px; font-weight: 700; color: var(--text);
+}
+.screen-subtitle { font-size: 12px; color: var(--text2); margin-top: 2px; }
+
+/* Segmented control */
+.seg-control {
+  display: flex; gap: 3px;
+  background: #0d111c;
+  border: 1px solid var(--border);
+  border-radius: 8px; padding: 3px;
+  margin: 12px 16px;
+}
+.seg-btn {
+  flex: 1; border: none;
+  background: transparent;
+  padding: 7px 0; border-radius: 6px;
+  font-size: 11px; font-weight: 500; letter-spacing: 0.5px;
+  color: var(--text2); cursor: pointer; transition: all 0.15s;
+}
+.seg-btn.active {
+  background: linear-gradient(135deg, #1a1400, #1f1800);
+  color: var(--gold);
+  border: 1px solid var(--gold-dim);
+  box-shadow: 0 0 8px rgba(201,168,76,0.15);
+}
+
+/* Gold progress bar */
+.prog-track {
+  height: 4px; background: #1a2030;
+  border-radius: 2px; overflow: visible; position: relative;
+}
+.prog-fill {
+  height: 100%; border-radius: 2px;
+  background: linear-gradient(90deg, var(--gold-dim), var(--gold), var(--gold-bright));
+  background-size: 200% 100%;
+  animation: shimmer 2.5s linear infinite;
+  box-shadow: 0 0 8px rgba(201,168,76,0.6);
+  position: relative;
+}
+.prog-fill::after {
+  content: '';
+  position: absolute; right: 0; top: -3px;
+  width: 10px; height: 10px;
+  background: var(--gold-bright);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--gold), 0 0 16px rgba(240,192,64,0.5);
+}
+
+/* Row separator */
+.row-sep {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border), transparent);
+  margin: 0;
+}
+
+/* Avatar */
+.avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: #1a2030;
+  border: 1px solid var(--border2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; color: var(--text2);
+  flex-shrink: 0;
+}
+
+/* Gold pill badge */
+.badge-gold {
+  font-size: 8px; font-weight: 700;
+  background: linear-gradient(135deg, #2a1a00, #3a2800);
+  color: var(--gold);
+  border: 1px solid var(--gold-dim);
+  padding: 2px 7px; border-radius: 20px;
+  letter-spacing: 0.5px; text-transform: uppercase;
+}
+
+/* Notch card (MMORPG style) */
+.notch-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  position: relative;
+  overflow: hidden;
+  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 0 100%);
+}
+.notch-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, var(--gold-dim), transparent);
+}
+
+/* ══════════════════════════════════════════
+   QUEST SCREEN
+══════════════════════════════════════════ */
+.quest-header {
+  padding: 16px 20px 18px;
+  background: linear-gradient(180deg, #0d111c 0%, var(--bg) 100%);
+  border-bottom: 1px solid var(--border);
+  position: relative; overflow: hidden;
+}
+.quest-header::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+}
+.quest-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.quest-tag {
+  font-size: 8px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--gold); padding: 3px 8px;
+  background: linear-gradient(135deg, #1a1000, #251800);
+  border: 1px solid var(--gold-dim);
+  border-radius: 4px;
+}
+.quest-timer {
+  display: flex; align-items: center; gap: 4px;
+  font-size: 10px; font-weight: 600; color: var(--text2);
+  font-variant-numeric: tabular-nums;
+  background: #0d111c; border: 1px solid var(--border2);
+  padding: 3px 8px; border-radius: 4px;
+}
+.quest-title { font-size: 20px; font-weight: 800; color: var(--text); letter-spacing: -0.5px; margin-bottom: 4px; }
+.quest-desc { font-size: 12px; color: var(--text2); margin-bottom: 14px; line-height: 1.4; }
+.prog-labels { display: flex; justify-content: space-between; font-size: 10px; margin-bottom: 5px; }
+.prog-labels span:first-child { color: var(--text2); }
+.prog-labels span:last-child { color: var(--gold); font-weight: 700; }
+
+/* Steps */
+.steps-section { padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
+
+.step-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden; cursor: pointer;
+  transition: border-color 0.2s;
+  position: relative;
+}
+.step-card::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+  width: 3px; background: var(--border2); border-radius: 10px 0 0 10px;
+  transition: background 0.2s;
+}
+.step-card.done::before  { background: var(--green); }
+.step-card.s-active::before { background: var(--gold); box-shadow: 0 0 8px rgba(201,168,76,0.5); }
+.step-card.s-active { border-color: var(--gold-dim); animation: glow-border 2s ease-in-out infinite; }
+
+.step-row { display: flex; align-items: center; gap: 10px; padding: 10px 10px 10px 14px; }
+
+.step-icon {
+  width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
+  background: #1a2030; border: 1px solid var(--border2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; color: var(--text2);
+}
+.step-icon.done { background: var(--green); border-color: var(--green); font-size: 11px; font-weight: 800; color: white; }
+.step-icon.s-active { background: linear-gradient(135deg, #2a1a00, #3a2200); border-color: var(--gold-dim); }
+
+.step-info { flex: 1; min-width: 0; }
+.step-title-row { display: flex; align-items: center; gap: 6px; margin-bottom: 2px; }
+.step-title { font-size: 13px; font-weight: 600; color: var(--text); }
+.step-title.done { color: var(--text3); text-decoration: line-through; }
+.step-sub { font-size: 10px; color: var(--text2); }
+
+.now-orb {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 6px var(--green);
+  animation: pulse-green 1.4s ease-in-out infinite;
+  flex-shrink: 0;
+}
+.now-badge {
+  font-size: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+  color: var(--gold); background: linear-gradient(135deg, #1a1000, #251800);
+  border: 1px solid var(--gold-dim); padding: 2px 7px; border-radius: 20px;
+}
+
+.step-chevron { color: var(--text3); font-size: 14px; transition: transform 0.2s; padding-right: 4px; }
+.step-chevron.open { transform: rotate(90deg); }
+
+.expanded-content { display: none; padding: 10px 10px 12px 24px; border-top: 1px solid var(--border); }
+.expanded-content.show { display: block; background: #0d111c; }
+
+/* Document */
+.doc-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px; padding: 10px;
+  font-size: 10px; color: var(--text2); line-height: 1.6;
+  font-family: 'SF Mono', monospace;
+}
+.doc-box a { font-size: 10px; color: var(--gold); text-decoration: none; display: flex; align-items: center; gap: 4px; margin-top: 8px; }
+
+/* Chat bubbles */
+.chat-row { display: flex; gap: 6px; align-items: flex-start; margin-bottom: 6px; }
+.bubble-them {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 0 8px 8px 8px;
+  padding: 7px 10px; font-size: 10px; color: var(--text); max-width: 82%;
+  line-height: 1.4;
+}
+.bubble-me {
+  background: linear-gradient(135deg, #1a1000, #2a1a00);
+  border: 1px solid var(--gold-dim);
+  border-radius: 8px 0 8px 8px;
+  padding: 7px 10px; font-size: 10px; color: var(--text); max-width: 82%;
+  line-height: 1.4; margin-left: auto;
+}
+.chat-continue {
+  border: 1px solid var(--gold-dim);
+  border-radius: 8px; padding: 8px;
+  text-align: center; font-size: 10px; font-weight: 600;
+  color: var(--gold); background: linear-gradient(135deg, #0d0800, #150f00);
+  margin-top: 4px; cursor: pointer; letter-spacing: 0.5px;
+}
+
+/* Video thumb */
+.video-thumb {
+  background: #0d111c;
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  aspect-ratio: 16/9;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+}
+.play-btn {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: linear-gradient(135deg, #1a1000, #2a1800);
+  border: 1px solid var(--gold-dim);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; color: var(--gold); padding-left: 2px;
+  box-shadow: 0 0 12px rgba(201,168,76,0.3);
+}
+.vid-dur {
+  position: absolute; bottom: 6px; right: 8px;
+  font-size: 9px; color: var(--text2);
+  background: rgba(0,0,0,0.7); padding: 2px 6px; border-radius: 3px;
+  font-family: monospace;
+}
+
+/* Action log */
+.action-log { padding: 0 16px 16px; }
+.log-label {
+  font-size: 8px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 8px;
+  display: flex; align-items: center; gap: 6px;
+}
+.log-label::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, var(--border), transparent); }
+
+.log-row {
+  display: flex; gap: 10px; align-items: center;
+  padding: 8px 0; border-bottom: 1px solid var(--border);
+  font-size: 10px; transition: background 0.15s;
+}
+.log-row:hover { background: #0d111c; margin: 0 -4px; padding: 8px 4px; border-radius: 4px; }
+.log-time { font-family: 'SF Mono', monospace; color: var(--green); width: 36px; font-size: 9px; }
+.log-action { color: var(--text); flex: 1; }
+.log-xp { color: var(--gold); font-weight: 700; font-size: 10px; white-space: nowrap; }
+
+/* CTA button */
+.cta-btn {
+  margin: 4px 16px 20px;
+  width: calc(100% - 32px);
+  background: linear-gradient(135deg, #1a1000, #2a1800);
+  color: var(--gold);
+  border: 1px solid var(--gold-dim);
+  border-radius: 10px; height: 46px;
+  font-size: 13px; font-weight: 700; letter-spacing: 0.5px;
+  cursor: pointer;
+  box-shadow: 0 0 16px rgba(201,168,76,0.15);
+  transition: all 0.2s;
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%);
+  position: relative; overflow: hidden;
+}
+.cta-btn::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(201,168,76,0.1) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: shimmer 2s linear infinite;
+}
+.cta-btn:hover { border-color: var(--gold); box-shadow: 0 0 24px rgba(201,168,76,0.3); }
+
+/* ══════════════════════════════════════════
+   CHARACTER CONVERSATIONS
+══════════════════════════════════════════ */
+.conv-section { padding: 14px 16px 0; }
+.conv-label {
+  font-size: 8px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 10px;
+  display: flex; align-items: center; gap: 6px;
+}
+.conv-label::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, var(--border), transparent); }
+
+.conv-row {
+  display: flex; align-items: center; gap: 11px;
+  padding: 10px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 6px;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  position: relative; overflow: hidden;
+}
+.conv-row::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+  width: 3px; border-radius: 10px 0 0 10px;
+  background: var(--border2); transition: background 0.2s;
+}
+.conv-row.unread::before { background: var(--gold); box-shadow: 0 0 6px rgba(201,168,76,0.5); }
+.conv-row.unread { border-color: var(--gold-dim); }
+.conv-row.locked { opacity: 0.4; cursor: default; }
+.conv-row:not(.locked):hover { border-color: var(--gold-dim); box-shadow: 0 0 12px rgba(201,168,76,0.1); }
+
+.conv-avatar {
+  width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0;
+  background: linear-gradient(135deg, #1a1000, #2a1a00);
+  border: 1.5px solid var(--gold-dim);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 800; color: var(--gold);
+  position: relative;
+}
+.conv-avatar.locked-avatar {
+  background: #1a1a2a; border-color: var(--border2); color: var(--text3);
+}
+.conv-online {
+  position: absolute; bottom: 1px; right: 1px;
+  width: 9px; height: 9px; border-radius: 50%;
+  background: var(--green); border: 1.5px solid var(--surface);
+  box-shadow: 0 0 5px var(--green);
+}
+.conv-info { flex: 1; min-width: 0; }
+.conv-name { font-size: 13px; font-weight: 700; color: var(--text); }
+.conv-role { font-size: 9px; color: var(--gold); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
+.conv-preview { font-size: 10px; color: var(--text2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.conv-preview.unread-preview { color: var(--text); font-weight: 500; }
+.conv-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
+.conv-time { font-size: 9px; color: var(--text3); }
+.conv-badge {
+  min-width: 18px; height: 18px; border-radius: 10px;
+  background: var(--gold); color: #000;
+  font-size: 9px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0 5px;
+}
+.conv-lock { font-size: 12px; color: var(--text3); }
+
+/* ── VAULT ── */
+.vault-section { padding: 14px 16px 20px; }
+.vault-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-top: 2px solid var(--gold-dim);
+  border-radius: 10px;
+  overflow: hidden;
+  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 0 100%);
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.vault-card:hover { border-color: var(--gold-dim); box-shadow: 0 0 16px rgba(201,168,76,0.12); }
+.vault-header {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 14px;
+}
+.vault-icon {
+  width: 36px; height: 36px; border-radius: 8px;
+  background: linear-gradient(135deg, #1a1000, #2a1800);
+  border: 1px solid var(--gold-dim);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  box-shadow: 0 0 10px rgba(201,168,76,0.2);
+}
+.vault-title { font-size: 13px; font-weight: 700; color: var(--text); }
+.vault-subtitle { font-size: 10px; color: var(--text2); margin-top: 1px; }
+.vault-chevron { margin-left: auto; font-size: 14px; color: var(--gold-dim); transition: transform 0.25s; }
+.vault-chevron.open { transform: rotate(90deg); }
+
+.vault-contents {
+  display: none; padding: 4px 14px 14px;
+  border-top: 1px solid var(--border);
+  background: #0d111c;
+}
+.vault-contents.show { display: block; }
+.vault-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 8px; margin-top: 10px;
+}
+.vault-item {
+  display: flex; flex-direction: column; align-items: center; gap: 5px;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 8px; padding: 10px 6px;
+  cursor: pointer; transition: all 0.2s;
+}
+.vault-item:hover { border-color: var(--gold-dim); box-shadow: 0 0 8px rgba(201,168,76,0.15); }
+.vault-item-icon { font-size: 22px; }
+.vault-item-name { font-size: 8px; color: var(--text2); text-align: center; line-height: 1.3; font-weight: 500; }
+.vault-item-type {
+  font-size: 7px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+  padding: 1px 5px; border-radius: 3px;
+}
+.vault-item-type.doc { background: rgba(59,130,246,0.15); color: var(--blue); }
+.vault-item-type.voice { background: rgba(39,174,96,0.15); color: var(--green); }
+.vault-item-type.video { background: rgba(201,168,76,0.15); color: var(--gold); }
+
+/* ── CHAT OVERLAY ── */
+.chat-overlay {
+  position: absolute; inset: 0;
+  background: var(--bg);
+  z-index: 30; display: none; flex-direction: column;
+}
+.chat-overlay.open { display: flex; animation: fadeIn 0.2s ease; }
+
+.chat-topbar {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px;
+  background: linear-gradient(180deg, #0d111c, var(--surface));
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.chat-topbar::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+}
+.chat-back {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: var(--surface2); border: 1px solid var(--border2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; color: var(--text2); cursor: pointer; flex-shrink: 0;
+  transition: all 0.2s;
+}
+.chat-back:hover { border-color: var(--gold-dim); color: var(--gold); }
+.chat-char-name { font-size: 14px; font-weight: 700; color: var(--text); }
+.chat-char-role { font-size: 9px; color: var(--gold); text-transform: uppercase; letter-spacing: 0.5px; }
+.chat-call-btn {
+  margin-left: auto;
+  width: 30px; height: 30px; border-radius: 50%;
+  background: linear-gradient(135deg, #0d2010, #1a3020);
+  border: 1px solid rgba(39,174,96,0.4);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; cursor: pointer; flex-shrink: 0;
+  box-shadow: 0 0 8px rgba(39,174,96,0.2);
+  transition: all 0.2s;
+}
+.chat-call-btn:hover { box-shadow: 0 0 14px rgba(39,174,96,0.4); }
+
+.chat-messages {
+  flex: 1; overflow-y: auto; padding: 14px;
+  display: flex; flex-direction: column; gap: 10px;
+  scrollbar-width: thin; scrollbar-color: var(--gold-dim) var(--bg);
+}
+.chat-msg { display: flex; gap: 7px; align-items: flex-end; }
+.chat-msg.me { flex-direction: row-reverse; }
+.chat-msg-avatar {
+  width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+  background: linear-gradient(135deg, #1a1000, #2a1800);
+  border: 1px solid var(--gold-dim);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px; font-weight: 800; color: var(--gold);
+  align-self: flex-end;
+}
+.chat-bubble {
+  max-width: 75%; padding: 8px 11px;
+  font-size: 11px; line-height: 1.5; color: var(--text);
+  border-radius: 12px;
+}
+.chat-bubble.them {
+  background: var(--surface2); border: 1px solid var(--border2);
+  border-radius: 4px 12px 12px 12px;
+}
+.chat-bubble.me {
+  background: linear-gradient(135deg, #1a1200, #2a1c00);
+  border: 1px solid var(--gold-dim);
+  border-radius: 12px 4px 12px 12px;
+  color: var(--text);
+}
+.chat-bubble-time { font-size: 8px; color: var(--text3); margin-top: 3px; text-align: right; }
+
+/* ── Call overlay ── */
+.call-overlay {
+  position: absolute; inset: 0; z-index: 30;
+  background: linear-gradient(180deg, #070a12 0%, #0c0f1a 60%, #07090f 100%);
+  display: none; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 10px;
+}
+.call-overlay.open { display: flex; }
+.call-rings { position: absolute; inset: 0; pointer-events: none; display: flex; align-items: center; justify-content: center; }
+.call-ring {
+  position: absolute; border-radius: 50%;
+  border: 1px solid rgba(201,168,76,0.18);
+  animation: call-expand 2.6s ease-out infinite;
+}
+.call-ring.r1 { width: 150px; height: 150px; animation-delay: 0s; }
+.call-ring.r2 { width: 215px; height: 215px; animation-delay: 0.7s; }
+.call-ring.r3 { width: 290px; height: 290px; animation-delay: 1.4s; }
+@keyframes call-expand {
+  0%   { opacity: 0.7; transform: scale(0.85); }
+  100% { opacity: 0;   transform: scale(1.15); }
+}
+.call-av {
+  width: 78px; height: 78px; border-radius: 50%; z-index: 1;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px; font-weight: 900;
+  border: 2px solid var(--gold);
+  background: linear-gradient(135deg, #0d0800, #1a1200);
+  box-shadow: 0 0 28px rgba(201,168,76,0.3), inset 0 0 12px rgba(201,168,76,0.05);
+}
+.call-name { font-size: 20px; font-weight: 800; color: var(--text); z-index: 1; letter-spacing: 0.3px; }
+.call-role { font-size: 9px; text-transform: uppercase; letter-spacing: 1.2px; z-index: 1; }
+.call-status { font-size: 11px; color: var(--text2); z-index: 1; margin-top: 2px; }
+.call-timer {
+  font-size: 22px; font-weight: 700; color: var(--gold); z-index: 1;
+  font-variant-numeric: tabular-nums; letter-spacing: 2px;
+  display: none; margin-top: 4px;
+}
+.call-actions { margin-top: 44px; z-index: 1; display: flex; gap: 32px; align-items: center; }
+.call-hangup {
+  width: 58px; height: 58px; border-radius: 50%;
+  background: linear-gradient(135deg, #7a0000, #c0392b);
+  border: none; font-size: 22px; cursor: pointer;
+  box-shadow: 0 0 20px rgba(192,57,43,0.5);
+  transition: all 0.2s; display: flex; align-items: center; justify-content: center;
+}
+.call-hangup:hover { box-shadow: 0 0 32px rgba(192,57,43,0.8); transform: scale(1.06); }
+.chat-input-row {
+  display: flex; gap: 8px; align-items: center;
+  padding: 10px 14px;
+  border-top: 1px solid var(--border);
+  background: #080b12; flex-shrink: 0;
+}
+.chat-input {
+  flex: 1; background: #0d111c; border: 1px solid var(--border2);
+  border-radius: 20px; padding: 8px 14px;
+  font-size: 12px; color: var(--text); outline: none;
+  transition: border-color 0.2s;
+}
+.chat-input:focus { border-color: var(--gold-dim); }
+.chat-send {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: linear-gradient(135deg, #1a1000, #2a1800);
+  border: 1px solid var(--gold-dim);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; cursor: pointer; flex-shrink: 0;
+  color: var(--gold);
+}
+
+/* ══════════════════════════════════════════
+   POST-QUEST SCREEN
+══════════════════════════════════════════ */
+.pq-topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 16px 6px;
+  background: linear-gradient(180deg, #0d111c 0%, var(--bg) 100%);
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 5;
+}
+.pq-back {
+  width: 34px; height: 34px;
+  background: var(--surface); border: 1px solid var(--border2);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 16px; color: var(--text2);
+  transition: all 0.2s;
+}
+.pq-back:hover { border-color: var(--gold-dim); color: var(--gold); }
+.pq-dots { display: flex; gap: 5px; align-items: center; }
+.pq-dot { height: 2px; background: var(--border2); border-radius: 1px; width: 5px; transition: all 0.3s; }
+.pq-dot.active { width: 20px; background: var(--gold); box-shadow: 0 0 6px var(--gold); }
+.pq-dot.past { background: var(--gold-dim); width: 5px; }
+
+.pq-slide { display: none; padding: 0 24px 24px; }
+.pq-slide.active { display: flex; flex-direction: column; align-items: center; animation: fadeIn 0.3s ease; }
+
+/* Slide 0 — Completion */
+.pq-trophy {
+  width: 72px; height: 72px; border-radius: 50%;
+  background: linear-gradient(135deg, #1a1000, #2a1800);
+  border: 2px solid var(--gold-dim);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 30px; margin: 40px 0 20px;
+  animation: float 3s ease-in-out infinite;
+  box-shadow: 0 0 20px rgba(201,168,76,0.3), 0 0 40px rgba(201,168,76,0.1);
+}
+.pq-eyebrow {
+  font-size: 9px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 6px;
+}
+.pq-title { font-size: 22px; font-weight: 800; color: var(--text); margin-bottom: 2px; }
+.pq-sub { font-size: 12px; color: var(--text2); margin-bottom: 24px; }
+.pq-stats {
+  display: flex; width: 100%;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; overflow: hidden;
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%);
+}
+.pq-stat { flex: 1; text-align: center; padding: 14px 0; }
+.pq-stat + .pq-stat { border-left: 1px solid var(--border); }
+.pq-stat-val { font-size: 22px; font-weight: 800; color: var(--gold); }
+.pq-stat-lbl { font-size: 8px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text2); margin-top: 2px; }
+
+/* Slide 1 — Grade */
+.pq-grade {
+  font-size: 80px; font-weight: 900; color: var(--gold-bright);
+  animation: grade-glow 2s ease-in-out infinite;
+  line-height: 1; margin: 36px 0 4px;
+}
+.pq-achievement {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 10px 12px; width: 100%; margin-bottom: 6px;
+  position: relative; overflow: hidden;
+}
+.pq-achievement::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+  width: 2px; background: var(--gold);
+  box-shadow: 0 0 6px var(--gold);
+}
+.pq-ach-icon { font-size: 18px; flex-shrink: 0; }
+.pq-ach-title { font-size: 12px; font-weight: 600; color: var(--text); }
+.pq-ach-desc { font-size: 10px; color: var(--text2); }
+
+/* Slide 2 — Clip */
+.pq-clip {
+  width: 200px; height: 320px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px; position: relative;
+  display: flex; align-items: center; justify-content: center;
+  margin: 30px 0 20px; overflow: hidden;
+  box-shadow: 0 0 30px rgba(59,130,246,0.15);
+}
+.pq-clip::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(59,130,246,0.05) 0%, transparent 40%, rgba(0,0,0,0.6) 100%);
+}
+.pq-play {
+  width: 48px; height: 48px; border-radius: 50%;
+  background: rgba(0,0,0,0.7); border: 1px solid rgba(255,255,255,0.2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; color: white; padding-left: 3px;
+  backdrop-filter: blur(4px);
+}
+.pq-clip-label {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  padding: 12px;
+  background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+}
+.pq-clip-label .title { font-size: 12px; font-weight: 600; color: white; }
+.pq-clip-label .dur { font-size: 10px; color: rgba(255,255,255,0.5); }
+.pq-btns { display: flex; gap: 8px; }
+.pq-btn-primary {
+  background: linear-gradient(135deg, #1a1000, #2a1800);
+  color: var(--gold); border: 1px solid var(--gold-dim);
+  border-radius: 24px; padding: 9px 18px;
+  font-size: 12px; font-weight: 700; cursor: pointer;
+  letter-spacing: 0.5px;
+}
+.pq-btn-secondary {
+  background: var(--surface); color: var(--text2);
+  border: 1px solid var(--border2); border-radius: 24px;
+  padding: 9px 18px; font-size: 12px; font-weight: 600; cursor: pointer;
+}
+
+/* Slide 3 — Rewards */
+.pq-reward-amount {
+  font-size: 48px; font-weight: 900;
+  color: var(--gold-bright);
+  text-shadow: 0 0 20px rgba(240,192,64,0.5);
+  margin: 36px 0 2px;
+}
+.pq-reward-row {
+  display: flex;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; overflow: hidden; width: 180px;
+  margin-bottom: 24px;
+}
+.pq-reward-item { flex: 1; text-align: center; padding: 12px 0; }
+.pq-reward-item + .pq-reward-item { border-left: 1px solid var(--border); }
+.pq-reward-val { font-size: 20px; font-weight: 800; color: var(--gold); }
+.pq-reward-lbl { font-size: 8px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--text2); }
+.pq-arriving {
+  display: flex; gap: 5px; align-items: center;
+  font-size: 10px; color: var(--text2);
+  background: var(--surface); border: 1px solid var(--border);
+  padding: 8px 14px; border-radius: 8px;
+}
+
+/* Slide 4 — Next Quest */
+.pq-next-card {
+  background: var(--surface);
+  border: 1px solid var(--border); border-top: 2px solid var(--gold-dim);
+  border-radius: 12px; padding: 20px;
+  width: 100%; margin: 28px 0 24px;
+  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 0 100%);
+  position: relative;
+}
+.pq-next-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, var(--gold-dim), transparent);
+}
+.pq-next-title { font-size: 17px; font-weight: 800; color: var(--text); margin-bottom: 8px; text-align: center; }
+.pq-next-desc { font-size: 12px; color: var(--text2); margin-bottom: 14px; text-align: center; line-height: 1.5; }
+.pq-next-meta { display: flex; justify-content: center; gap: 20px; }
+.pq-next-meta-val { font-size: 13px; font-weight: 700; color: var(--gold); text-align: center; }
+.pq-next-meta-lbl { font-size: 9px; color: var(--text2); text-align: center; }
+.pq-accept {
+  background: linear-gradient(135deg, #1a1000, #2a1800);
+  color: var(--gold); border: 1px solid var(--gold-dim);
+  border-radius: 24px; padding: 12px 32px;
+  font-size: 14px; font-weight: 700; cursor: pointer;
+  letter-spacing: 0.5px;
+  box-shadow: 0 0 16px rgba(201,168,76,0.2);
+  position: relative; overflow: hidden;
+}
+.pq-accept::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(201,168,76,0.15) 50%, transparent 100%);
+  background-size: 200%; animation: shimmer 2s linear infinite;
+}
+
+/* PQ nav bar */
+.pq-nav {
+  display: flex; justify-content: space-between;
+  padding: 10px 16px 12px;
+  background: #080b12; border-top: 1px solid var(--border);
+}
+.pq-nav-btn {
+  background: var(--surface); border: 1px solid var(--border2);
+  border-radius: 8px; padding: 8px 18px;
+  font-size: 12px; font-weight: 600; color: var(--text2); cursor: pointer;
+  transition: all 0.2s;
+}
+.pq-nav-btn.primary {
+  background: linear-gradient(135deg, #1a1000, #251800);
+  color: var(--gold); border-color: var(--gold-dim);
+}
+.pq-nav-btn:hover { border-color: var(--gold-dim); color: var(--gold); }
+
+/* ══════════════════════════════════════════
+   HISTORY SCREEN
+══════════════════════════════════════════ */
+.hist-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer; transition: background 0.15s;
+  position: relative;
+}
+.hist-row:hover { background: #0d111c; }
+.hist-row::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+  width: 0; background: var(--gold); transition: width 0.2s;
+}
+.hist-row:hover::before { width: 2px; }
+.hist-title { font-size: 13px; font-weight: 600; color: var(--text); }
+.hist-meta { font-size: 10px; color: var(--text2); margin-top: 2px; display: flex; gap: 4px; align-items: center; }
+.hist-grade {
+  font-size: 18px; font-weight: 800; margin-left: auto; margin-right: 6px;
+  font-variant-numeric: tabular-nums;
+}
+.grade-a-plus { color: var(--gold); text-shadow: 0 0 8px rgba(201,168,76,0.5); }
+.grade-a { color: var(--gold); }
+.grade-b-plus { color: var(--silver); }
+.grade-a-minus { color: var(--gold); opacity: 0.8; }
+.grade-b { color: var(--silver); }
+.chevron-icon { color: var(--text3); font-size: 13px; }
+
+/* Badges */
+.badges-count { font-size: 10px; color: var(--text2); padding: 10px 16px 6px; }
+.badges-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 14px; padding: 6px 16px 20px;
+}
+.badge-item { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.badge-box {
+  width: 54px; height: 54px; border-radius: 14px;
+  background: var(--surface); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  transition: all 0.2s;
+}
+.badge-box.unlocked {
+  border-color: var(--gold-dim);
+  box-shadow: 0 0 10px rgba(201,168,76,0.2), inset 0 0 10px rgba(201,168,76,0.05);
+}
+.badge-box.locked { opacity: 0.2; filter: grayscale(1); }
+.badge-lbl { font-size: 8px; font-weight: 500; color: var(--text2); text-align: center; max-width: 60px; line-height: 1.3; }
+
+/* Personality */
+.pers-section { padding: 6px 16px 20px; }
+.pers-hero { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 20px 0; }
+.pers-emoji { font-size: 32px; margin-bottom: 6px; }
+.pers-name { font-size: 15px; font-weight: 700; color: var(--text); }
+.pers-desc { font-size: 11px; color: var(--text2); margin-top: 4px; }
+.trait { margin-bottom: 14px; }
+.trait-head { display: flex; justify-content: space-between; font-size: 10px; color: var(--text2); margin-bottom: 5px; }
+.trait-pct { color: var(--gold); font-weight: 700; }
+.trait-bar { height: 4px; background: #1a2030; border-radius: 2px; overflow: hidden; }
+.trait-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold-dim), var(--gold), var(--gold-bright));
+  border-radius: 2px;
+  box-shadow: 0 0 6px rgba(201,168,76,0.4);
+}
+
+/* ══════════════════════════════════════════
+   SOCIAL SCREEN
+══════════════════════════════════════════ */
+.lb-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer; transition: background 0.15s;
+}
+.lb-row:hover { background: #0d111c; }
+.lb-row.you-row {
+  background: linear-gradient(90deg, rgba(59,130,246,0.08), transparent);
+  border-bottom-color: rgba(59,130,246,0.2);
+}
+.lb-rank { font-size: 10px; font-weight: 700; width: 20px; text-align: right; color: var(--text3); }
+.lb-rank.r1 { color: var(--gold); font-size: 14px; }
+.lb-rank.r2 { color: var(--silver); font-size: 14px; }
+.lb-rank.r3 { color: var(--bronze); font-size: 14px; }
+.lb-name { font-size: 13px; font-weight: 600; color: var(--text); }
+.lb-level { font-size: 10px; color: var(--text2); margin-top: 1px; }
+.lb-xp { font-size: 13px; font-weight: 700; margin-left: auto; color: var(--gold); font-variant-numeric: tabular-nums; }
+.you-tag {
+  font-size: 8px; font-weight: 700;
+  background: rgba(59,130,246,0.15); color: var(--blue);
+  border: 1px solid rgba(59,130,246,0.3);
+  padding: 1px 6px; border-radius: 20px; letter-spacing: 0.5px;
+}
+.lb-xp.you-xp { color: var(--blue); text-shadow: 0 0 8px rgba(59,130,246,0.4); }
+
+.act-row {
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 12px 16px; border-bottom: 1px solid var(--border);
+  cursor: pointer; transition: background 0.15s;
+}
+.act-row:hover { background: #0d111c; }
+.act-action { font-size: 12px; color: var(--text); line-height: 1.4; }
+.act-action strong { color: var(--text); font-weight: 700; }
+.act-time { display: flex; gap: 3px; align-items: center; font-size: 9px; color: var(--text3); margin-top: 3px; }
+.act-grade { margin-left: auto; font-size: 13px; font-weight: 800; color: var(--gold); }
+
+/* ══════════════════════════════════════════
+   WALLET SCREEN
+══════════════════════════════════════════ */
+.wallet-hero {
+  padding: 20px 20px 18px;
+  background: linear-gradient(180deg, #0d111c 0%, var(--bg) 100%);
+  border-bottom: 1px solid var(--border);
+  position: relative; overflow: hidden;
+}
+.wallet-hero::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+}
+.wallet-balance-lbl {
+  font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 6px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.wallet-addr {
+  font-size: 9px; color: var(--text2);
+  background: #0d111c; border: 1px solid var(--border2);
+  border-radius: 6px; padding: 3px 8px;
+  font-family: 'SF Mono', monospace; letter-spacing: 0.5px;
+}
+.wallet-amount {
+  font-size: 40px; font-weight: 900;
+  color: var(--gold-bright);
+  text-shadow: 0 0 24px rgba(240,192,64,0.3);
+  letter-spacing: -1px;
+}
+
+.wallet-split { display: flex; border-bottom: 1px solid var(--border); }
+.wallet-split-item { flex: 1; padding: 12px 16px; }
+.wallet-split-item + .wallet-split-item { border-left: 1px solid var(--border); }
+.wsplit-lbl {
+  display: flex; align-items: center; gap: 4px;
+  font-size: 8px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--text3); margin-bottom: 4px;
+}
+.wsplit-val { font-size: 17px; font-weight: 800; color: var(--text); }
+.wsplit-sub { font-size: 9px; color: var(--text2); margin-top: 2px; }
+
+.wallet-actions { display: flex; gap: 8px; padding: 12px 16px; border-bottom: 1px solid var(--border); }
+.wallet-action-btn {
+  flex: 1; background: var(--surface);
+  border: 1px solid var(--border2); border-radius: 8px;
+  padding: 9px; font-size: 12px; font-weight: 600;
+  color: var(--text2); cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 5px;
+  transition: all 0.2s;
+}
+.wallet-action-btn:hover { border-color: var(--gold-dim); color: var(--gold); }
+
+/* Connect wallet form */
+.connect-wallet { padding: 20px; }
+.cw-icon {
+  width: 64px; height: 64px; border-radius: 50%; margin: 20px auto 16px;
+  background: linear-gradient(135deg, #1a1000, #2a1800);
+  border: 2px solid var(--gold-dim);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px;
+  box-shadow: 0 0 20px rgba(201,168,76,0.2);
+}
+.cw-title { font-size: 20px; font-weight: 800; color: var(--text); text-align: center; margin-bottom: 6px; }
+.cw-sub { font-size: 12px; color: var(--text2); text-align: center; line-height: 1.5; margin-bottom: 24px; }
+.cw-input {
+  width: 100%; background: #0d111c;
+  border: 1px solid var(--border2); border-radius: 10px;
+  padding: 13px 14px; font-size: 14px; color: var(--text);
+  margin-bottom: 10px; outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  font-family: inherit;
+}
+.cw-input:focus { border-color: var(--gold-dim); box-shadow: 0 0 12px rgba(201,168,76,0.15); }
+.cw-input::placeholder { color: var(--text3); }
+.cw-btn-primary {
+  width: 100%; height: 46px;
+  background: linear-gradient(135deg, #1a1000, #2a1800);
+  color: var(--gold); border: 1px solid var(--gold-dim);
+  border-radius: 10px; font-size: 14px; font-weight: 700;
+  cursor: pointer; margin-bottom: 14px;
+  position: relative; overflow: hidden;
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
+}
+.cw-btn-primary::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(201,168,76,0.15), transparent);
+  background-size: 200%; animation: shimmer 2s linear infinite;
+}
+.cw-divider {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 14px; font-size: 11px; color: var(--gold); letter-spacing: 2px;
+}
+.cw-divider::before, .cw-divider::after {
+  content: ''; flex: 1; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border2));
+}
+.cw-divider::after { background: linear-gradient(90deg, var(--border2), transparent); }
+.cw-btn-secondary {
+  width: 100%; height: 44px;
+  background: var(--surface); color: var(--text2);
+  border: 1px solid var(--border2); border-radius: 10px;
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: all 0.2s;
+}
+.cw-btn-secondary:hover { border-color: var(--gold-dim); color: var(--gold); }
+
+/* Transactions */
+.tx-section { padding: 12px 16px 16px; }
+.tx-label {
+  font-size: 8px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 8px;
+  display: flex; align-items: center; gap: 6px;
+}
+.tx-label::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, var(--border), transparent); }
+.tx-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 0; border-bottom: 1px solid var(--border);
+  transition: background 0.15s; cursor: pointer;
+}
+.tx-row:hover { background: #0d111c; margin: 0 -4px; padding: 9px 4px; }
+.tx-icon {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--surface); border: 1px solid var(--border2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; flex-shrink: 0;
+}
+.tx-icon.credit { border-color: rgba(39,174,96,0.3); color: var(--green); }
+.tx-icon.debit { border-color: rgba(192,57,43,0.3); color: var(--crimson); }
+.tx-name { font-size: 12px; color: var(--text); }
+.tx-date { font-size: 10px; color: var(--text2); }
+.tx-amount { font-size: 12px; font-weight: 700; margin-left: auto; font-variant-numeric: tabular-nums; }
+.tx-amount.credit { color: var(--green); }
+.tx-amount.debit { color: var(--crimson); }
+
+.wallet-footer { padding: 8px 16px 20px; }
+.wallet-footer button {
+  width: 100%; background: transparent; border: none;
+  padding: 9px; font-size: 12px; font-weight: 600; cursor: pointer;
+  border-radius: 8px; transition: background 0.15s;
+}
+.wallet-footer .danger { color: rgba(192,57,43,0.8); }
+.wallet-footer .danger:hover { background: rgba(192,57,43,0.1); }
+.wallet-footer .muted { color: var(--text3); }
+.wallet-footer .muted:hover { background: var(--surface); }
+
+/* ══════════════════════════════════════════
+   CAMERA SCREEN
+══════════════════════════════════════════ */
+.camera-screen {
+  height: 700px; background: #000;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
+}
+.camera-screen::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,255,0,0.012) 2px,
+    rgba(0,255,0,0.012) 4px
+  );
+  animation: scanlines 4s linear infinite;
+  pointer-events: none; z-index: 1;
+}
+.cam-bg {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at center, #0a1a0a 0%, #000 70%);
+}
+.reticle {
+  position: relative; width: 180px; height: 180px;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 2;
+}
+.reticle-ring {
+  position: absolute; border-radius: 50%;
+  border: 1px solid transparent; animation: reticle-pulse 2s ease-in-out infinite;
+}
+.reticle-ring-1 {
+  width: 180px; height: 180px;
+  border-top-color: rgba(0,255,80,0.6);
+  border-right-color: rgba(0,255,80,0.3);
+  animation: rotate-ring 4s linear infinite, reticle-pulse 2s ease-in-out infinite;
+}
+.reticle-ring-2 {
+  width: 140px; height: 140px;
+  border-bottom-color: rgba(0,255,80,0.4);
+  border-left-color: rgba(0,255,80,0.2);
+  animation: rotate-ring-reverse 3s linear infinite;
+}
+.reticle-ring-3 {
+  width: 100px; height: 100px;
+  border: 1px solid rgba(0,255,80,0.15);
+}
+.reticle-cross {
+  position: absolute; color: rgba(0,255,80,0.7); font-size: 12px;
+  animation: reticle-pulse 1.5s ease-in-out infinite;
+}
+.reticle-cross::before, .reticle-cross::after {
+  content: '';
+  position: absolute; background: rgba(0,255,80,0.6);
+}
+.reticle-cross::before { width: 20px; height: 1px; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+.reticle-cross::after  { width: 1px; height: 20px; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+.cam-corners div {
+  position: absolute; width: 16px; height: 16px;
+  border-color: rgba(0,255,80,0.7); border-style: solid; border-width: 0;
+}
+.cam-corners .tl { top: -4px; left: -4px; border-top-width: 2px; border-left-width: 2px; }
+.cam-corners .tr { top: -4px; right: -4px; border-top-width: 2px; border-right-width: 2px; }
+.cam-corners .bl { bottom: -4px; left: -4px; border-bottom-width: 2px; border-left-width: 2px; }
+.cam-corners .br { bottom: -4px; right: -4px; border-bottom-width: 2px; border-right-width: 2px; }
+
+.cam-hud { position: absolute; z-index: 2; font-size: 9px; font-family: 'SF Mono', monospace; }
+.cam-hud.tl { top: 20px; left: 20px; color: rgba(0,255,80,0.6); }
+.cam-hud.tr { top: 20px; right: 20px; color: rgba(0,255,80,0.6); text-align: right; }
+.cam-hud.bl { bottom: 24px; left: 20px; color: rgba(0,255,80,0.5); }
+.cam-hud.br { bottom: 24px; right: 20px; color: rgba(0,255,80,0.5); text-align: right; }
+.cam-hud p { line-height: 1.6; }
+
+.cam-text {
+  position: absolute; z-index: 2;
+  text-align: center;
+  bottom: 110px;
+}
+.cam-text p { font-size: 11px; color: rgba(0,255,80,0.4); letter-spacing: 1px; }
+</style>
+</head>
+<body>
+<!-- SVG icon sprite -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+  <symbol id="ic-sword"   viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5L3 6V3h3l11.5 11.5"/><path d="M13 19l6-6"/><path d="M2 2l20 20"/><path d="M17.5 14.5l2 2.5-2.5 2.5-2-2"/></symbol>
+  <symbol id="ic-trophy"  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4a2 2 0 000 4h2"/><path d="M18 9h2a2 2 0 010 4h-2"/><path d="M6 5v9a6 6 0 0012 0V5H6z"/><line x1="12" y1="17" x2="12" y2="21"/><line x1="8" y1="21" x2="16" y2="21"/></symbol>
+  <symbol id="ic-scroll"  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></symbol>
+  <symbol id="ic-zap"     viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></symbol>
+  <symbol id="ic-gem"     viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"/><line x1="12" y1="22" x2="12" y2="2"/><polyline points="22 8.5 12 13 2 8.5"/></symbol>
+  <symbol id="ic-eye"     viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="ic-phone"   viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.64A2 2 0 012.08 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.47 9.47a16 16 0 006.06 6.06l.85-.85a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></symbol>
+  <symbol id="ic-phone-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.68 13.31a16 16 0 003.41 2.6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.42 19.42 0 01-3.33-2.67m-2.67-3.34a19.79 19.79 0 01-3.07-8.63A2 2 0 014.11 2h3a2 2 0 011.72 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L7.91 9.91"/><line x1="23" y1="1" x2="1" y2="23"/></symbol>
+  <symbol id="ic-lock"    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></symbol>
+  <symbol id="ic-unlock"  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 019.9-1"/></symbol>
+  <symbol id="ic-file"    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></symbol>
+  <symbol id="ic-mail"    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></symbol>
+  <symbol id="ic-video"   viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></symbol>
+  <symbol id="ic-map"     viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></symbol>
+  <symbol id="ic-list"    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3" y2="6"/><line x1="3" y1="12" x2="3" y2="12"/><line x1="3" y1="18" x2="3" y2="18"/></symbol>
+  <symbol id="ic-music"   viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></symbol>
+  <symbol id="ic-mic"     viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></symbol>
+  <symbol id="ic-clock"   viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
+  <symbol id="ic-calendar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></symbol>
+  <symbol id="ic-shield"  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></symbol>
+  <symbol id="ic-target"  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></symbol>
+  <symbol id="ic-cpu"     viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></symbol>
+  <symbol id="ic-globe"   viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></symbol>
+  <symbol id="ic-user"    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+  <symbol id="ic-message" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></symbol>
+  <symbol id="ic-award"   viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></symbol>
+  <symbol id="ic-ninja"   viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/><line x1="8" y1="8" x2="16" y2="8"/></symbol>
+</svg>
+
+<div class="app-header">
+  <div class="app-title"><svg width="14" height="14" class="icon"><use href="#ic-sword"/></svg> OpenD&D</div>
+  <div class="app-subtitle">Mobile App Preview · ETH Global Cannes 2026</div>
+</div>
+
+<div class="nav-tabs">
+  <button class="active" onclick="showScreen('quest')"><svg width="13" height="13" class="icon"><use href="#ic-shield"/></svg> Quest</button>
+  <button onclick="showScreen('postquest')"><svg width="13" height="13" class="icon"><use href="#ic-trophy"/></svg> Post-Quest</button>
+  <button onclick="showScreen('history')"><svg width="13" height="13" class="icon"><use href="#ic-scroll"/></svg> History</button>
+  <button onclick="showScreen('social')"><svg width="13" height="13" class="icon"><use href="#ic-zap"/></svg> Social</button>
+  <button onclick="showScreen('wallet')"><svg width="13" height="13" class="icon"><use href="#ic-gem"/></svg> Wallet</button>
+  <button onclick="showScreen('camera')"><svg width="13" height="13" class="icon"><use href="#ic-eye"/></svg> Camera</button>
+</div>
+
+<!-- ══════════ iPHONE ══════════ -->
+<div class="iphone">
+
+  <!-- Status bar -->
+  <div class="iphone-notch">
+    <span class="status-time">⚔ 2026</span>
+    <span class="status-icons">
+      <span>▲▲▲</span>
+      <span><svg width="10" height="10" class="icon"><use href="#ic-zap"/></svg></span>
+      <span>⬛⬛⬛</span>
+    </span>
+  </div>
+
+  <div class="iphone-screen">
+
+    <!-- ══ QUEST ══ -->
+    <div id="screen-quest" class="screen active">
+
+      <div class="quest-header">
+        <div class="quest-meta">
+          <span class="quest-tag">⚔ Active Quest</span>
+          <span class="quest-timer"><svg width="10" height="10" class="icon"><use href="#ic-clock"/></svg> 2h 34m left</span>
+        </div>
+        <div class="quest-title">Operation Nightfall</div>
+        <div class="quest-desc">Infiltrate the Syndicate's HQ and retrieve classified data</div>
+        <div class="prog-labels">
+          <span>2 of 5 steps completed</span>
+          <span style="color:var(--gold);font-weight:700;">40%</span>
+        </div>
+        <div class="prog-track"><div class="prog-fill" style="width:40%"></div></div>
+      </div>
+
+      <!-- ── CHARACTER CONVERSATIONS ── -->
+      <div class="conv-section">
+        <div class="conv-label">⬡ Characters</div>
+
+        <!-- Agent K — unread, active -->
+        <div class="conv-row unread" onclick="openChat('K','Agent K','Field Operative','K')">
+          <div class="conv-avatar">K<div class="conv-online"></div></div>
+          <div class="conv-info">
+            <div class="conv-role">Field Operative</div>
+            <div class="conv-name">Agent K</div>
+            <div class="conv-preview unread-preview">"You have 3 minutes. Choose your words carefully..."</div>
+          </div>
+          <div class="conv-right">
+            <div class="conv-time">14:32</div>
+            <div class="conv-badge">3</div>
+          </div>
+        </div>
+
+        <!-- The Handler — read -->
+        <div class="conv-row" onclick="openChat('H','The Handler','Mission Control','H')">
+          <div class="conv-avatar" style="background:linear-gradient(135deg,#001a2a,#002a3a);border-color:rgba(59,130,246,0.4);color:var(--blue);">H</div>
+          <div class="conv-info">
+            <div class="conv-role" style="color:var(--blue);">Mission Control</div>
+            <div class="conv-name">The Handler</div>
+            <div class="conv-preview">"Surveillance package delivered. Stand by."</div>
+          </div>
+          <div class="conv-right">
+            <div class="conv-time">14:15</div>
+          </div>
+        </div>
+
+        <!-- General Vance — read -->
+        <div class="conv-row" onclick="openChat('V','General Vance','Command','V')">
+          <div class="conv-avatar" style="background:linear-gradient(135deg,#1a0010,#2a0018);border-color:rgba(192,57,43,0.4);color:var(--crimson);">V</div>
+          <div class="conv-info">
+            <div class="conv-role" style="color:var(--crimson);">Command</div>
+            <div class="conv-name">General Vance</div>
+            <div class="conv-preview">"Do not compromise the mission. That's an order."</div>
+          </div>
+          <div class="conv-right">
+            <div class="conv-time">13:50</div>
+          </div>
+        </div>
+
+        <!-- Ghost — read -->
+        <div class="conv-row" onclick="openChat('G','Ghost','Extraction Specialist','G')">
+          <div class="conv-avatar" style="background:linear-gradient(135deg,#101a10,#182818);border-color:rgba(39,174,96,0.4);color:var(--green);">G</div>
+          <div class="conv-info">
+            <div class="conv-role" style="color:var(--green);">Extraction Specialist</div>
+            <div class="conv-name">Ghost</div>
+            <div class="conv-preview">"Extraction route B is clean. I'll be waiting."</div>
+          </div>
+          <div class="conv-right">
+            <div class="conv-time">13:20</div>
+          </div>
+        </div>
+
+        <!-- Dr. Chen — locked -->
+        <div class="conv-row locked">
+          <div class="conv-avatar locked-avatar"><svg width="14" height="14" class="icon"><use href="#ic-lock"/></svg></div>
+          <div class="conv-info">
+            <div class="conv-role">Tech Specialist</div>
+            <div class="conv-name">Dr. Chen</div>
+            <div class="conv-preview">Unlocks at step 4 — Infiltrate the Compound</div>
+          </div>
+          <div class="conv-right">
+            <div class="conv-lock"><svg width="11" height="11" class="icon"><use href="#ic-lock"/></svg></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── VAULT ── -->
+      <div class="vault-section">
+        <div class="vault-card" onclick="toggleVault(this)">
+          <div class="vault-header">
+            <div class="vault-icon">🗄️</div>
+            <div>
+              <div class="vault-title">Mission Vault</div>
+              <div class="vault-subtitle">6 classified files · 2 voice memos</div>
+            </div>
+            <span class="vault-chevron">›</span>
+          </div>
+          <div class="vault-contents">
+            <div class="vault-grid">
+              <div class="vault-item">
+                <div class="vault-item-icon"><svg width="24" height="24" class="icon"><use href="#ic-file"/></svg></div>
+                <div class="vault-item-name">briefing.pdf</div>
+                <div class="vault-item-type doc">DOC</div>
+              </div>
+              <div class="vault-item">
+                <div class="vault-item-icon"><svg width="24" height="24" class="icon"><use href="#ic-lock"/></svg></div>
+                <div class="vault-item-name">classified.pdf</div>
+                <div class="vault-item-type doc">DOC</div>
+              </div>
+              <div class="vault-item">
+                <div class="vault-item-icon"><svg width="24" height="24" class="icon"><use href="#ic-mail"/></svg></div>
+                <div class="vault-item-name">intercepted email</div>
+                <div class="vault-item-type doc">DOC</div>
+              </div>
+              <div class="vault-item">
+                <div class="vault-item-icon"><svg width="24" height="24" class="icon"><use href="#ic-mic"/></svg></div>
+                <div class="vault-item-name">voicemail #1</div>
+                <div class="vault-item-type voice">VOICE</div>
+              </div>
+              <div class="vault-item">
+                <div class="vault-item-icon"><svg width="24" height="24" class="icon"><use href="#ic-mic"/></svg></div>
+                <div class="vault-item-name">voicemail #2</div>
+                <div class="vault-item-type voice">VOICE</div>
+              </div>
+              <div class="vault-item">
+                <div class="vault-item-icon"><svg width="24" height="24" class="icon"><use href="#ic-video"/></svg></div>
+                <div class="vault-item-name">recon clip</div>
+                <div class="vault-item-type video">VIDEO</div>
+              </div>
+              <div class="vault-item">
+                <div class="vault-item-icon"><svg width="24" height="24" class="icon"><use href="#ic-map"/></svg></div>
+                <div class="vault-item-name">floor plan B2</div>
+                <div class="vault-item-type doc">DOC</div>
+              </div>
+              <div class="vault-item">
+                <div class="vault-item-icon"><svg width="24" height="24" class="icon"><use href="#ic-list"/></svg></div>
+                <div class="vault-item-name">asset list</div>
+                <div class="vault-item-type doc">DOC</div>
+              </div>
+              <div class="vault-item">
+                <div class="vault-item-icon"><svg width="24" height="24" class="icon"><use href="#ic-music"/></svg></div>
+                <div class="vault-item-name">playlist.html</div>
+                <div class="vault-item-type video">MEDIA</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button class="cta-btn" onclick="openPostQuest()">⚔ View Quest Summary</button>
+
+      <!-- ── CHAT OVERLAY ── -->
+      <div class="chat-overlay" id="chat-overlay">
+        <div class="chat-topbar" style="position:relative;">
+          <button class="chat-back" onclick="closeChat()">‹</button>
+          <div style="flex:1;min-width:0;">
+            <div class="chat-char-role" id="chat-role">Field Operative</div>
+            <div class="chat-char-name" id="chat-name">Agent K</div>
+          </div>
+          <button class="chat-call-btn" onclick="openCall()"><svg width="14" height="14" class="icon"><use href="#ic-phone"/></svg></button>
+        </div>
+
+        <div class="chat-messages" id="chat-messages"></div>
+
+        <div class="chat-input-row">
+          <input class="chat-input" placeholder="Type a message..." id="chat-input" />
+          <button class="chat-send">➤</button>
+        </div>
+      </div>
+
+      <!-- ── Call overlay ── -->
+      <div class="call-overlay" id="call-overlay">
+        <div class="call-rings">
+          <div class="call-ring r1"></div>
+          <div class="call-ring r2"></div>
+          <div class="call-ring r3"></div>
+        </div>
+        <div class="call-av" id="call-av">K</div>
+        <div class="call-name" id="call-name-display">Agent K</div>
+        <div class="call-role" id="call-role-display" style="color:var(--gold)">Field Operative</div>
+        <div class="call-status" id="call-status">Appel en cours…</div>
+        <div class="call-timer" id="call-timer">00:00</div>
+        <div class="call-actions">
+          <button class="call-hangup" onclick="closeCall()"><svg width="22" height="22" class="icon"><use href="#ic-phone-off"/></svg></button>
+        </div>
+      </div>
+
+    </div><!-- /quest -->
+
+
+    <!-- ══ POST-QUEST ══ -->
+    <div id="screen-postquest" class="screen">
+
+      <div class="pq-topbar">
+        <button class="pq-back" onclick="showScreen('quest')">‹</button>
+        <div class="pq-dots" id="pq-dots"></div>
+        <div style="width:34px"></div>
+      </div>
+
+      <!-- Slide 0 -->
+      <div class="pq-slide active" id="pq-0">
+        <div class="pq-trophy"><svg width="48" height="48" class="icon"><use href="#ic-trophy"/></svg></div>
+        <div class="pq-eyebrow">✦ Quest Complete ✦</div>
+        <div class="pq-title">Operation Nightfall</div>
+        <div class="pq-sub">Mission accomplished</div>
+        <div class="pq-stats">
+          <div class="pq-stat"><div class="pq-stat-val">47m</div><div class="pq-stat-lbl">Time</div></div>
+          <div class="pq-stat"><div class="pq-stat-val">5/5</div><div class="pq-stat-lbl">Steps</div></div>
+          <div class="pq-stat"><div class="pq-stat-val">0</div><div class="pq-stat-lbl">Fails</div></div>
+        </div>
+      </div>
+
+      <!-- Slide 1 -->
+      <div class="pq-slide" id="pq-1" style="background:linear-gradient(180deg, #0d111c 0%, var(--bg) 100%);align-items:center;text-align:center;padding-bottom:32px;">
+        <div class="pq-eyebrow" style="margin-top:24px;">⟡ Performance Review ⟡</div>
+        <div class="pq-grade">A+</div>
+        <div class="pq-sub">Top 3% of all players</div>
+        <div style="display:flex;flex-direction:column;gap:6px;width:100%;padding:0 4px;">
+          <div class="pq-achievement"><div class="pq-ach-icon"><svg width="18" height="18" class="icon"><use href="#ic-ninja"/></svg></div><div><div class="pq-ach-title">Stealth Master</div><div class="pq-ach-desc">Zero alerts triggered</div></div></div>
+          <div class="pq-achievement"><div class="pq-ach-icon"><svg width="18" height="18" class="icon"><use href="#ic-message"/></svg></div><div><div class="pq-ach-title">Smooth Talker</div><div class="pq-ach-desc">Perfect interrogation</div></div></div>
+          <div class="pq-achievement"><div class="pq-ach-icon"><svg width="18" height="18" class="icon"><use href="#ic-zap"/></svg></div><div><div class="pq-ach-title">Speed Demon</div><div class="pq-ach-desc">12 min under par</div></div></div>
+        </div>
+      </div>
+
+      <!-- Slide 2 -->
+      <div class="pq-slide" id="pq-2" style="align-items:center;text-align:center;">
+        <div class="pq-eyebrow" style="margin-top:24px;">⬡ Best Moment ⬡</div>
+        <div class="pq-clip">
+          <div class="pq-play">▶</div>
+          <div class="pq-clip-label">
+            <div class="title">The Vault Escape</div>
+            <div class="dur">0:47</div>
+          </div>
+        </div>
+        <div class="pq-btns">
+          <button class="pq-btn-primary">↑ Share</button>
+          <button class="pq-btn-secondary">Save</button>
+        </div>
+      </div>
+
+      <!-- Slide 3 -->
+      <div class="pq-slide" id="pq-3" style="align-items:center;text-align:center;background:linear-gradient(180deg,#0d111c,var(--bg));">
+        <div class="pq-eyebrow" style="margin-top:24px;">✦ Rewards ✦</div>
+        <div class="pq-reward-amount">$24.50</div>
+        <div class="pq-sub">Quest reward · Arriving in ~2h</div>
+        <div class="pq-reward-row">
+          <div class="pq-reward-item"><div class="pq-reward-val">+340</div><div class="pq-reward-lbl">XP</div></div>
+          <div class="pq-reward-item"><div class="pq-reward-val">+2</div><div class="pq-reward-lbl">Badges</div></div>
+        </div>
+        <div class="pq-arriving"><svg width="10" height="10" class="icon"><use href="#ic-clock"/></svg> Payment arriving in ~2 hours</div>
+      </div>
+
+      <!-- Slide 4 -->
+      <!-- Slide 4 — Top 3 Moments -->
+      <div class="pq-slide" id="pq-4" style="padding-bottom:24px;">
+        <div class="pq-eyebrow" style="margin-top:20px;align-self:center;"><svg width="13" height="13" class="icon"><use href="#ic-video"/></svg> Top Moments</div>
+        <div style="display:flex;flex-direction:column;gap:8px;width:100%;margin-top:16px;">
+
+          <div style="background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--gold);border-radius:10px;padding:12px 14px;position:relative;overflow:hidden;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+              <span style="font-size:14px;font-weight:900;color:var(--gold);">#1</span>
+              <div>
+                <div style="font-size:11px;font-weight:700;color:var(--gold);">#1 · 14:28</div>
+                <div style="font-size:13px;font-weight:700;color:var(--text);">The Perfect Bluff</div>
+              </div>
+              <div style="margin-left:auto;background:rgba(201,168,76,0.15);border:1px solid var(--gold-dim);border-radius:6px;padding:3px 8px;font-size:9px;font-weight:700;color:var(--gold);">+75 XP</div>
+            </div>
+            <div style="font-size:11px;color:var(--text2);line-height:1.5;">You convinced Agent K you had inside knowledge — without revealing your source. The Syndicate never saw it coming.</div>
+          </div>
+
+          <div style="background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--silver);border-radius:10px;padding:12px 14px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+              <span style="font-size:14px;font-weight:900;color:var(--silver);">#2</span>
+              <div>
+                <div style="font-size:11px;font-weight:700;color:var(--silver);">#2 · 14:15</div>
+                <div style="font-size:13px;font-weight:700;color:var(--text);">Ghost Route Discovered</div>
+              </div>
+              <div style="margin-left:auto;background:rgba(168,180,192,0.1);border:1px solid rgba(168,180,192,0.3);border-radius:6px;padding:3px 8px;font-size:9px;font-weight:700;color:var(--silver);">+50 XP</div>
+            </div>
+            <div style="font-size:11px;color:var(--text2);line-height:1.5;">Zero guards alerted while crossing the compound perimeter. Ghost himself was impressed.</div>
+          </div>
+
+          <div style="background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--bronze);border-radius:10px;padding:12px 14px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+              <span style="font-size:14px;font-weight:900;color:var(--bronze);">#3</span>
+              <div>
+                <div style="font-size:11px;font-weight:700;color:var(--bronze);">#3 · 14:02</div>
+                <div style="font-size:13px;font-weight:700;color:var(--text);">Decrypted in 47 Seconds</div>
+              </div>
+              <div style="margin-left:auto;background:rgba(200,121,65,0.1);border:1px solid rgba(200,121,65,0.3);border-radius:6px;padding:3px 8px;font-size:9px;font-weight:700;color:var(--bronze);">+30 XP</div>
+            </div>
+            <div style="font-size:11px;color:var(--text2);line-height:1.5;">Broke the Syndicate's encryption in record time. The Handler couldn't believe it.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 5 — Character Reviews -->
+      <div class="pq-slide" id="pq-5" style="padding-bottom:24px;">
+        <div class="pq-eyebrow" style="margin-top:20px;align-self:center;"><svg width="13" height="13" class="icon"><use href="#ic-message"/></svg> Character Reviews</div>
+        <div style="display:flex;flex-direction:column;gap:8px;width:100%;margin-top:16px;">
+
+          <div style="background:var(--surface);border:1px solid var(--gold-dim);border-radius:10px;padding:12px 14px;clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,0 100%);">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+              <div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#1a1000,#2a1800);border:1.5px solid var(--gold-dim);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--gold);flex-shrink:0;">K</div>
+              <div><div style="font-size:12px;font-weight:700;color:var(--text);">Agent K</div><div style="font-size:9px;color:var(--gold);text-transform:uppercase;letter-spacing:0.5px;">Field Operative</div></div>
+              <div style="margin-left:auto;font-size:18px;font-weight:800;color:var(--gold);">A+</div>
+            </div>
+            <div style="font-size:11px;color:var(--text2);line-height:1.6;font-style:italic;">"I've worked with the best. You belong on that list. That bluff in the interrogation room? Textbook. Don't get cocky."</div>
+          </div>
+
+          <div style="background:var(--surface);border:1px solid rgba(59,130,246,0.3);border-radius:10px;padding:12px 14px;clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,0 100%);">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+              <div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#001a2a,#002a3a);border:1.5px solid rgba(59,130,246,0.4);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--blue);flex-shrink:0;">H</div>
+              <div><div style="font-size:12px;font-weight:700;color:var(--text);">The Handler</div><div style="font-size:9px;color:var(--blue);text-transform:uppercase;letter-spacing:0.5px;">Mission Control</div></div>
+              <div style="margin-left:auto;font-size:18px;font-weight:800;color:var(--silver);">A</div>
+            </div>
+            <div style="font-size:11px;color:var(--text2);line-height:1.6;font-style:italic;">"Comms discipline was excellent. You used the 4-minute window exactly as planned. Minor hesitation on route selection — cost you 2 minutes."</div>
+          </div>
+
+          <div style="background:var(--surface);border:1px solid rgba(192,57,43,0.3);border-radius:10px;padding:12px 14px;clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,0 100%);">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+              <div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#1a0010,#2a0018);border:1.5px solid rgba(192,57,43,0.4);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--crimson);flex-shrink:0;">V</div>
+              <div><div style="font-size:12px;font-weight:700;color:var(--text);">General Vance</div><div style="font-size:9px;color:var(--crimson);text-transform:uppercase;letter-spacing:0.5px;">Command</div></div>
+              <div style="margin-left:auto;font-size:18px;font-weight:800;color:var(--bronze);">B+</div>
+            </div>
+            <div style="font-size:11px;color:var(--text2);line-height:1.6;font-style:italic;">"Results speak for themselves. But you took unnecessary risks. Next time, follow orders to the letter. Dismissed."</div>
+          </div>
+
+          <div style="background:var(--surface);border:1px solid rgba(39,174,96,0.3);border-radius:10px;padding:12px 14px;clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,0 100%);">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+              <div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#101a10,#182818);border:1.5px solid rgba(39,174,96,0.4);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--green);flex-shrink:0;">G</div>
+              <div><div style="font-size:12px;font-weight:700;color:var(--text);">Ghost</div><div style="font-size:9px;color:var(--green);text-transform:uppercase;letter-spacing:0.5px;">Extraction Specialist</div></div>
+              <div style="margin-left:auto;font-size:18px;font-weight:800;color:var(--gold);">A+</div>
+            </div>
+            <div style="font-size:11px;color:var(--text2);line-height:1.6;font-style:italic;">"Clean. Fast. Silent. You were a shadow out there. I barely knew you existed until you appeared at the extraction point."</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 6 — Next Quest -->
+      <div class="pq-slide" id="pq-6" style="align-items:center;text-align:center;">
+        <div class="pq-eyebrow" style="margin-top:24px;">⚔ Up Next ⚔</div>
+        <div class="pq-next-card" style="margin-top:20px;">
+          <div class="pq-next-title">Operation Sunrise</div>
+          <div class="pq-next-desc">A new threat emerges from the ashes. Your skills have not gone unnoticed.</div>
+          <div class="pq-next-meta">
+            <div class="pq-next-meta-item"><div class="pq-next-meta-val">500 XP</div><div class="pq-next-meta-lbl">Reward</div></div>
+            <div class="pq-next-meta-item"><div class="pq-next-meta-val">Hard</div><div class="pq-next-meta-lbl">Difficulty</div></div>
+            <div class="pq-next-meta-item"><div class="pq-next-meta-val">$35</div><div class="pq-next-meta-lbl">Payout</div></div>
+          </div>
+        </div>
+        <button class="pq-accept" onclick="showScreen('quest')">⚔ Accept Quest</button>
+      </div>
+
+      <div class="pq-nav">
+        <button class="pq-nav-btn" onclick="pqPrev()">‹ Prev</button>
+        <button class="pq-nav-btn primary" onclick="pqNext()">Next ›</button>
+      </div>
+
+    </div><!-- /postquest -->
+
+
+    <!-- ══ HISTORY ══ -->
+    <div id="screen-history" class="screen">
+      <div class="screen-header">
+        <div class="screen-eyebrow">⟡ Chronicles</div>
+        <div class="screen-title">History</div>
+        <div class="screen-subtitle">5 quests · Level 12 · Phantom Strategist</div>
+      </div>
+      <div class="seg-control">
+        <button class="seg-btn active" onclick="switchSeg(this,'history')">Quests</button>
+        <button class="seg-btn" onclick="switchSeg(this,'history')">Badges</button>
+        <button class="seg-btn" onclick="switchSeg(this,'history')">Personality</button>
+      </div>
+
+      <div id="history-quests">
+        <div class="hist-row"><div style="flex:1"><div class="hist-title">Operation Nightfall</div><div class="hist-meta"><svg width="10" height="10" class="icon"><use href="#ic-calendar"/></svg>Mar 28, 2026 · ✦ +340 XP · $24.50</div></div><div class="hist-grade grade-a-plus">A+</div><span class="chevron-icon">›</span></div>
+        <div class="hist-row"><div style="flex:1"><div class="hist-title">The Moscow Exchange</div><div class="hist-meta"><svg width="10" height="10" class="icon"><use href="#ic-calendar"/></svg>Mar 22, 2026 · ✦ +280 XP · $18.00</div></div><div class="hist-grade grade-a">A</div><span class="chevron-icon">›</span></div>
+        <div class="hist-row"><div style="flex:1"><div class="hist-title">Dead Drop</div><div class="hist-meta"><svg width="10" height="10" class="icon"><use href="#ic-calendar"/></svg>Mar 15, 2026 · ✦ +210 XP · $12.50</div></div><div class="hist-grade grade-b-plus">B+</div><span class="chevron-icon">›</span></div>
+        <div class="hist-row"><div style="flex:1"><div class="hist-title">Cold Trail</div><div class="hist-meta"><svg width="10" height="10" class="icon"><use href="#ic-calendar"/></svg>Mar 8, 2026 · ✦ +300 XP · $20.00</div></div><div class="hist-grade grade-a-minus">A−</div><span class="chevron-icon">›</span></div>
+        <div class="hist-row"><div style="flex:1"><div class="hist-title">First Contact</div><div class="hist-meta"><svg width="10" height="10" class="icon"><use href="#ic-calendar"/></svg>Mar 1, 2026 · ✦ +150 XP · $8.00</div></div><div class="hist-grade grade-b">B</div><span class="chevron-icon">›</span></div>
+      </div>
+
+      <div id="history-badges" style="display:none">
+        <div class="badges-count">✦ 6 of 8 unlocked</div>
+        <div class="badges-grid">
+          <div class="badge-item"><div class="badge-box unlocked"><svg width="22" height="22" class="icon"><use href="#ic-ninja"/></svg></div><div class="badge-lbl">Shadow Agent</div></div>
+          <div class="badge-item"><div class="badge-box unlocked"><svg width="22" height="22" class="icon"><use href="#ic-target"/></svg></div><div class="badge-lbl">Perfect Shot</div></div>
+          <div class="badge-item"><div class="badge-box unlocked"><svg width="22" height="22" class="icon"><use href="#ic-cpu"/></svg></div><div class="badge-lbl">Mastermind</div></div>
+          <div class="badge-item"><div class="badge-box unlocked"><svg width="22" height="22" class="icon"><use href="#ic-zap"/></svg></div><div class="badge-lbl">Speed Runner</div></div>
+          <div class="badge-item"><div class="badge-box unlocked"><svg width="22" height="22" class="icon"><use href="#ic-shield"/></svg></div><div class="badge-lbl">Untouchable</div></div>
+          <div class="badge-item"><div class="badge-box unlocked"><svg width="22" height="22" class="icon"><use href="#ic-message"/></svg></div><div class="badge-lbl">Silver Tongue</div></div>
+          <div class="badge-item"><div class="badge-box locked"><svg width="22" height="22" class="icon"><use href="#ic-unlock"/></svg></div><div class="badge-lbl">Lockpicker</div></div>
+          <div class="badge-item"><div class="badge-box locked"><svg width="22" height="22" class="icon"><use href="#ic-globe"/></svg></div><div class="badge-lbl">Globetrotter</div></div>
+        </div>
+      </div>
+
+      <div id="history-personality" style="display:none">
+        <div class="pers-section">
+          <div class="pers-hero">
+            <div class="pers-emoji"><svg width="36" height="36" class="icon"><use href="#ic-user"/></svg></div>
+            <div class="pers-name">The Phantom Strategist</div>
+            <div class="pers-desc">A calculated mind that prefers brains over brawn</div>
+          </div>
+          <div class="trait"><div class="trait-head"><span>Strategist</span><span class="trait-pct">85%</span></div><div class="trait-bar"><div class="trait-fill" style="width:85%"></div></div></div>
+          <div class="trait"><div class="trait-head"><span>Diplomat</span><span class="trait-pct">72%</span></div><div class="trait-bar"><div class="trait-fill" style="width:72%"></div></div></div>
+          <div class="trait"><div class="trait-head"><span>Fighter</span><span class="trait-pct">45%</span></div><div class="trait-bar"><div class="trait-fill" style="width:45%"></div></div></div>
+          <div class="trait"><div class="trait-head"><span>Hacker</span><span class="trait-pct">68%</span></div><div class="trait-bar"><div class="trait-fill" style="width:68%"></div></div></div>
+          <div class="trait"><div class="trait-head"><span>Leader</span><span class="trait-pct">90%</span></div><div class="trait-bar"><div class="trait-fill" style="width:90%"></div></div></div>
+        </div>
+      </div>
+    </div><!-- /history -->
+
+
+    <!-- ══ SOCIAL ══ -->
+    <div id="screen-social" class="screen">
+      <div class="screen-header">
+        <div class="screen-eyebrow"><svg width="12" height="12" class="icon"><use href="#ic-zap"/></svg> Guild</div>
+        <div class="screen-title">Friends</div>
+        <div class="screen-subtitle">See what your squad is up to</div>
+      </div>
+      <div class="seg-control">
+        <button class="seg-btn active" onclick="switchSeg(this,'social')">Leaderboard</button>
+        <button class="seg-btn" onclick="switchSeg(this,'social')">Activity</button>
+      </div>
+
+      <div id="social-leaderboard">
+        <div class="lb-row"><span class="lb-rank r1">#1</span><div class="avatar">A</div><div style="flex:1"><div class="lb-name">Alex K.</div><div class="lb-level">Level 18</div></div><span class="lb-xp">4,820 ✦</span></div>
+        <div class="lb-row"><span class="lb-rank r2">#2</span><div class="avatar">S</div><div style="flex:1"><div class="lb-name">Sarah M.</div><div class="lb-level">Level 17</div></div><span class="lb-xp" style="color:var(--silver)">4,510 ✦</span></div>
+        <div class="lb-row you-row"><span class="lb-rank r3">#3</span><div class="avatar" style="border-color:rgba(59,130,246,0.4);">Y</div><div style="flex:1"><div class="lb-name" style="display:flex;gap:5px;align-items:center;">You <span class="you-tag">you</span></div><div class="lb-level">Level 16</div></div><span class="lb-xp you-xp">4,280 ✦</span></div>
+        <div class="lb-row"><span class="lb-rank">4</span><div class="avatar">M</div><div style="flex:1"><div class="lb-name">Mike R.</div><div class="lb-level">Level 15</div></div><span class="lb-xp">3,900 ✦</span></div>
+        <div class="lb-row"><span class="lb-rank">5</span><div class="avatar">L</div><div style="flex:1"><div class="lb-name">Luna Z.</div><div class="lb-level">Level 14</div></div><span class="lb-xp">3,750 ✦</span></div>
+        <div class="lb-row"><span class="lb-rank">6</span><div class="avatar">D</div><div style="flex:1"><div class="lb-name">Dev P.</div><div class="lb-level">Level 13</div></div><span class="lb-xp">3,200 ✦</span></div>
+        <div class="lb-row"><span class="lb-rank">7</span><div class="avatar">N</div><div style="flex:1"><div class="lb-name">Nora T.</div><div class="lb-level">Level 12</div></div><span class="lb-xp">2,980 ✦</span></div>
+      </div>
+
+      <div id="social-activity" style="display:none">
+        <div class="act-row"><div class="avatar">A</div><div style="flex:1"><div class="act-action"><strong>Alex K.</strong> completed Operation Blackout</div><div class="act-time"><svg width="9" height="9" class="icon"><use href="#ic-clock"/></svg>2h ago</div></div><div class="act-grade">S</div><span class="chevron-icon">›</span></div>
+        <div class="act-row"><div class="avatar">S</div><div style="flex:1"><div class="act-action"><strong>Sarah M.</strong> unlocked Sharpshooter badge</div><div class="act-time"><svg width="9" height="9" class="icon"><use href="#ic-clock"/></svg>4h ago</div></div><span class="chevron-icon">›</span></div>
+        <div class="act-row"><div class="avatar">L</div><div style="flex:1"><div class="act-action"><strong>Luna Z.</strong> started The Heist</div><div class="act-time"><svg width="9" height="9" class="icon"><use href="#ic-clock"/></svg>5h ago</div></div><span class="chevron-icon">›</span></div>
+        <div class="act-row"><div class="avatar">M</div><div style="flex:1"><div class="act-action"><strong>Mike R.</strong> completed Dead Drop</div><div class="act-time"><svg width="9" height="9" class="icon"><use href="#ic-clock"/></svg>8h ago</div></div><div class="act-grade" style="color:var(--silver)">A−</div><span class="chevron-icon">›</span></div>
+        <div class="act-row"><div class="avatar">D</div><div style="flex:1"><div class="act-action"><strong>Dev P.</strong> reached Level 13</div><div class="act-time"><svg width="9" height="9" class="icon"><use href="#ic-clock"/></svg>1d ago</div></div><span class="chevron-icon">›</span></div>
+      </div>
+    </div><!-- /social -->
+
+
+    <!-- ══ WALLET ══ -->
+    <div id="screen-wallet" class="screen">
+
+      <!-- Authenticated view -->
+      <div class="wallet-hero">
+        <div class="wallet-balance-lbl">
+          ✦ Available Balance
+          <span class="wallet-addr">0x1a2b...9f3e</span>
+        </div>
+        <div class="wallet-amount">$67.00</div>
+      </div>
+
+      <div class="wallet-split">
+        <div class="wallet-split-item">
+          <div class="wsplit-lbl"><svg width="10" height="10" class="icon"><use href="#ic-lock"/></svg> Locked</div>
+          <div class="wsplit-val">$35.00</div>
+          <div class="wsplit-sub">Reserved for quests</div>
+        </div>
+        <div class="wallet-split-item">
+          <div class="wsplit-lbl"><svg width="10" height="10" class="icon"><use href="#ic-clock"/></svg> Pending</div>
+          <div class="wsplit-val">$24.50</div>
+          <div class="wsplit-sub">Arriving in ~2h</div>
+        </div>
+      </div>
+
+      <div class="wallet-actions">
+        <button class="wallet-action-btn">↙ Deposit</button>
+        <button class="wallet-action-btn">↗ Withdraw</button>
+      </div>
+
+      <div class="tx-section">
+        <div class="tx-label">⬡ Transactions</div>
+        <div class="tx-row"><div class="tx-icon credit">↙</div><div style="flex:1"><div class="tx-name">Operation Nightfall</div><div class="tx-date">Mar 28</div></div><div class="tx-amount credit">+$24.50</div></div>
+        <div class="tx-row"><div class="tx-icon debit">↗</div><div style="flex:1"><div class="tx-name">Quest unlock: Sunrise</div><div class="tx-date">Mar 28</div></div><div class="tx-amount debit">−$5.00</div></div>
+        <div class="tx-row"><div class="tx-icon credit">↙</div><div style="flex:1"><div class="tx-name">The Moscow Exchange</div><div class="tx-date">Mar 22</div></div><div class="tx-amount credit">+$18.00</div></div>
+        <div class="tx-row"><div class="tx-icon debit">↗</div><div style="flex:1"><div class="tx-name">Premium gear pack</div><div class="tx-date">Mar 20</div></div><div class="tx-amount debit">−$8.00</div></div>
+        <div class="tx-row"><div class="tx-icon credit">↙</div><div style="flex:1"><div class="tx-name">Dead Drop</div><div class="tx-date">Mar 15</div></div><div class="tx-amount credit">+$12.50</div></div>
+        <div class="tx-row"><div class="tx-icon credit">↙</div><div style="flex:1"><div class="tx-name">Weekly bonus</div><div class="tx-date">Mar 14</div></div><div class="tx-amount credit">+$5.00</div></div>
+      </div>
+
+      <div class="wallet-footer">
+        <button class="danger">Disconnect Wallet</button>
+        <button class="muted">Restart Onboarding</button>
+      </div>
+    </div><!-- /wallet -->
+
+    <!-- ══ CONNECT WALLET (toggle demo) ══ -->
+    <div id="screen-wallet-connect" class="screen">
+      <div class="connect-wallet">
+        <div class="cw-icon">💎</div>
+        <div class="cw-title">Connect Wallet</div>
+        <div class="cw-sub">Sign in to manage your quest earnings and on-chain assets</div>
+        <input class="cw-input" type="email" placeholder="· · · enter your email · · ·" />
+        <button class="cw-btn-primary">Continue with Email</button>
+        <div class="cw-divider">⸻ ✦ ⸻</div>
+        <button class="cw-btn-secondary"><svg width="12" height="12" class="icon"><use href="#ic-zap"/></svg> Sign in with Dynamic</button>
+      </div>
+    </div>
+
+
+    <!-- ══ CAMERA ══ -->
+    <div id="screen-camera" class="screen">
+      <div class="camera-screen">
+        <div class="cam-bg"></div>
+
+        <div class="cam-hud tl">
+          <p>REC ●</p>
+          <p>1080p · 30fps</p>
+        </div>
+        <div class="cam-hud tr">
+          <p>DAT SDK v0.5</p>
+          <p>Ray-Ban Meta</p>
+        </div>
+        <div class="cam-hud bl">
+          <p>SIGNAL: ████░</p>
+          <p>LATENCY: 12ms</p>
+        </div>
+        <div class="cam-hud br">
+          <p>BATT: 87%</p>
+          <p><svg width="11" height="11" class="icon"><use href="#ic-clock"/></svg> 00:04:32</p>
+        </div>
+
+        <div class="reticle">
+          <div class="cam-corners">
+            <div class="tl"></div><div class="tr"></div>
+            <div class="bl"></div><div class="br"></div>
+          </div>
+          <div class="reticle-ring reticle-ring-1"></div>
+          <div class="reticle-ring reticle-ring-2"></div>
+          <div class="reticle-ring reticle-ring-3"></div>
+          <div class="reticle-cross"></div>
+        </div>
+
+        <div class="cam-text">
+          <p>CONNECT RAY-BAN META GLASSES</p>
+          <p>TO START STREAMING</p>
+        </div>
+      </div>
+    </div><!-- /camera -->
+
+  </div><!-- /iphone-screen -->
+
+  <!-- ══ TAB BAR ══ -->
+  <div class="iphone-tabbar">
+    <button class="tab-item active" id="tab-quest" onclick="showScreen('quest')">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L4 6v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V6l-8-4z"/></svg>
+      Quest
+    </button>
+    <button class="tab-item" id="tab-history" onclick="showScreen('history')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      History
+    </button>
+    <button class="tab-item" id="tab-camera" onclick="showScreen('camera')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z" stroke-dasharray="3 2"/><circle cx="12" cy="12" r="6" fill="none"/></svg>
+      Camera
+    </button>
+    <button class="tab-item" id="tab-wallet" onclick="showScreen('wallet')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4z"/></svg>
+      Wallet
+    </button>
+    <button class="tab-item" id="tab-social" onclick="showScreen('social')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Friends
+    </button>
+  </div>
+
+</div><!-- /iphone -->
+
+<script>
+let currentScreen = 'quest';
+
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.nav-tabs button').forEach(b => b.classList.remove('active'));
+
+  document.getElementById('screen-' + name)?.classList.add('active');
+  document.getElementById('tab-' + name)?.classList.add('active');
+
+  const map = { quest:0, postquest:1, history:2, social:3, wallet:4, camera:5 };
+  const btns = document.querySelectorAll('.nav-tabs button');
+  if (map[name] !== undefined) btns[map[name]]?.classList.add('active');
+
+  document.querySelector('.iphone-screen').scrollTop = 0;
+  currentScreen = name;
+}
+
+// Post quest
+let pqSlide = 0;
+const totalSlides = 7;
+
+function initPqDots() {
+  const dots = document.getElementById('pq-dots');
+  dots.innerHTML = '';
+  for (let i = 0; i < totalSlides; i++) {
+    const d = document.createElement('div');
+    d.className = 'pq-dot' + (i === pqSlide ? ' active' : (i < pqSlide ? ' past' : ''));
+    dots.appendChild(d);
+  }
+}
+
+function goToSlide(n) {
+  document.querySelectorAll('.pq-slide').forEach(s => s.classList.remove('active'));
+  pqSlide = Math.max(0, Math.min(n, totalSlides - 1));
+  document.getElementById('pq-' + pqSlide)?.classList.add('active');
+  initPqDots();
+  document.querySelector('.iphone-screen').scrollTop = 0;
+}
+
+function pqNext() {
+  if (pqSlide < totalSlides - 1) goToSlide(pqSlide + 1);
+  else showScreen('quest');
+}
+function pqPrev() {
+  if (pqSlide > 0) goToSlide(pqSlide - 1);
+  else showScreen('quest');
+}
+function openPostQuest() {
+  pqSlide = 0;
+  goToSlide(0);
+  showScreen('postquest');
+}
+
+// Vault toggle
+function toggleVault(card) {
+  const contents = card.querySelector('.vault-contents');
+  const chevron  = card.querySelector('.vault-chevron');
+  contents.classList.toggle('show');
+  chevron.classList.toggle('open');
+}
+
+// Chat data per character
+const chatData = {
+  K: {
+    role: 'Field Operative',
+    name: 'Agent K',
+    color: 'var(--gold)',
+    messages: [
+      { from:'them', text:"I have intel on the Syndicate's inner circle. But I need something in return.", time:'14:15' },
+      { from:'me',   text:'What are you asking for exactly?', time:'14:16' },
+      { from:'them', text:"Get me out of this city alive. That's all. The data is in sublevel B2, behind a biometric lock.", time:'14:20' },
+      { from:'me',   text:'I know about the shipment. Tell me about sublevel B2.', time:'14:28' },
+      { from:'them', text:'You have 3 minutes. Choose your next words carefully, agent.', time:'14:32' },
+    ]
+  },
+  H: {
+    role: 'Mission Control',
+    name: 'The Handler',
+    color: 'var(--blue)',
+    messages: [
+      { from:'them', text:'Package secured. Surveillance footage uploaded to your Vault.', time:'13:40' },
+      { from:'me',   text:'Confirmed. Any movement on the guard rotation?', time:'13:42' },
+      { from:'them', text:'Rotation shifts at 14:45. You have a 4-minute window after that.', time:'13:44' },
+      { from:'them', text:'Surveillance package delivered. Stand by for further instructions.', time:'14:15' },
+    ]
+  },
+  V: {
+    role: 'Command',
+    name: 'General Vance',
+    color: 'var(--crimson)',
+    messages: [
+      { from:'them', text:'The President himself is watching this operation. Do not fail.', time:'12:00' },
+      { from:'me',   text:"Understood, sir. I'll get the data.", time:'12:02' },
+      { from:'them', text:'Collateral damage is acceptable. The data is the priority.', time:'12:05' },
+      { from:'them', text:'Do not compromise the mission. That\'s an order.', time:'13:50' },
+    ]
+  },
+  G: {
+    role: 'Extraction Specialist',
+    name: 'Ghost',
+    color: 'var(--green)',
+    messages: [
+      { from:'them', text:'Route A is compromised. Two guards, thermal vision. Take route B through the service tunnel.', time:'13:00' },
+      { from:'me',   text:"Copy that. I'll need 8 minutes to reach the exit.", time:'13:10' },
+      { from:'them', text:"I'll keep the engine running. Don't make me wait.", time:'13:12' },
+      { from:'them', text:'Extraction route B is clean. I\'ll be waiting.', time:'13:20' },
+    ]
+  }
+};
+
+let currentChatKey = 'K';
+
+function openChat(key, name, role) {
+  currentChatKey = key;
+  const overlay = document.getElementById('chat-overlay');
+  const data = chatData[key] || chatData['K'];
+  document.getElementById('chat-name').textContent = data.name;
+  document.getElementById('chat-role').textContent = data.role;
+  document.getElementById('chat-role').style.color = data.color;
+
+  const msgs = document.getElementById('chat-messages');
+  msgs.innerHTML = '';
+  data.messages.forEach(m => {
+    const div = document.createElement('div');
+    div.className = 'chat-msg ' + (m.from === 'me' ? 'me' : '');
+    const avatarLetter = m.from === 'me' ? 'Y' : key;
+    div.innerHTML = `
+      <div class="chat-msg-avatar" style="border-color:${data.color};color:${data.color}">${avatarLetter}</div>
+      <div>
+        <div class="chat-bubble ${m.from}">${m.text}</div>
+        <div class="chat-bubble-time">${m.time}</div>
+      </div>`;
+    msgs.appendChild(div);
+  });
+  msgs.scrollTop = msgs.scrollHeight;
+
+  overlay.classList.add('open');
+}
+
+function closeChat() {
+  document.getElementById('chat-overlay').classList.remove('open');
+}
+
+// ── Call overlay ──
+let callTimer = null;
+let callSeconds = 0;
+
+function openCall() {
+  const data = chatData[currentChatKey] || chatData['K'];
+  const av = document.getElementById('call-av');
+  av.textContent = data.name[0];
+  av.style.color = data.color;
+  av.style.borderColor = data.color;
+  av.style.boxShadow = `0 0 28px ${data.color}55, inset 0 0 12px ${data.color}11`;
+  document.getElementById('call-name-display').textContent = data.name;
+  const roleEl = document.getElementById('call-role-display');
+  roleEl.textContent = data.role;
+  roleEl.style.color = data.color;
+  const statusEl = document.getElementById('call-status');
+  statusEl.textContent = 'Appel en cours…';
+  statusEl.style.color = 'var(--text2)';
+  const timerEl = document.getElementById('call-timer');
+  timerEl.style.display = 'none';
+  timerEl.textContent = '00:00';
+  clearInterval(callTimer);
+  callSeconds = 0;
+  document.getElementById('call-overlay').classList.add('open');
+  // After 2s → connected
+  setTimeout(() => {
+    statusEl.textContent = 'Connecté';
+    statusEl.style.color = 'var(--green)';
+    timerEl.style.display = 'block';
+    callTimer = setInterval(() => {
+      callSeconds++;
+      const m = String(Math.floor(callSeconds / 60)).padStart(2, '0');
+      const s = String(callSeconds % 60).padStart(2, '0');
+      timerEl.textContent = m + ':' + s;
+    }, 1000);
+  }, 2000);
+}
+
+function closeCall() {
+  document.getElementById('call-overlay').classList.remove('open');
+  clearInterval(callTimer);
+  callTimer = null;
+}
+
+// Step toggle (kept for compat)
+function toggleStep(card, forceOpen) {
+  const content = card.querySelector('.expanded-content');
+  const arrow = card.querySelector('.step-chevron');
+  const isOpen = content.classList.contains('show');
+  if (forceOpen && isOpen) return;
+  content.classList.toggle('show', !isOpen);
+  arrow?.classList.toggle('open', !isOpen);
+}
+
+// Seg control
+function switchSeg(btn, screen) {
+  const parent = btn.closest('.seg-control');
+  parent.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const idx = Array.from(parent.querySelectorAll('.seg-btn')).indexOf(btn);
+
+  if (screen === 'history') {
+    document.getElementById('history-quests').style.display = idx === 0 ? 'block' : 'none';
+    document.getElementById('history-badges').style.display = idx === 1 ? 'block' : 'none';
+    document.getElementById('history-personality').style.display = idx === 2 ? 'block' : 'none';
+  }
+  if (screen === 'social') {
+    document.getElementById('social-leaderboard').style.display = idx === 0 ? 'block' : 'none';
+    document.getElementById('social-activity').style.display = idx === 1 ? 'block' : 'none';
+  }
+}
+
+initPqDots();
+</script>
+</body>
+</html>
