@@ -20,6 +20,7 @@ import SwiftUI
 struct MainAppView: View {
   let wearables: WearablesInterface
   @ObservedObject private var viewModel: WearablesViewModel
+  @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
 
   init(wearables: WearablesInterface, viewModel: WearablesViewModel) {
     self.wearables = wearables
@@ -27,10 +28,13 @@ struct MainAppView: View {
   }
 
   var body: some View {
-    if viewModel.registrationState == .registered || viewModel.hasMockDevice {
+    if !hasCompletedOnboarding {
+      OnboardingView {
+        hasCompletedOnboarding = true
+      }
+    } else if viewModel.registrationState == .registered || viewModel.hasMockDevice {
       TabBarView(wearables: wearables, wearablesVM: viewModel)
     } else {
-      // User not registered - show registration/onboarding flow
       HomeScreenView(viewModel: viewModel)
     }
   }

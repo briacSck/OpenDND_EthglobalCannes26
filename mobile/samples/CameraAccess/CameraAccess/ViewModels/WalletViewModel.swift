@@ -8,6 +8,7 @@
 
 import Foundation
 import SwiftUI
+import Combine
 import DynamicSDKSwift
 
 @MainActor
@@ -22,43 +23,46 @@ final class WalletViewModel: ObservableObject {
   @Published var email = ""
 
   private var sdk: DynamicSDK? { DynamicSDK.shared }
-  private var authListenerId: String?
+  private var cancellables = Set<AnyCancellable>()
 
   func startListening() {
     guard let sdk else { return }
 
     // Check if already authenticated
-    if sdk.auth.authenticatedUser != nil {
+    if let user = sdk.auth.authenticatedUser {
       isAuthenticated = true
       loadWallets()
-      userEmail = sdk.auth.authenticatedUser?.email
+      userEmail = user.email
     }
 
-    // Listen for auth state changes
-    authListenerId = sdk.auth.onAuthStateChange { [weak self] event in
-      Task { @MainActor in
+    // Listen for auth state changes via Combine publisher
+    sdk.auth.authenticatedUserChanges
+      .receive(on: DispatchQueue.main)
+      .sink { [weak self] user in
         guard let self else { return }
-        switch event {
-        case .authenticated:
+        if user != nil {
           self.isAuthenticated = true
-          self.userEmail = sdk.auth.authenticatedUser?.email
+          self.userEmail = user?.email
           self.loadWallets()
-        case .unauthenticated:
+        } else {
           self.isAuthenticated = false
           self.wallets = []
           self.userEmail = nil
-        default:
-          break
         }
       }
-    }
+      .store(in: &cancellables)
+
+    // Listen for wallet changes
+    sdk.wallets.userWalletsChanges
+      .receive(on: DispatchQueue.main)
+      .sink { [weak self] wallets in
+        self?.wallets = wallets
+      }
+      .store(in: &cancellables)
   }
 
   func stopListening() {
-    if let id = authListenerId {
-      sdk?.auth.removeAuthStateChangeListener(id: id)
-      authListenerId = nil
-    }
+    cancellables.removeAll()
   }
 
   func loadWallets() {
@@ -89,7 +93,7 @@ final class WalletViewModel: ObservableObject {
   }
 
   func openAuthFlow() {
-    sdk?.ui.openAuthFlow()
+    sdk?.ui.showAuth()
   }
 
   func createWallet(chain: EmbeddedWalletChain = .evm) async {
@@ -98,7 +102,7 @@ final class WalletViewModel: ObservableObject {
     errorMessage = nil
 
     do {
-      try await sdk.wallets.createWallet(chain: chain)
+      _ = try await sdk.wallets.embedded.createWallet(chain: chain)
       loadWallets()
     } catch {
       errorMessage = error.localizedDescription
@@ -107,7 +111,9 @@ final class WalletViewModel: ObservableObject {
   }
 
   func logout() {
-    sdk?.auth.logout()
+    Task {
+      try? await sdk?.auth.logout()
+    }
   }
 
   var primaryWalletAddress: String? {

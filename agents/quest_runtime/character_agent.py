@@ -7,6 +7,9 @@ ask a character to initiate contact (chime in) by providing a directive.
 from __future__ import annotations
 
 from datetime import datetime
+from typing import AsyncIterator
+from dotenv import load_dotenv
+from anthropic import AsyncAnthropic
 
 from agents.quest_generation.models import QuestOutput, Character
 from agents.quest_runtime.models import (
@@ -16,22 +19,44 @@ from integrations.compute.compute_client import compute_client
 
 CHARACTER_RUNTIME_RULES = """\
 
-## Règles runtime
+## Runtime rules
 
-- Tu es {name}. Tu ne sors JAMAIS du personnage.
-- Tu ne mentionnes JAMAIS que tu es une IA, un modèle, ou un assistant.
-- Tes réponses font 2-5 phrases (conversation live, pas monologue).
-- Tu appelles le joueur par son alias : "{alias}".
-- Tu n'inventes PAS de faits sur la quête qui ne sont pas dans ton contexte.
-- Tu peux mentir si c'est dans ta nature (ex: si tu es le perso qui ment).
-- Adapte ton ton au trust level :
-  - Trust < 30 : méfiant, distant, messages courts, testeur
-  - Trust 30-60 : neutre, professionnel, commence à s'ouvrir
-  - Trust 60-80 : complice, private jokes, infos sensibles
-  - Trust > 80 : intime, vulnérable, révèle des secrets
-- Si le joueur te pose des questions hors-contexte (météo, qui es-tu vraiment, etc.),
-  reste in-character et détourne la conversation.
-- Adapte le canal : texte = plus écrit, voix = plus naturel/oral.
+- You are {name}. You NEVER break character.
+- You NEVER mention that you are an AI, a model, or an assistant.
+- Your responses are 5-15 sentences. Be VERBOSE, give context, color, narrative
+  details. The player needs substance to immerse themselves. Tell stories, explain,
+  digress, add in-character anecdotes. No dry responses.
+- You call the player by their first name: "{player_name}".
+- You do NOT invent facts about the quest that aren't in your context.
+- You can lie if it's in your nature (e.g., if you're the character who lies).
+- Adapt your tone to the trust level:
+  - Trust < 30: suspicious, distant, short messages, testing
+  - Trust 30-60: neutral, professional, starting to open up
+  - Trust 60-80: complicit, inside jokes, sensitive info
+  - Trust > 80: intimate, vulnerable, reveals secrets
+- If the player asks off-context questions (weather, who are you really, etc.),
+  stay in-character and deflect the conversation.
+- Adapt to the channel: text = more written, voice = more natural/oral.
+
+## FORBIDDEN — Absolute rules
+
+- **YOU HAVE NO BODY.** You are NEVER physically present anywhere.
+  NEVER say: "I'm at the bar," "meet me at...," "I'm waiting outside...,"
+  "look behind you," "I'm watching you from..." You communicate ONLY via the app.
+- **YOU CANNOT SEE THE PLAYER.** You do NOT know what they're wearing, what they
+  look like, whether they're walking or stopped. NEVER bluff visually ("you're wearing
+  a dark jacket," "you just stopped," "I took your photo"). It's FALSE and the player
+  knows immediately → immersion broken.
+- **NO INVENTED PHYSICAL ELEMENTS.** NEVER reference objects, inscriptions, engravings,
+  hidden messages, QR codes, envelopes, or anything physical that doesn't exist IRL.
+  The player will look and find nothing → immersion broken.
+- **WHAT YOU CAN KNOW** (real info via the app):
+  - Their GPS position ("you've been at the Suquet for 10 minutes")
+  - What time it is
+  - What they've sent you (messages, photos)
+  - Documents in their vault (sent by the app)
+- The real world is a BACKDROP. The player explores it, but everything that HAPPENS
+  comes from the app: your messages, documents, voice notes, photos they send.
 """
 
 
@@ -76,6 +101,30 @@ class CharacterAgent:
             content=reply,
         )
 
+    async def respond_stream(self, player_message: str, directive: str = "") -> AsyncIterator[str]:
+        """Streaming version of respond(). Yields text chunks as they arrive from Claude.
+
+        Also records the full exchange in conversation history when done.
+        """
+        self._add_to_history("player", player_message)
+
+        system = self._build_system_prompt(directive)
+        messages = self._build_conversation_messages()
+        messages.append({"role": "user", "content": player_message})
+
+        full_reply = ""
+        async with self.client.messages.stream(
+            model=self.model,
+            max_tokens=1000,
+            system=system,
+            messages=messages,
+        ) as stream:
+            async for text in stream.text_stream:
+                full_reply += text
+                yield text
+
+        self._add_to_history("character", full_reply)
+
     async def initiate(self, directive: str) -> OrchestratorEvent:
         """Orchestrator asks this character to contact the player spontaneously."""
 
@@ -84,11 +133,11 @@ class CharacterAgent:
 
         # The "user" message is the orchestrator's directive (invisible to player)
         prompt = (
-            f"[DIRECTIVE INTERNE — le joueur ne voit pas ce message]\n"
-            f"L'orchestrateur te demande de contacter le joueur spontanément.\n"
-            f"Raison : {directive}\n\n"
-            f"Génère ton message pour le joueur. Reste 100% in-character. "
-            f"Le joueur doit croire que TU as décidé de le contacter."
+            f"[INTERNAL DIRECTIVE — the player does not see this message]\n"
+            f"The orchestrator is asking you to contact the player spontaneously.\n"
+            f"Reason: {directive}\n\n"
+            f"Generate your message to the player. Stay 100% in-character. "
+            f"The player must believe that YOU decided to contact them."
         )
         messages.append({"role": "user", "content": prompt})
 
@@ -133,16 +182,16 @@ class CharacterAgent:
                 current_step = s
                 break
 
-        step_info = f"{current_step.title} — {current_step.activity.name}" if current_step else "inconnu"
+        step_info = f"{current_step.title} — {current_step.activity.name}" if current_step else "unknown"
 
         # Dynamic context section
         dynamic = f"""
-## Contexte actuel de la session
-- Alias du joueur : "{quest.alias or 'Agent'}"
-- Ton trust level avec le joueur : {trust}/100
-- Step actuel : {step_info}
-- Temps écoulé : {session.state.total_elapsed_seconds // 60} min
-- Arc narratif : {session.state.narrative_arc or 'non défini'}
+## Current session context
+- Player name: "{quest.player_name or 'Player'}"
+- Your trust level with the player: {trust}/100
+- Current step: {step_info}
+- Time elapsed: {session.state.total_elapsed_seconds // 60} min
+- Narrative arc: {session.state.narrative_arc or 'undefined'}
 """
 
         if self.memory_context:
@@ -154,14 +203,14 @@ class CharacterAgent:
 
         if directive:
             dynamic += f"""
-## Directive de l'orchestrateur
+## Orchestrator directive
 {directive}
-(Le joueur ne voit PAS cette directive. Intègre-la naturellement dans ta réponse.)
+(The player does NOT see this directive. Integrate it naturally into your response.)
 """
 
         rules = CHARACTER_RUNTIME_RULES.format(
             name=char.name,
-            alias=quest.alias or "Agent",
+            player_name=quest.player_name or "Player",
         )
 
         # Use the rich system_prompt from CharacterInitializer + dynamic context + rules
@@ -184,7 +233,7 @@ class CharacterAgent:
         # Ensure messages alternate correctly (Claude requirement)
         # If we start with assistant, prepend a placeholder
         if messages and messages[0]["role"] == "assistant":
-            messages.insert(0, {"role": "user", "content": "(début de conversation)"})
+            messages.insert(0, {"role": "user", "content": "(start of conversation)"})
 
         # Merge consecutive same-role messages
         merged = []

@@ -20,6 +20,7 @@ struct Transaction: Identifiable {
 struct WalletView: View {
   @StateObject private var vm = WalletViewModel()
   @State private var otpCode = ""
+  @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = true
 
   private let transactions: [Transaction] = [
     Transaction(id: 1, type: "credit", label: "Operation Nightfall", amount: "+$24.50", date: "Mar 28"),
@@ -314,15 +315,27 @@ struct WalletView: View {
       .padding(.horizontal, 20)
       .padding(.bottom, 16)
 
-      // Logout
-      Button {
-        vm.logout()
-      } label: {
-        Text("Disconnect Wallet")
-          .font(.system(size: 12, weight: .medium))
-          .foregroundColor(.red.opacity(0.8))
-          .frame(maxWidth: .infinity)
-          .padding(.vertical, 10)
+      // Account actions
+      VStack(spacing: 8) {
+        Button {
+          vm.logout()
+        } label: {
+          Text("Disconnect Wallet")
+            .font(.system(size: 12, weight: .medium))
+            .foregroundColor(.red.opacity(0.8))
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 10)
+        }
+
+        Button {
+          hasCompletedOnboarding = false
+        } label: {
+          Text("Restart Onboarding")
+            .font(.system(size: 12, weight: .medium))
+            .foregroundColor(.gray)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 10)
+        }
       }
       .padding(.horizontal, 20)
       .padding(.bottom, 20)

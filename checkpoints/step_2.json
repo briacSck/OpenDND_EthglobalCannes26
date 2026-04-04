@@ -1,0 +1,101 @@
+{
+  "step_id": 2,
+  "title": "The Jailer's Geometry",
+  "activity": {
+    "name": "La Croisette Waterfront — The Palais des Festivals Esplanade",
+    "address": "1 Boulevard de la Croisette, 06400 Cannes",
+    "price_eur": 0,
+    "duration_minutes": 15,
+    "category": "exploration"
+  },
+  "narrative_intro": "You've barely left the Carlton's shadow when your phone buzzes three times in rapid succession — three different senders. Vera's message is terse: \"The cipher map uses a 17th-century surveyor's grid. The key is angular orientation — the jailer was a military cartographer before he was a prison guard. Find me a sightline.\" Marco's is panicked: \"Someone at the auction photographed us both. I'm sending you the partial image of the map the buyer's broker flashed during bidding. Study it. Tell me what projection system it uses — I need to know if this thing is real before I do something I can't undo.\" And then a number you don't recognize sends a single line: \"The Palais steps face 187° south-southwest. That matters. — Le Pharmacien.\" You're walking toward the Palais des Festivals now, where the MIPIM detritus still litters the esplanade — abandoned banner frames, cable runs taped to concrete, the skeletal remains of a conference that moved billions. Somewhere in this architectural wreckage, three people are waiting for you to confirm whether a 328-year-old map is authentic. The problem is, you're starting to suspect each of them already knows the answer.",
+  "instruction": "Head to the Palais des Festivals esplanade (3-minute walk east along the Croisette from the Carlton). When you arrive, Marco will send you a partial photograph of the cipher map shown during the auction. Your job: study the real architectural orientation of the Palais des Festivals — specifically the famous front steps facing the sea — and compare the angles to the map fragment. Photograph the Palais steps from the waterfront side, capturing the full staircase and its orientation toward the harbor. Send the photo to Vera. Then tell Marco what compass bearing the steps face and whether the map's grid lines could use the Palais (or its historical predecessor, the old Casino Municipal) as an orientation anchor.",
+  "player_action": "Photograph the grand staircase of the Palais des Festivals from the waterfront, capturing the full width of the steps and their orientation toward the Vieux Port. Then analyze the partial map image Marco sends and report to him what cartographic projection or grid system the map appears to use, based on what you observe about directional alignments in the real architecture.",
+  "gps_trigger": {
+    "type": "image",
+    "character": "Marco Delvecchio",
+    "content_brief": "A high-resolution crop of the cipher map fragment — showing a hand-drawn grid of intersecting lines overlaid on what appears to be a coastal outline, with tiny annotations in Old French. Three buildings are marked with crosses. Angular measurements are scratched in the margins. A watermark is faintly visible: the Lérins abbey seal. Marco's accompanying message reads: 'This is all I got before the broker locked the display case. The angles — they're not random. Someone used real buildings as reference points. I need you to tell me which ones.'"
+  },
+  "camera_prompt": "The player photographs the grand staircase of the Palais des Festivals from the waterfront/beach side. AI should identify: the iconic red-carpet steps, the modernist concrete facade, the orientation of the building toward the sea and Vieux Port, any visible compass directions or harbor landmarks. Narratively, the AI interprets the architectural angles as matching — or contradicting — the grid lines on the cipher map fragment, noting that the Palais sits on the exact site of the old Casino Municipal which would have existed in the 17th century as a coastal landmark visible from Île Sainte-Marguerite.",
+  "walking_minutes_from_previous": 3,
+  "tension": {
+    "type": "intellectual_pressure",
+    "description": "Three characters are simultaneously demanding the player's expertise on the cipher map's authenticity. Each will interpret the player's analysis differently — Vera needs confirmation to advance her trap, Marco needs reassurance before committing to a dangerous play, and Le Pharmacien is testing whether the player actually has the skills they claim. The player's assessment here determines how much trust each character extends for the rest of the quest.",
+    "resolution": "The player's photo and analysis — accurate or not — triggers divergent character reactions. A strong analysis earns Marco's vulnerable honesty and Le Pharmacien's grudging respect. A weak one causes Vera to start withholding information and Marco to spiral into recklessness."
+  },
+  "character_interactions": [
+    {
+      "character": "Marco Delvecchio",
+      "trigger": "Player sends analysis of the map's grid system after photographing the Palais steps",
+      "phone_version": "Marco responds with voice message, audibly shaken: 'A triangulation grid. Using coastal landmarks. God, that's — that's exactly what Noor's father published in his last paper before the university buried him. The Lérins cartographic method. She was right. Her father was right.' Long pause. 'Listen, I need to tell you something about Noor Kazan. We... knew each other. Istanbul, 2019. She was researching Ottoman trade routes and I was — it doesn't matter what I was doing. The point is, if she's here and she sees that map, she'll recognize the methodology instantly. And she'll know I'm the one who stole her father's research notes from the Istanbul archive. Do NOT mention my name to her. Please.'",
+      "rayban_version": {
+        "script": "Marco's voice crackles through, strained and rapid: 'Triangulation grid. Coastal landmarks. That's the Lérins method — the same system Noor Kazan's father described before they discredited him. She was right all along. Listen — I knew Noor. Istanbul, 2019. If she sees that map, she'll know I stole her father's research from the archive. Do not mention my name to her. I'm begging you.'",
+        "audio_type": "voice_message",
+        "duration_seconds": 45,
+        "camera_mode": {
+          "enabled": false,
+          "purpose": ""
+        },
+        "contextual_music": {
+          "enabled": true,
+          "track_type": "low_tension_ambient",
+          "duration_seconds": 45
+        }
+      },
+      "awaits_response": true
+    },
+    {
+      "character": "Vera Solari",
+      "trigger": "Player sends photo of Palais des Festivals steps",
+      "phone_version": "Vera texts back within 90 seconds — unnervingly fast, as if she was watching for the upload: 'Good. The steps face 187° SSW — Le Pharmacien wasn't wrong about that, which irritates me. Now look at the map fragment Marco sent you. See the longest line, the one cutting diagonally from the upper cross to the coastal outline? That's the sightline from Fort Royal on Sainte-Marguerite to the old Casino Municipal — which stood exactly where you're standing now. The jailer used buildings he could SEE from the prison as his grid anchors. Which means the map's destination point can be reverse-calculated from those angles. I've already done the math. It points to Le Suquet — specifically, to a wall inside what is now the Musée des Explorations du Monde. I need you to get there. But first, I need to know: did Marco tell you about Istanbul?'",
+      "rayban_version": {
+        "script": "Vera's voice, clipped and controlled: 'The steps face 187° south-southwest. Le Pharmacien was right, which irritates me. Now — the longest line on that map fragment runs from Fort Royal to the old Casino Municipal. You're standing on its exact site. The jailer used visible coastal landmarks as his grid. I've reverse-calculated the angles. They point to Le Suquet — a wall inside the Musée des Explorations du Monde. We need to get there. But first: did Marco tell you about Istanbul?'",
+        "audio_type": "voice_message",
+        "duration_seconds": 35,
+        "camera_mode": {
+          "enabled": false,
+          "purpose": ""
+        },
+        "contextual_music": {
+          "enabled": false,
+          "track_type": "",
+          "duration_seconds": 0
+        }
+      },
+      "awaits_response": true
+    },
+    {
+      "character": "Le Pharmacien",
+      "trigger": "GPS arrival at Palais des Festivals esplanade, delayed 4 minutes after arrival",
+      "phone_version": "A message from the unknown number, no greeting: 'If the grid is triangulated from Fort Royal, the margin error at this distance is ±3 meters per degree of miscalculation. A 17th-century compass had ±2° variance. That means the map's destination has a search radius of roughly 6 meters. Enough to identify a wall. Not enough to identify a stone. You'll need the full map for that. The buyer has the full map. The buyer is on a yacht called the Seraphim Star. The Seraphim Star is registered to a shell company in Cyprus that also owns four apartments in the Gray d'Albion building. The Gray d'Albion apartments were purchased with proceeds from jewels stolen from the Carlton InterContinental on July 28, 2013. This is not a treasure hunt. This is a crime scene. Act accordingly. — Le Pharmacien'",
+      "rayban_version": {
+        "script": "Flat, synthetic-sounding voice — possibly run through a modulator: 'Triangulated grid from Fort Royal. Margin error: plus or minus three meters per degree. Seventeenth-century compass variance: two degrees. Search radius at destination: six meters. Enough for a wall. Not a stone. You need the full map. The buyer has it. The yacht is the Seraphim Star. Registered to a Cyprus shell. Same shell that owns Gray d'Albion apartments. Purchased with Carlton heist proceeds. July 28, 2013. This is a crime scene. Act accordingly.'",
+        "audio_type": "voice_message",
+        "duration_seconds": 30,
+        "camera_mode": {
+          "enabled": false,
+          "purpose": ""
+        },
+        "contextual_music": {
+          "enabled": true,
+          "track_type": "dark_electronic_pulse",
+          "duration_seconds": 30
+        }
+      },
+      "awaits_response": false
+    }
+  ],
+  "verification": {
+    "method": "photo_ai",
+    "target": "Grand staircase of the Palais des Festivals, captured from the waterfront/Croisette side showing full steps and sea-facing orientation",
+    "success_condition": "AI identifies the Palais des Festivals iconic staircase, its south-southwest orientation, and the player provides a plausible cartographic analysis (mentioning triangulation, grid orientation, coastal landmarks, or angular measurement)",
+    "success_reaction": "Vera sends a follow-up: 'You actually know what you're doing. That changes things. I was prepared to feed you simplified instructions, but you don't need training wheels. Here — ' She unlocks a second image in the vault: a high-resolution scan of a 1687 military survey of Cannes showing the exact buildings that would have been visible from Fort Royal. 'Cross-reference this with the map fragment. You'll see the third anchor point. It's the church tower in Le Suquet.' +40 XP. Marco's trust increases — he sends a personal detail: 'My real name isn't Delvecchio. But you've earned the right to not hear that story yet.'",
+    "failure_fallback": "Vera texts: 'The photo's usable but your analysis is thin. I'll do the cartographic work — you focus on getting to Le Suquet. I'm sending you simplified coordinates.' She sends a marked-up version of the map fragment with arrows and annotations, effectively doing the work for the player. Story continues with slightly reduced trust from Marco, who texts: 'Not sure you're the expert they said you were. But we're past the point of finding someone else.' Le Pharmacien sends nothing — silence is his judgment.",
+    "timeout_reaction": "After 6 minutes, Marco sends an anxious text: 'Are you still at the Palais? The yacht crew just started engine checks — that's a 40-minute pre-departure sequence. We're running out of margin. Send me ANYTHING — even a guess. I'll take a guess over silence right now.' If no response after 8 minutes, Vera intervenes: 'I don't have time to wait for perfectionism. I've done my own triangulation. Get to the Forville Market area — I'll direct you from there.'"
+  },
+  "blockchain_event": "cipher_map_analysis_submitted",
+  "unlock_message": "Marco's partial map fragment has been added to your vault. Three sightlines. Three anchor points. The geometry of a 328-year-old prison is still visible in the streets beneath your feet.",
+  "skill_xp": 40,
+  "is_skill_step": true,
+  "is_collaborative": false
+}

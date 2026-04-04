@@ -1,0 +1,100 @@
+{
+  "step_id": 6,
+  "title": "The Mask Unmade",
+  "activity": {
+    "name": "Musée des Explorations du Monde — Interior Investigation & Final Cipher Resolution",
+    "address": "Place de la Castre, Le Suquet, 06400 Cannes",
+    "price_eur": 6,
+    "duration_minutes": 45,
+    "category": "museum_visit",
+    "booking_url": "https://www.cannesticket.com/offres/musee-des-explorations-du-monde-cannes-fr-5366287/"
+  },
+  "narrative_intro": "The heavy wooden door closes behind you and the noise of Le Suquet — the gulls, the distant hum of the port — cuts to silence. The air inside the Musée des Explorations du Monde smells of old stone and polished wood, centuries folded into glass cases. You're standing in the castle that once watched over every ship entering Cannes harbor, built by monks from the same Lérins monastery that produced the reliquary that started all of this.\n\nYour phone vibrates. Three messages arrive simultaneously — Vera, Noor, and Yael, all aware you've entered the museum. Each wants something different from the next few minutes. The cipher's final coordinate points to an object in the Mediterranean antiquities collection on the ground floor. A specific vessel. A specific inscription. The map was always leading here — to the place where the jailer hid something inside the one institution nobody would ever think to rob: a museum that didn't exist yet.\n\nBut Vera's cipher is a forgery. You know that now. Which means the coordinates she gave you point to something she planted in the narrative — not something the jailer hid. The real question isn't what the cipher says. It's what's actually here, in this collection, that Vera is so desperate for you to find. And why Le Pharmacien just sent you a photograph of a page from the prison registry of Fort Royal, dated 1698, with one entry circled: an inventory of items transferred with the masked prisoner. Item 7: \"un vase de terre, contenant des papiers, scellé.\"\n\nA sealed clay vessel containing papers. Transferred with the prisoner. Lost when Napoleon dismantled the fortress archives.\n\nYou're looking for a Provençal clay vessel in the Mediterranean antiquities collection. If it's here — if it was always here, miscatalogued, hiding in plain sight for three centuries — then Vera didn't forge the trail. She reverse-engineered it from real evidence. And the documents inside may have been read by the museum's curators without anyone understanding what they had.\n\nThe yacht in the Vieux Port isn't going anywhere. Yael's people have delayed its departure with a customs inspection. You have time. But Marco just went silent, and Noor's last message ended mid-sentence. Something has shifted. Find the vessel. Photograph it. And decide who gets to know what you find.",
+  "instruction": "Your ticket has been activated through the app. Enter the Musée des Explorations du Monde and make your way to the Mediterranean antiquities collection on the ground floor. You are looking for a Provençal clay vessel — likely terracotta, likely 17th century or catalogued as such — among the Mediterranean artifacts. Examine the vessels on display. Look for any that match the description: sealed or once-sealed, Provençal origin, roughly the size described in a prison transfer inventory. Photograph the vessel or vessels you believe could be the one referenced in the 1698 Fort Royal registry. Then climb the Tour du Suquet — the medieval watchtower — and from the panoramic viewing platform, photograph the Vieux Port below. Noor needs visual confirmation of the yacht's position, and Vera needs to know if a second vessel has appeared at the eastern dock. Send both photographs through the app. Your choices in the next few minutes determine who walks away with the evidence — and who walks away with nothing.",
+  "player_action": "Find and photograph a Provençal terracotta vessel in the Mediterranean antiquities collection that could match the 1698 Fort Royal prison transfer inventory description. Then climb the Tour du Suquet watchtower and photograph the panoramic view of the Vieux Port, identifying the yacht's position at the docks below.",
+  "gps_trigger": {
+    "type": "document",
+    "character": "Le Pharmacien",
+    "content_brief": "A high-resolution scan of a page from the 1698 Fort Royal prison transfer registry, with Item 7 circled in red: 'un vase de terre, contenant des papiers, scellé' — a sealed clay vessel containing papers. Marginal note in different handwriting reads: 'envoyé à la tour de Cannes, inventaire civil.' A second document accompanies it: a partial 19th-century museum acquisition log from the Château de la Castre showing 'divers objets de terre, provenance monastique, Lérins' — miscellaneous clay objects of monastic provenance from Lérins. Le Pharmacien's only annotation: 'It was never lost. It was filed wrong. Room 2, west wall. Go.'"
+  },
+  "camera_prompt": "The player photographs terracotta or clay vessels in the Mediterranean antiquities collection. AI identifies the vessel type, approximate period, provenance information on museum labels, any visible seals or markings. The AI weaves what it sees into the narrative — matching or contrasting the vessel with the 1698 description. If the player photographs the panoramic view from the Tour du Suquet, AI identifies the Vieux Port, dock positions, and any large vessels visible, interpreting them as the seized yacht in the narrative context.",
+  "walking_minutes_from_previous": 1,
+  "tension": {
+    "type": "climax",
+    "description": "All threads converge inside the museum. Vera's forgery is exposed but her trail proved real. Noor has gone silent — possibly intercepted by the buyer's network. Marco's betrayal or loyalty depends on what the player shared with him. Yael is demanding the player transmit everything to her as legal evidence. Le Pharmacien wants public disclosure. The player holds the pivot: who they send the photographs to first determines who controls the discovery. The vessel may actually contain — or have once contained — documents that identify the Man in the Iron Mask. Three centuries of mystery, sitting in a glass case labeled 'Provençal, 17th c., monastic origin, use unknown.'",
+    "resolution": "The player photographs the vessel and the view from the tower, then chooses who receives the evidence. The twist lands: Vera forged the cipher map, yes — but she forged it by working BACKWARD from real evidence she found in this museum five years ago. She was the anonymous researcher who requested access to the Lérins acquisition archive in 2021. The vessel was opened by conservators in 1987 and the papers inside were catalogued as 'liturgical fragments, untranslated.' They are still in the museum's archive. Vera has been engineering this entire day to force an official re-examination of those papers — because no one believed her when she published her findings. The reliquary, the auction, the cipher — all theater to create a public event dramatic enough that the documents couldn't be ignored again. The player can validate her scheme or expose it. Either way, the documents get a second look."
+  },
+  "character_interactions": [
+    {
+      "character": "Vera Solari",
+      "trigger": "Player sends photograph of the terracotta vessel from the Mediterranean collection",
+      "phone_version": "Vera's response arrives after a long pause — longer than any of her previous messages. When it comes, her tone has shifted entirely. The performance is over.\n\n'You found it. I know you found it because I found it five years ago. Same room, same case, same awful fluorescent lighting. I requested access to the Lérins acquisition archive in 2021 under a false academic credential. The conservators opened that vessel in 1987. The papers inside were catalogued as liturgical fragments — untranslated, unstudied, forgotten. I read them. They are not liturgical. They are personal letters, written in a cipher that matches the one used by Saint-Mars, the jailer of the Iron Mask. I published my findings in the Revue d'Histoire Moderne. No one read it. No one cared. So I built all of this — the reliquary, the auction, the cipher map, your involvement — to create a situation so dramatic that the academic world and the press would have to re-examine those papers. You were never authenticating a reliquary. You were authenticating a story. And now you have to decide: do you tell Yael everything, and I go to prison for fraud and forgery? Or do you validate the trail, the documents get examined properly, and the Man in the Iron Mask finally gets a name? I won't insult you by saying there's an easy answer. There isn't. But you've earned the right to make this call. Not Noor. Not Yael. You.'",
+      "rayban_version": {
+        "script": "Vera's voice comes through raw, stripped of its usual precision. 'You found it. Same room where I found it five years ago. I published what those papers contain. No one listened. So I fabricated a spectacle — the reliquary, the cipher, you — to force the world to look. Those papers are real. My methods are not. Now you decide who I am: a criminal, or the woman who solved history's greatest mystery and couldn't get anyone to care. Send the photo to Yael and I'm done. Send it to Le Pharmacien and the papers get their day. Your call. I'm tired of making it for everyone.'",
+        "audio_type": "voice_message",
+        "duration_seconds": 55,
+        "camera_mode": {
+          "enabled": false,
+          "purpose": ""
+        },
+        "contextual_music": {
+          "enabled": true,
+          "track_type": "minimal piano, single repeated note dissolving into silence",
+          "duration_seconds": 55
+        }
+      },
+      "awaits_response": true
+    },
+    {
+      "character": "Capitaine Yael Morin",
+      "trigger": "Player sends photograph of the Vieux Port panorama from the Tour du Suquet",
+      "phone_version": "Yael's message is clipped, professional, but there's an undercurrent of urgency she's no longer hiding.\n\n'Good. I can see the yacht from your angle — eastern berth, third slip. My team boarded twenty minutes ago under customs authority. The skeleton crew had already begun destroying digital records. We recovered partial files linking three shell companies to properties purchased with proceeds from the 2013 Carlton heist. This is the break the investigating magistrate has needed for eleven years. But I need more. If what you're telling me about Vera Solari is accurate — that she engineered a fraudulent auction to manipulate an investigation — that's a separate criminal matter. I need your testimony. I need the photographs. I need the vessel provenance. I understand she may have done this for reasons you find sympathetic. I find them sympathetic too. But I don't get to choose which laws apply based on how I feel about the person breaking them. Neither do you. Send me everything you have, and I will ensure the museum documents are examined through proper forensic channels. Or don't, and watch this become another conspiracy theory that lives and dies on Reddit. Your move, authenticator.'",
+      "rayban_version": {
+        "script": "Yael's voice is steady, deliberate — a captain who has waited years for this. 'I can see the yacht from your photo. My team is aboard. We've recovered partial Carlton heist files. Now I need you. If Vera engineered a fraud, I need your evidence. I know she may be right about those documents. But the law doesn't bend for good intentions. Send me what you have. I'll make sure the museum papers get a proper forensic examination. Or keep it to yourself and watch this disappear into myth. You've been an authenticator all day. Authenticate this: does the truth need permission to come out?'",
+        "audio_type": "voice_message",
+        "duration_seconds": 40,
+        "camera_mode": {
+          "enabled": true,
+          "purpose": "AI analyzes the panoramic view to identify the yacht position and dock layout, feeding details into Yael's tactical response"
+        },
+        "contextual_music": {
+          "enabled": false
+        }
+      },
+      "awaits_response": true
+    },
+    {
+      "character": "Noor Kazan",
+      "trigger": "90 seconds after the Vera interaction resolves",
+      "phone_version": "Noor's message arrives fragmented, as though typed in a hurry.\n\n'Still here. Sorry for going dark — the buyer's people found my real name. Had to switch devices. Listen: I don't care about Vera's scheme or Yael's case. My father spent thirty years arguing that the Iron Mask was an Armenian diplomat named Davtyan, and the Sorbonne laughed him out of his career. He died believing he was right. If those papers in the museum prove him wrong, fine. If they prove him right, I need to be the one to publish. Not Vera. Not some government press office. Not a podcast. Me. His daughter. In a peer-reviewed journal with his name as co-author. That's all I've wanted since I walked into that auction. You don't owe me anything. But if you photograph the papers' reference number from the museum catalogue — just the accession number — I can file an official academic access request tonight. Vera gets her vindication. Yael gets her evidence. I get to finish my father's work. This is the only version where everyone wins. Please.'",
+      "rayban_version": {
+        "script": "Noor's voice is breathless, hurried. 'I had to switch devices — the buyer's people found me. Listen. I don't care about Vera or Yael. My father died trying to prove the Iron Mask was an Armenian diplomat. If those papers prove anything, I need to publish it. His name, a real journal. Just photograph the accession number from the museum catalogue. I can file an academic access request tonight. Everyone gets what they want. This is the version where nobody loses. Please.'",
+        "audio_type": "voice_message",
+        "duration_seconds": 35,
+        "camera_mode": {
+          "enabled": false,
+          "purpose": ""
+        },
+        "contextual_music": {
+          "enabled": true,
+          "track_type": "distant oud melody, single phrase repeated and fading",
+          "duration_seconds": 30
+        }
+      },
+      "awaits_response": true
+    }
+  ],
+  "verification": {
+    "method": "photo",
+    "target": "A terracotta or clay vessel in the Mediterranean antiquities collection AND a panoramic photograph of the Vieux Port from the Tour du Suquet watchtower",
+    "success_condition": "Player photographs a plausible Provençal terracotta vessel from the museum collection showing period-appropriate characteristics, AND photographs the Vieux Port panorama from the tower showing the dock area",
+    "success_reaction": "Le Pharmacien sends a final message: 'The accession number is 1987.LER.044. The conservator's report noted \"papiers pliés, encre ferrogallique, état fragile, langue non identifiée.\" Folded papers, iron gall ink, fragile condition, unidentified language. Three hundred and twenty-eight years in a glass case and nobody asked what language it was because nobody expected a clay pot from a monastery to contain state secrets. You did well today. Better than I expected. Better than any of them deserved. Publish or don't. But remember: I gave you the truth for free. Everyone else charged admission.' — The player receives maximum XP, full trust from all characters who received evidence, and a blockchain-minted certificate: 'Salt and Ashes — Authenticator, First Class.' The final narrative beat acknowledges the player's choices and reflects them back: who they sent photos to, who they trusted, what kind of authenticator they became.",
+    "failure_fallback": "If the player cannot find a matching vessel or doesn't climb the tower, Le Pharmacien sends the accession number anyway: 'You're overthinking it. Room 2, west wall, third case from the door. It has a crack along the rim where the conservators opened it in 1987. The view from the tower would have been nice — Saint-Mars could see every ship from up there. But the documents matter more than the view. Here's the number: 1987.LER.044. Do what you want with it.' The story resolves with slightly less dramatic impact but all narrative threads close. The player still makes the final choice of who receives the evidence.",
+    "timeout_reaction": "Dimitri breaks his silence with a rare double-sentence message: 'Museum closes at 6. You're not the type to let a clock beat you.' Thirty seconds later, Vera sends: 'If you're hesitating, that means you're taking it seriously. That's more than anyone else has done. Take your time. The papers waited three centuries. They can wait ten more minutes.'"
+  },
+  "blockchain_event": "mint_quest_completion_nft_salt_and_ashes_authenticator",
+  "unlock_message": "The door opens onto centuries of collected expeditions — masks, instruments, weapons, maps. Somewhere in this castle, a clay vessel holds the answer to a question that has haunted historians since 1698. Le Pharmacien's documents have just appeared in your vault. Room 2. West wall. The jailer's secret has been hiding in plain sight. Find it.",
+  "skill_xp": 50,
+  "is_skill_step": true,
+  "is_collaborative": false
+}

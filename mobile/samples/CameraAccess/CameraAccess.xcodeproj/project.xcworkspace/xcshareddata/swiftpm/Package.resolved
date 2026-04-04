@@ -1,5 +1,5 @@
 {
-  "originHash" : "9dd38f857db7479f1816015771b37a83ed7849590400ca2677a9c5f1b5014407",
+  "originHash" : "91baeee9cce385134c4baee5b8384e1d7e7b5c9ff89152f718357a9f1f229597",
   "pins" : [
     {
       "identity" : "meta-wearables-dat-ios",
@@ -8,6 +8,15 @@
       "state" : {
         "revision" : "2ea30fa228359315baf71c404aec821472e994c1",
         "version" : "0.5.0"
+      }
+    },
+    {
+      "identity" : "swift-sdk-and-sample-app",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/dynamic-labs/swift-sdk-and-sample-app",
+      "state" : {
+        "revision" : "2903d4d70c477a8119108769a00363df1a5c7180",
+        "version" : "1.0.11"
       }
     }
   ],

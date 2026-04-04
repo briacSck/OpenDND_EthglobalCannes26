@@ -1,0 +1,101 @@
+{
+  "step_id": 3,
+  "title": "The Pharmacist's Price",
+  "activity": {
+    "name": "Vieux Port de Cannes — Quai Saint-Pierre Investigation",
+    "address": "Quai Saint-Pierre, 06400 Cannes",
+    "price_eur": 0,
+    "duration_minutes": 20,
+    "category": "exploration"
+  },
+  "narrative_intro": "The esplanade geometry gave you three coordinates. Two match locations on the modern Cannes grid. The third doesn't exist — it points to open water, roughly where a 68-meter seized superyacht named *Seraphim* has been anchored in the Vieux Port since February, frozen by a French court order tied to EU sanctions. Skeleton crew. Legal limbo. And according to Vera, the anonymous buyer's extraction vehicle.\\n\\nBut as you cut south toward the old port, your phone buzzes twice in rapid succession. The first message is from a number you don't recognize — a single image: a pharmaceutical label from 1887, handwritten in Latin, with the word PERSONA scratched into the margin. Le Pharmacien has found you.\\n\\nThe second message is from Noor Kazan. She's tracked the same coordinates you have. She wants to collaborate — pool what you've decoded from the esplanade with what she pulled from the auction's provenance files. She's offering her father's research on the Iron Mask jailer's cipher system in exchange. But she wants to meet you at the port. Not in person — she'll be watching the yacht from somewhere along the quay, and she needs your eyes on something she can't see from her position.\\n\\nThe Vieux Port is busy. Fishing boats, charter yachts, the ferry terminal to the Lérins Islands. Somewhere along Quai Saint-Pierre, between the fish market and the harbor master's office, you need to find the *Seraphim* — or at least confirm it's really there. Because Le Pharmacien's message implies something Vera hasn't told you: the yacht may have already moved once this week.",
+  "instruction": "Head to Quai Saint-Pierre at the Vieux Port. When you arrive, locate and photograph any large yacht or vessel moored in the port — Noor needs visual confirmation of what's anchored there. While you photograph, count the number of visible surveillance cameras along the quay between the fish market stalls and the port authority building. Report the count to Le Pharmacien — he claims it will tell him whether the port's security grid has been \"adjusted\" for the buyer's departure. This is a collaborative step: share your camera feed and findings with your quest partner to cross-reference observations.",
+  "player_action": "Photograph the largest yacht or vessel visible in the Vieux Port from Quai Saint-Pierre and send it to Noor. Then count the surveillance cameras visible along the quay between the fish market area and the port authority office, and report the number to Le Pharmacien.",
+  "gps_trigger": {
+    "type": "document",
+    "character": "Le Pharmacien",
+    "content_brief": "A scanned image appears in the vault: a 19th-century pharmaceutical inventory page from a Cannes apothecary, with three entries circled in red ink. The circled entries are all compounds used in period-accurate iron gall ink — the same ink type that would have been used for any 1698 document. A handwritten annotation in modern pen reads: 'She mixed it herself. Ask her which century.' This is Le Pharmacien's first direct accusation that Vera forged the cipher map."
+  },
+  "camera_prompt": "The player photographs a yacht or large vessel in the Vieux Port of Cannes. AI interprets the vessel's details — size, flag, deck equipment, any visible name — and Noor reacts narratively, comparing what she sees to the known profile of the seized superyacht Seraphim. If the yacht matches (large, white, multiple decks), Noor confirms the extraction vehicle is still in port. If it's a different vessel, Noor notes the Seraphim may have been moved to the outer anchorage — raising the stakes on the timeline.",
+  "walking_minutes_from_previous": 4,
+  "tension": {
+    "type": "alliance_dilemma",
+    "description": "Noor and Le Pharmacien both want the player's observations but for opposing reasons. Noor needs yacht confirmation to time her own move on the reliquary. Le Pharmacien is building a case that Vera's entire operation is a fabrication — and the camera count is his way of testing whether the player will share raw intelligence with him or filter it through Vera first. Sharing with both means neither fully trusts you. Choosing one burns the other.",
+    "resolution": "The player's choice of who receives the most detailed information shifts alliance dynamics. Le Pharmacien rewards honesty with a critical revelation about the ink forgery. Noor rewards cooperation with her father's cipher key fragment. Both paths advance the story but reconfigure trust."
+  },
+  "character_interactions": [
+    {
+      "character": "Noor Kazan",
+      "trigger": "Player sends photo of yacht/vessel in the port",
+      "phone_version": "Noor responds with a voice message, her tone measured but urgent: 'That's... not the Seraphim. Or it's been repainted — the Seraphim had a dark blue hull when my contact photographed it in Monaco last month. Either they've disguised it or Vera's been lying about the extraction timeline. I'm sending you a fragment of my father's cipher analysis — he spent eleven years on the Iron Mask correspondence before the university stripped his tenure. Page 7 is the one that matters. The jailer used a rotating key based on liturgical calendar dates. If the reliquary map is authentic, the cipher resets on saint's days. If it doesn't... it's modern. Check it against what Vera gave you.' A 3-page academic PDF appears in the vault.",
+      "rayban_version": {
+        "script": "Noor's voice comes through your frames, low and controlled, as if she's speaking from somewhere nearby but refuses to say where. 'Look at the hull color. Does that match a vessel that's been sitting in legal seizure since February? Paint oxidizes. Salt air does things. If that hull is pristine, someone's maintaining it — or it arrived recently. Send me the photo. I'm giving you my father's cipher work in exchange. Page seven. The liturgical key. It's how we prove whether Vera's map is real or manufactured.'",
+        "audio_type": "voice_message",
+        "duration_seconds": 35,
+        "camera_mode": {
+          "enabled": true,
+          "purpose": "AI analyzes the photographed vessel's hull condition, size, visible flags or registration, and deck configuration to determine if it matches the profile of a seized oligarch yacht"
+        },
+        "contextual_music": {
+          "enabled": false,
+          "track_type": "",
+          "duration_seconds": 0
+        }
+      },
+      "awaits_response": true
+    },
+    {
+      "character": "Le Pharmacien",
+      "trigger": "Player reports camera count or sends any observation about port security",
+      "phone_version": "A text message, no greeting: 'Fourteen was the number last Tuesday. If you counted fewer, they've been disabled. If more, new ones were installed for the departure. Either way, someone with port authority access is facilitating. — You found the document I left in your vault. The ink compounds. Vera Solari purchased iron gall ink reagents from a specialty supplier in Grasse eight weeks ago. I have the receipt. She built that cipher map in her apartment. The question isn't whether it's a forgery. The question is whether what the forgery points to is still real. Ask yourself: why would she forge a map to a location that contains nothing?' A purchase receipt image appears in the vault.",
+      "rayban_version": {
+        "script": "Le Pharmacien's voice is synthetic, digitally altered, gender-indeterminate. A whisper that sounds like it's being read from notes. 'The cameras. How many. This matters more than you think. Port surveillance in Cannes runs through a municipal system that was upgraded after twenty-fifteen. Any deviation from baseline means someone paid for a gap. Count carefully. And while you're counting — did you read what I sent you? The ink compounds. She bought them in Grasse. Eight weeks ago. Vera made that map herself. But here is what I cannot determine from where I sit: does the location the map points to actually contain something? That is why I need you. You are my eyes in the geometry.'",
+        "audio_type": "voice_message",
+        "duration_seconds": 30,
+        "camera_mode": {
+          "enabled": false,
+          "purpose": ""
+        },
+        "contextual_music": {
+          "enabled": false,
+          "track_type": "",
+          "duration_seconds": 0
+        }
+      },
+      "awaits_response": true
+    },
+    {
+      "character": "Vera Solari",
+      "trigger": "Time elapsed: 6 minutes after GPS arrival, or immediately if player shares Le Pharmacien's accusations",
+      "phone_version": "Vera calls. She sounds like she's walking fast, slightly out of breath. 'I know Le Pharmacien contacted you. I know what he sent. He's not wrong about the ink — I'm not going to insult you by denying it. Yes. I drew the map. But I drew it from memory, Player. I saw the original in 2019, in a private collection in Beirut, for eleven seconds before the owner's security removed me from the room. Eleven seconds. I have an eidetic memory for spatial layouts — it's why I was good at what I did before all this. The map I recreated is accurate to within millimeters. The forgery is the medium, not the content. What's inside that museum is real. And if you let Le Pharmacien's obsession with process destroy the only chance we have of reaching it before the buyer's network — then we all lose. Including Noor's father, who deserved better than what the academic establishment did to him. You have the cipher key fragment from her now. Use it. The next location is in Le Suquet. I need you to trust me for twenty more minutes.'",
+      "rayban_version": {
+        "script": "Vera's voice cuts in, raw, no preamble, the sound of wind and traffic behind her. 'Stop. Before you decide I'm the villain — yes. I made the map. The physical object is mine. But the information on it is real. I saw the original for eleven seconds in Beirut in twenty-nineteen. I have eidetic spatial memory. That is not a boast, it is a diagnosis. What I drew is accurate. Le Pharmacien wants to discredit me because I wouldn't share my source with him three years ago. He's brilliant and he's petty and he's not wrong about the ink and he's completely wrong about what matters. The documents inside that museum are real. Noor's father knew it. Use her cipher key. Get to Le Suquet. Trust me for twenty more minutes. That's all I'm asking.'",
+        "audio_type": "phone_call",
+        "duration_seconds": 45,
+        "camera_mode": {
+          "enabled": false,
+          "purpose": ""
+        },
+        "contextual_music": {
+          "enabled": true,
+          "track_type": "ambient_tension",
+          "duration_seconds": 45
+        }
+      },
+      "awaits_response": false
+    }
+  ],
+  "verification": {
+    "method": "photo_and_text",
+    "target": "Yacht/vessel photo sent to Noor + surveillance camera count sent to Le Pharmacien",
+    "success_condition": "Player sends a clear photo of a vessel in the Vieux Port AND provides a specific number for camera count",
+    "success_reaction": "Both Noor and Le Pharmacien reward the player with critical intel. Noor's cipher fragment unlocks the liturgical key needed to validate the map. Le Pharmacien's ink receipt proves Vera's forgery but his final question — 'why forge a map to nothing?' — plants the seed that Vera may be telling the truth about the underlying discovery. Player gains trust with both characters and receives +40 XP. Vera's subsequent call feels more desperate and honest because the player now holds leverage.",
+    "failure_fallback": "If the player sends only the photo or only the count, the character who received nothing sends a curt message: Noor says 'I gave you my father's work. You gave me silence. Fine. But you'll need page seven eventually.' Le Pharmacien says 'Incomplete data is worse than no data. I'll assume you're working for her now.' The missing intel piece is provided anyway after 3 minutes via a 'consolation' message from the overlooked character, but trust is reduced. Story continues to Step 4.",
+    "timeout_reaction": "After 8 minutes, Marco Delvecchio sends an unsolicited message: 'Still at the port? Bad idea to linger. The harbor master's office logs foot traffic near restricted berths. I can see you've been stationary too long on the GPS. Move toward Le Suquet. I'll explain when you're walking.' This nudges the player toward Step 4 while adding Marco's surveillance layer to the tension."
+  },
+  "blockchain_event": "port_intelligence_gathered",
+  "unlock_message": "A pharmaceutical inventory from 1887 has appeared in your vault. Someone called Le Pharmacien wants you to see what Vera has been buying.",
+  "skill_xp": 40,
+  "is_collaborative": true,
+  "is_skill_step": false
+}

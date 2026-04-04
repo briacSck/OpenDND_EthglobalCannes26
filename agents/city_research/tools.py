@@ -48,7 +48,7 @@ async def search_tripadvisor(query: str, location: str) -> str:
 
 async def search_google_maps(query: str, location: str, radius_km: float = 3.0) -> str:
     """Search Google Maps for places near a location."""
-    search_query = f"{query} à {location} dans un rayon de {radius_km}km"
+    search_query = f"{query} near {location} within {radius_km}km"
     return await search_google(search_query)
 
 
@@ -98,9 +98,9 @@ async def search_getyourguide(query: str, location: str) -> str:
                     if title:
                         parts.append(title.get_text(strip=True))
                     if price:
-                        parts.append(f"Prix: {price.get_text(strip=True)}")
+                        parts.append(f"Price: {price.get_text(strip=True)}")
                     if rating:
-                        parts.append(f"Note: {rating.get_text(strip=True)}")
+                        parts.append(f"Rating: {rating.get_text(strip=True)}")
                     if parts:
                         gyg_results.append(" | ".join(parts))
     except Exception:
@@ -114,25 +114,67 @@ async def search_getyourguide(query: str, location: str) -> str:
 
 async def get_weather(location: str, date: str) -> str:
     """Get weather forecast for a location and date."""
-    search_query = f"météo {location} {date}"
+    search_query = f"weather {location} {date}"
     return await search_google(search_query)
 
 
 async def get_directions(origin: str, destination: str) -> str:
-    """Get walking/transit directions between two points."""
-    search_query = f"distance à pied {origin} à {destination} temps trajet"
-    return await search_google(search_query)
+    """Get walking directions between two points using OSRM (real walking distances)."""
+    # First, geocode both locations via Nominatim
+    async with httpx.AsyncClient(headers=HEADERS, timeout=TIMEOUT) as client:
+        coords = []
+        for place in [origin, destination]:
+            try:
+                resp = await client.get(
+                    "https://nominatim.openstreetmap.org/search",
+                    params={"q": place, "format": "json", "limit": 1},
+                    headers={"User-Agent": "OpenDnD-QuestGen/1.0"},
+                )
+                data = resp.json()
+                if data:
+                    coords.append((float(data[0]["lon"]), float(data[0]["lat"])))
+                else:
+                    # Fallback to Google search if geocoding fails
+                    return await search_google(f"walking distance {origin} to {destination} travel time")
+            except Exception:
+                return await search_google(f"walking distance {origin} to {destination} travel time")
+
+        if len(coords) != 2:
+            return await search_google(f"walking distance {origin} to {destination} travel time")
+
+        # Call OSRM for walking route
+        try:
+            osrm_url = f"http://router.project-osrm.org/route/v1/foot/{coords[0][0]},{coords[0][1]};{coords[1][0]},{coords[1][1]}?overview=false"
+            resp = await client.get(osrm_url)
+            data = resp.json()
+            if data.get("code") == "Ok" and data.get("routes"):
+                route = data["routes"][0]
+                distance_m = route["distance"]
+                duration_s = route["duration"]
+                distance_km = distance_m / 1000
+                duration_min = duration_s / 60
+                return (
+                    f"Walking directions: {origin} → {destination}\n"
+                    f"Distance: {distance_km:.1f} km ({distance_m:.0f} m)\n"
+                    f"Walking time: {duration_min:.0f} minutes\n"
+                    f"Source: OSRM (OpenStreetMap)"
+                )
+        except Exception:
+            pass
+
+    # Fallback
+    return await search_google(f"walking distance {origin} to {destination} travel time")
 
 
 async def search_news(query: str, location: str) -> str:
     """Search for current news, scandals, geopolitical events related to a location."""
     results = []
     # Local news
-    local = await search_google(f"actualités {location} {query} 2026")
-    results.append(f"--- Actualités locales ---\n{local}")
+    local = await search_google(f"news {location} {query} 2026")
+    results.append(f"--- Local news ---\n{local}")
     # Broader geopolitical / scandal / events
-    broader = await search_google(f"{query} {location} scandale conférence sommet affaire 2026")
-    results.append(f"--- Contexte géopolitique ---\n{broader}")
+    broader = await search_google(f"{query} {location} scandal conference summit affair 2026")
+    results.append(f"--- Geopolitical context ---\n{broader}")
     return "\n\n".join(results)
 
 

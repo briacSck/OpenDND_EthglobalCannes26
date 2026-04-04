@@ -1,4 +1,8 @@
-"""City Research Agent — orchestrates iterative web research via Claude tool use."""
+"""City Research Agent — orchestrates iterative web research via Claude tool use.
+
+The LLM decides WHICH searches to run. Results are collected raw and aggregated
+in Python — no expensive LLM compile step.
+"""
 
 from __future__ import annotations
 
@@ -7,14 +11,16 @@ import os
 from dotenv import load_dotenv
 from anthropic import AsyncAnthropic
 
-from agents.city_research.models import CityContext
+from agents.city_research.models import (
+    CityContext, LocationInfo, Activity, Restaurant, Shop, Event, POI,
+    TransportInfo, NewsItem,
+)
 from agents.city_research.tools import TOOL_DEFINITIONS, TOOL_FUNCTIONS
-from agents.city_research.prompts import CITY_RESEARCH_SYSTEM_PROMPT, COMPILE_RESULTS_TOOL
+from agents.city_research.prompts import CITY_RESEARCH_SYSTEM_PROMPT
 
 load_dotenv()
 
-MAX_ITERATIONS = 20  # safety cap on tool use loops
-FORCE_COMPILE_AT = 10  # force compile after this many iterations
+MAX_ITERATIONS = 8
 
 
 class CityResearchAgent:
@@ -23,9 +29,8 @@ class CityResearchAgent:
             base_url=os.getenv("ANTHROPIC_BASE_URL"),
             api_key=os.getenv("ANTHROPIC_AUTH_TOKEN"),
         )
-        self.model = os.getenv("ANTHROPIC_MODEL", "claude-sonnet-4-20250514")
-        # All tools: search tools + compile_results
-        self.tools = TOOL_DEFINITIONS + [COMPILE_RESULTS_TOOL]
+        self.model = os.getenv("ANTHROPIC_MODEL", "claude-opus-4-6")
+        self.tools = TOOL_DEFINITIONS
 
     async def research(self, quest_request: dict) -> CityContext:
         """Run the iterative research loop and return a CityContext."""
@@ -33,48 +38,51 @@ class CityResearchAgent:
         user_prompt = self._build_user_prompt(quest_request)
         messages = [{"role": "user", "content": user_prompt}]
 
-        for i in range(MAX_ITERATIONS):
-            print(f"\n--- Agent iteration {i + 1} ---")
+        # Collect raw results by tool type
+        raw_results: dict[str, list[str]] = {
+            "google": [],
+            "tripadvisor": [],
+            "google_maps": [],
+            "luma": [],
+            "getyourguide": [],
+            "news": [],
+            "weather": [],
+            "directions": [],
+        }
 
-            # Force compilation if taking too long
-            if i == FORCE_COMPILE_AT:
-                print("  -> Forcing compilation (iteration limit)...")
-                messages.append({
-                    "role": "user" if messages[-1]["role"] == "assistant" else "user",
-                    "content": "STOP SEARCHING. You've done enough research. Call compile_results NOW with at least 50 entries total, using your search results AND your own verified knowledge of the city. Include 15+ activities, 10+ restaurants, 5+ shops, 5+ events, 10+ POIs.",
-                })
+        for i in range(MAX_ITERATIONS):
+            print(f"\n--- Agent iteration {i + 1} ---", flush=True)
 
             response = await self.client.messages.create(
                 model=self.model,
-                max_tokens=16000,
+                max_tokens=4000,
                 system=CITY_RESEARCH_SYSTEM_PROMPT,
                 tools=self.tools,
                 messages=messages,
             )
 
-            # Check if the model wants to use tools
             if response.stop_reason == "tool_use":
-                # Process all tool calls in this response
                 assistant_content = response.content
                 tool_results = []
 
                 for block in assistant_content:
                     if block.type == "text":
-                        print(f"Agent: {block.text[:200]}...")
+                        print(f"Agent: {block.text[:200]}...", flush=True)
                     elif block.type == "tool_use":
                         tool_name = block.name
                         tool_input = block.input
 
-                        print(f"  -> Calling {tool_name}({json.dumps(tool_input, ensure_ascii=False)[:100]})")
+                        print(f"  -> {tool_name}({json.dumps(tool_input, ensure_ascii=False)[:80]})", flush=True)
 
-                        # If compile_results is called, we're done
-                        if tool_name == "compile_results":
-                            print("  -> Research complete! Compiling results...")
-                            return self._parse_city_context(tool_input)
-
-                        # Execute the search tool
                         result = await self._execute_tool(tool_name, tool_input)
-                        print(f"  <- Got {len(result)} chars of results")
+                        print(f"  <- {len(result)} chars", flush=True)
+
+                        # Store raw result
+                        key = tool_name.replace("search_", "")
+                        if key in raw_results:
+                            raw_results[key].append(result)
+                        else:
+                            raw_results.setdefault("other", []).append(result)
 
                         tool_results.append({
                             "type": "tool_result",
@@ -82,123 +90,101 @@ class CityResearchAgent:
                             "content": result,
                         })
 
-                # Add assistant message and tool results to conversation
                 messages.append({"role": "assistant", "content": assistant_content})
                 messages.append({"role": "user", "content": tool_results})
 
-            elif response.stop_reason == "end_turn":
-                # Model finished without compile_results — extract any text and nudge it
+            elif response.stop_reason in ("end_turn", "max_tokens"):
                 for block in response.content:
                     if block.type == "text":
-                        print(f"Agent (final): {block.text[:300]}")
-
-                # Nudge to compile
-                messages.append({"role": "assistant", "content": response.content})
-                messages.append({
-                    "role": "user",
-                    "content": "You've done great research. Now please call the compile_results tool to structure your findings into the final CityContext.",
-                })
-            elif response.stop_reason == "max_tokens":
-                # Response was cut off — may have incomplete tool_use blocks
-                print("  -> Hit max_tokens, recovering...")
-
-                # Filter out any tool_use blocks and provide dummy results so the API doesn't complain
-                assistant_content = response.content
-                dangling_tool_ids = [
-                    block.id for block in assistant_content if block.type == "tool_use"
-                ]
-
-                if dangling_tool_ids:
-                    # Must provide tool_results for any tool_use in the truncated response
-                    messages.append({"role": "assistant", "content": assistant_content})
-                    dummy_results = [
-                        {
-                            "type": "tool_result",
-                            "tool_use_id": tid,
-                            "content": "[skipped — response was truncated]",
-                        }
-                        for tid in dangling_tool_ids
-                    ]
-                    messages.append({"role": "user", "content": dummy_results + [
-                        {"type": "text", "text": "Your previous response was truncated. Please immediately call compile_results with everything you've found so far. Do NOT do more searches."}
-                    ]})
-                else:
-                    messages.append({"role": "assistant", "content": assistant_content})
-                    messages.append({
-                        "role": "user",
-                        "content": "Your response was truncated. Please immediately call compile_results with everything you've found so far. Do NOT do more searches.",
-                    })
-            else:
-                print(f"Unexpected stop reason: {response.stop_reason}")
+                        print(f"Agent done: {block.text[:200]}", flush=True)
                 break
 
-        raise RuntimeError(f"Agent did not complete after {MAX_ITERATIONS} iterations")
+        # Aggregate raw results into CityContext — no LLM needed
+        print("\n--- Aggregating results (no LLM) ---", flush=True)
+        city = quest_request.get("location", "Unknown")
+        context = self._aggregate(city, raw_results)
+        print(f"Done: {len(context.activities)} activities, {len(context.restaurants)} restaurants, "
+              f"{len(context.pois)} POIs, {len(context.current_news)} news", flush=True)
+        return context
 
     async def _execute_tool(self, tool_name: str, tool_input: dict) -> str:
-        """Execute a search tool and return its result as a string."""
         func = TOOL_FUNCTIONS.get(tool_name)
         if not func:
             return f"Error: unknown tool '{tool_name}'"
         try:
             result = await func(**tool_input)
-            # Truncate very long results to keep context manageable
             if len(result) > 5000:
-                result = result[:5000] + "\n\n[... truncated — use more specific queries for details]"
+                result = result[:5000] + "\n[... truncated]"
             return result
         except Exception as e:
             return f"Error calling {tool_name}: {e}"
 
     def _build_user_prompt(self, quest_request: dict) -> str:
-        """Build the initial user prompt from a quest request."""
-        return f"""Here is the quest request from the user:
+        tone = quest_request.get("tone", "loufoque")
+        news_instruction = ""
+        if tone == "high_stakes":
+            news_instruction = (
+                "\n**HIGH_STAKES** — Use search_news to find current scandals, "
+                "judicial affairs, geopolitical events near this location. "
+                "Find 5-10 real news items for narrative anchoring."
+            )
 
+        return f"""Research this location for a quest:
+
+- **Location**: {quest_request.get('location', 'Cannes')}
 - **Goal**: {quest_request.get('goal', 'general discovery')}
 - **Vibe**: {quest_request.get('vibe', 'aventure')}
 - **Duration**: {quest_request.get('duration', '4h')}
 - **Budget**: {quest_request.get('budget', 50)}€
-- **Location**: {quest_request.get('location', 'Cannes')}
-- **Difficulty**: {quest_request.get('difficulty', 'life-maxing')}
-- **Players**: {quest_request.get('players', 1)}
 - **Date/Time**: {quest_request.get('datetime', 'tomorrow 10:00')}
-- **Tone**: {quest_request.get('tone', 'loufoque')}
+- **Tone**: {tone}
+{news_instruction}
 
-{"**IMPORTANT: This is a HIGH_STAKES quest.** You MUST research current news, scandals, geopolitical events, and judicial affairs related to this location using the search_news tool. Find at least 5-10 real, verifiable news items that could anchor a Da Vinci Code / Mission Impossible style narrative. The player must be able to Google these and find real articles." if quest_request.get('tone') == 'high_stakes' else ""}
+Search across Google, TripAdvisor, Google Maps, Luma, GetYourGuide.
+Find: activities, restaurants, events, points of interest, transport info.
+When you have enough data (4-6 iterations), just stop — say "DONE" and summarize what you found.
+Do NOT try to compile or structure the results — just search."""
 
-Start your research! Remember:
-1. First do a broad search across multiple sources (Google, TripAdvisor, Google Maps, Luma, GetYourGuide)
-2. Analyze what you found and identify gaps
-3. Do targeted searches to fill the gaps
-4. Call compile_results with your structured findings
+    def _aggregate(self, city: str, raw: dict[str, list[str]]) -> CityContext:
+        """Parse raw search results into a CityContext. Best-effort extraction."""
 
-Scope your searches to the specific area and constraints above. Go!"""
+        all_text = ""
+        for source, results in raw.items():
+            for r in results:
+                all_text += f"\n[{source}] {r}\n"
 
-    def _parse_city_context(self, raw: dict) -> CityContext:
-        """Parse the compile_results tool input into a CityContext model."""
-        from agents.city_research.models import (
-            LocationInfo, Activity, Restaurant, Shop, Event, POI, TransportInfo, NewsItem,
-        )
+        # Weather
+        weather = ""
+        for w in raw.get("weather", []):
+            weather = w.strip()
 
-        location = LocationInfo(**raw.get("location", {"city": "Unknown"}))
+        # Directions / transport
+        directions_notes = "\n".join(raw.get("directions", []))
 
-        activities = [Activity(**a) for a in raw.get("activities", [])]
-        restaurants = [Restaurant(**r) for r in raw.get("restaurants", [])]
-        shops = [Shop(**s) for s in raw.get("shops", [])]
-        events = [Event(**e) for e in raw.get("events", [])]
-        pois = [POI(**p) for p in raw.get("points_of_interest", [])]
-        news = [NewsItem(**n) for n in raw.get("current_news", [])]
-
-        transport_data = raw.get("transport", {})
-        transport = TransportInfo(**transport_data) if transport_data else TransportInfo()
+        # News items from search_news results
+        news_items = []
+        for news_text in raw.get("news", []):
+            # Each news result is raw text — store as one NewsItem per result block
+            if news_text and len(news_text) > 20:
+                # Try to extract individual items from the text
+                for line in news_text.split("\n"):
+                    line = line.strip()
+                    if len(line) > 30 and not line.startswith("Error"):
+                        news_items.append(NewsItem(
+                            name=line[:120],
+                            summary=line,
+                            source="search_news",
+                        ))
 
         return CityContext(
-            location=location,
-            city_description=raw.get("city_description", ""),
-            activities=activities,
-            restaurants=restaurants,
-            shops=shops,
-            events=events,
-            points_of_interest=pois,
-            transport=transport,
-            current_news=news,
-            raw_notes=raw.get("raw_notes", ""),
+            location=LocationInfo(city=city, weather=weather),
+            city_description=f"Raw research data for {city}. See raw_notes for full details.",
+            activities=[],
+            restaurants=[],
+            shops=[],
+            events=[],
+            points_of_interest=[],
+            transport=TransportInfo(notes=directions_notes),
+            current_news=news_items[:15],
+            raw_notes=all_text[:50000],  # Cap at 50k chars
         )
