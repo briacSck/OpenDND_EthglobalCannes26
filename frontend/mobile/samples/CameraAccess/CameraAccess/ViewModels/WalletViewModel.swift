@@ -24,6 +24,7 @@ final class WalletViewModel: ObservableObject {
 
   private var sdk: DynamicSDK? { DynamicSDK.shared }
   private var cancellables = Set<AnyCancellable>()
+  private var authCheckRetries = 0
 
   func startListening() {
     guard let sdk else { return }
@@ -33,9 +34,13 @@ final class WalletViewModel: ObservableObject {
       isAuthenticated = true
       loadWallets()
       userEmail = user.email
+      persistAuthState(true)
+    } else if wasAuthenticated {
+      // SDK might need a moment to restore session from keychain
+      retryAuthCheck()
     }
 
-    // Listen for auth state changes via Combine publisher
+    // Listen for auth state changes
     sdk.auth.authenticatedUserChanges
       .receive(on: DispatchQueue.main)
       .sink { [weak self] user in
@@ -44,10 +49,12 @@ final class WalletViewModel: ObservableObject {
           self.isAuthenticated = true
           self.userEmail = user?.email
           self.loadWallets()
+          self.persistAuthState(true)
         } else {
           self.isAuthenticated = false
           self.wallets = []
           self.userEmail = nil
+          self.persistAuthState(false)
         }
       }
       .store(in: &cancellables)
@@ -113,6 +120,7 @@ final class WalletViewModel: ObservableObject {
   func logout() {
     Task {
       try? await sdk?.auth.logout()
+      persistAuthState(false)
     }
   }
 
@@ -125,5 +133,33 @@ final class WalletViewModel: ObservableObject {
       return primaryWalletAddress ?? ""
     }
     return "\(addr.prefix(6))...\(addr.suffix(4))"
+  }
+
+  // MARK: - Auth Persistence
+
+  private var wasAuthenticated: Bool {
+    UserDefaults.standard.bool(forKey: "dynamicWasAuthenticated")
+  }
+
+  private func persistAuthState(_ authenticated: Bool) {
+    UserDefaults.standard.set(authenticated, forKey: "dynamicWasAuthenticated")
+  }
+
+  /// Dynamic SDK may take a moment to restore the session from keychain on cold start.
+  /// Retry a few times before giving up.
+  private func retryAuthCheck() {
+    guard authCheckRetries < 5 else { return }
+    authCheckRetries += 1
+
+    DispatchQueue.main.asyncAfter(deadline: .now() + Double(authCheckRetries) * 0.5) { [weak self] in
+      guard let self, let sdk = self.sdk else { return }
+      if let user = sdk.auth.authenticatedUser {
+        self.isAuthenticated = true
+        self.userEmail = user.email
+        self.loadWallets()
+      } else {
+        self.retryAuthCheck()
+      }
+    }
   }
 }

@@ -8,50 +8,14 @@
 
 import SwiftUI
 
-struct LeaderboardEntry: Identifiable {
-  let id = UUID()
-  let rank: Int
-  let name: String
-  let avatar: String
-  let xp: Int
-  let level: Int
-  let isYou: Bool
-}
-
-struct FriendActivity: Identifiable {
-  let id = UUID()
-  let name: String
-  let avatar: String
-  let action: String
-  let grade: String?
-  let time: String
-}
-
 struct SocialView: View {
+  @StateObject private var vm = SocialViewModel()
   @State private var selectedTab: SocialTab = .leaderboard
 
   enum SocialTab: String, CaseIterable {
     case leaderboard
     case activity
   }
-
-  private let leaderboard: [LeaderboardEntry] = [
-    LeaderboardEntry(rank: 1, name: "Alex K.", avatar: "A", xp: 4820, level: 18, isYou: false),
-    LeaderboardEntry(rank: 2, name: "Sarah M.", avatar: "S", xp: 4510, level: 17, isYou: false),
-    LeaderboardEntry(rank: 3, name: "You", avatar: "Y", xp: 4280, level: 16, isYou: true),
-    LeaderboardEntry(rank: 4, name: "Mike R.", avatar: "M", xp: 3900, level: 15, isYou: false),
-    LeaderboardEntry(rank: 5, name: "Luna Z.", avatar: "L", xp: 3750, level: 14, isYou: false),
-    LeaderboardEntry(rank: 6, name: "Dev P.", avatar: "D", xp: 3200, level: 13, isYou: false),
-    LeaderboardEntry(rank: 7, name: "Nora T.", avatar: "N", xp: 2980, level: 12, isYou: false),
-  ]
-
-  private let friendActivity: [FriendActivity] = [
-    FriendActivity(name: "Alex K.", avatar: "A", action: "completed Operation Blackout", grade: "S", time: "2h ago"),
-    FriendActivity(name: "Sarah M.", avatar: "S", action: "unlocked Sharpshooter badge", grade: nil, time: "4h ago"),
-    FriendActivity(name: "Luna Z.", avatar: "L", action: "started The Heist", grade: nil, time: "5h ago"),
-    FriendActivity(name: "Mike R.", avatar: "M", action: "completed Dead Drop", grade: "A-", time: "8h ago"),
-    FriendActivity(name: "Dev P.", avatar: "D", action: "reached Level 13", grade: nil, time: "1d ago"),
-  ]
 
   var body: some View {
     ScrollView {
@@ -80,8 +44,10 @@ struct SocialView: View {
           .padding(.horizontal, 20)
           .padding(.vertical, 10)
 
-        // Content
-        if selectedTab == .leaderboard {
+        if vm.isLoading {
+          ProgressView()
+            .padding(.top, 40)
+        } else if selectedTab == .leaderboard {
           leaderboardContent
         } else {
           activityContent
@@ -89,6 +55,7 @@ struct SocialView: View {
       }
     }
     .background(Color.white)
+    .onAppear { vm.load() }
   }
 
   // MARK: - Tab Selector
@@ -121,51 +88,59 @@ struct SocialView: View {
 
   private var leaderboardContent: some View {
     VStack(spacing: 0) {
-      ForEach(leaderboard) { user in
-        HStack(spacing: 10) {
-          Text("\(user.rank)")
-            .font(.system(size: 11, weight: .medium))
-            .foregroundColor(.gray)
-            .frame(width: 16, alignment: .trailing)
-            .monospacedDigit()
-
-          Text(user.avatar)
-            .font(.system(size: 11, weight: .semibold))
-            .frame(width: 30, height: 30)
-            .background(Color(.systemGray6))
-            .clipShape(Circle())
-            .overlay(Circle().stroke(Color(.systemGray5), lineWidth: 0.5))
-
-          VStack(alignment: .leading, spacing: 1) {
-            HStack(spacing: 4) {
-              Text(user.name)
-                .font(.system(size: 13, weight: .medium))
-              if user.isYou {
-                Text("you")
-                  .font(.system(size: 9))
-                  .foregroundColor(.gray)
-              }
-            }
-            Text("Level \(user.level)")
-              .font(.system(size: 11))
+      if vm.leaderboard.isEmpty {
+        Text("No players yet")
+          .font(.system(size: 13))
+          .foregroundColor(.gray)
+          .padding(.top, 40)
+      } else {
+        ForEach(vm.leaderboard) { user in
+          let isYou = user.id == vm.currentUserId
+          HStack(spacing: 10) {
+            Text("\(user.rank)")
+              .font(.system(size: 11, weight: .medium))
               .foregroundColor(.gray)
+              .frame(width: 16, alignment: .trailing)
+              .monospacedDigit()
+
+            Text(user.avatar)
+              .font(.system(size: 11, weight: .semibold))
+              .frame(width: 30, height: 30)
+              .background(Color(.systemGray6))
+              .clipShape(Circle())
+              .overlay(Circle().stroke(Color(.systemGray5), lineWidth: 0.5))
+
+            VStack(alignment: .leading, spacing: 1) {
+              HStack(spacing: 4) {
+                Text(isYou ? "You" : user.name)
+                  .font(.system(size: 13, weight: .medium))
+                if isYou {
+                  Text("you")
+                    .font(.system(size: 9))
+                    .foregroundColor(.gray)
+                }
+              }
+              Text("Level \(user.level)")
+                .font(.system(size: 11))
+                .foregroundColor(.gray)
+            }
+
+            Spacer()
+
+            Text("\(user.xp.formatted())")
+              .font(.system(size: 13, weight: .medium))
+              .monospacedDigit()
           }
-
-          Spacer()
-
-          Text("\(user.xp.formatted())")
-            .font(.system(size: 13, weight: .medium))
-            .monospacedDigit()
+          .padding(.vertical, 10)
+          .padding(.horizontal, 20)
+          .background(isYou ? Color(.systemGray6) : Color.clear)
+          .overlay(
+            Rectangle()
+              .fill(Color(.systemGray5))
+              .frame(height: 0.5),
+            alignment: .bottom
+          )
         }
-        .padding(.vertical, 10)
-        .padding(.horizontal, 20)
-        .background(user.isYou ? Color(.systemGray6) : Color.clear)
-        .overlay(
-          Rectangle()
-            .fill(Color(.systemGray5))
-            .frame(height: 0.5),
-          alignment: .bottom
-        )
       }
     }
   }
@@ -174,53 +149,68 @@ struct SocialView: View {
 
   private var activityContent: some View {
     VStack(spacing: 0) {
-      ForEach(friendActivity) { activity in
-        HStack(spacing: 10) {
-          Text(activity.avatar)
-            .font(.system(size: 11, weight: .semibold))
-            .frame(width: 30, height: 30)
-            .background(Color(.systemGray6))
-            .clipShape(Circle())
-            .overlay(Circle().stroke(Color(.systemGray5), lineWidth: 0.5))
+      if vm.activity.isEmpty {
+        Text("No recent activity")
+          .font(.system(size: 13))
+          .foregroundColor(.gray)
+          .padding(.top, 40)
+      } else {
+        ForEach(vm.activity) { activity in
+          HStack(spacing: 10) {
+            Text(activity.avatar)
+              .font(.system(size: 11, weight: .semibold))
+              .frame(width: 30, height: 30)
+              .background(Color(.systemGray6))
+              .clipShape(Circle())
+              .overlay(Circle().stroke(Color(.systemGray5), lineWidth: 0.5))
 
-          VStack(alignment: .leading, spacing: 2) {
-            HStack(spacing: 0) {
-              Text(activity.name)
-                .font(.system(size: 13, weight: .medium))
-              Text(" \(activity.action)")
-                .font(.system(size: 13))
-                .foregroundColor(.gray)
+            VStack(alignment: .leading, spacing: 2) {
+              HStack(spacing: 0) {
+                Text(activity.name)
+                  .font(.system(size: 13, weight: .medium))
+                Text(" \(activity.action)")
+                  .font(.system(size: 13))
+                  .foregroundColor(.gray)
+              }
+
+              HStack(spacing: 3) {
+                Image(systemName: "clock")
+                  .font(.system(size: 8))
+                Text(formatRelativeTime(activity.time))
+                  .font(.system(size: 11))
+              }
+              .foregroundColor(.gray)
             }
 
-            HStack(spacing: 3) {
-              Image(systemName: "clock")
-                .font(.system(size: 8))
-              Text(activity.time)
-                .font(.system(size: 11))
+            Spacer()
+
+            if let grade = activity.grade {
+              Text(grade)
+                .font(.system(size: 13, weight: .semibold))
             }
-            .foregroundColor(.gray)
+
+            Image(systemName: "chevron.right")
+              .font(.system(size: 12))
+              .foregroundColor(.gray)
           }
-
-          Spacer()
-
-          if let grade = activity.grade {
-            Text(grade)
-              .font(.system(size: 13, weight: .semibold))
-          }
-
-          Image(systemName: "chevron.right")
-            .font(.system(size: 12))
-            .foregroundColor(.gray)
+          .padding(.vertical, 12)
+          .padding(.horizontal, 20)
+          .overlay(
+            Rectangle()
+              .fill(Color(.systemGray5))
+              .frame(height: 0.5),
+            alignment: .bottom
+          )
         }
-        .padding(.vertical, 12)
-        .padding(.horizontal, 20)
-        .overlay(
-          Rectangle()
-            .fill(Color(.systemGray5))
-            .frame(height: 0.5),
-          alignment: .bottom
-        )
       }
     }
+  }
+
+  private func formatRelativeTime(_ date: Date?) -> String {
+    guard let date = date else { return "-" }
+    let interval = Date().timeIntervalSince(date)
+    if interval < 3600 { return "\(Int(interval / 60))m ago" }
+    if interval < 86400 { return "\(Int(interval / 3600))h ago" }
+    return "\(Int(interval / 86400))d ago"
   }
 }

@@ -86,7 +86,7 @@ router.get("/:id", async (req, res) => {
       return;
     }
     const { rows: friends } = await pool.query(
-      "SELECT phone FROM user_friends WHERE user_id = $1",
+      "SELECT phone, friend_id FROM user_friends WHERE user_id = $1",
       [req.params.id]
     );
     res.json({ ...users[0], friends: friends.map((f) => f.phone) });
@@ -120,6 +120,50 @@ router.get("/", async (req, res) => {
     );
     res.json(rows);
   } catch {
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+// PATCH /api/users/:id — update user
+router.patch("/:id", async (req, res) => {
+  const { walletAddress, xp, level } = req.body;
+  const updates: string[] = [];
+  const values: any[] = [];
+  let idx = 1;
+
+  if (walletAddress !== undefined) {
+    updates.push(`wallet_address = $${idx++}`);
+    values.push(walletAddress);
+  }
+  if (xp !== undefined) {
+    updates.push(`xp = $${idx++}`);
+    values.push(xp);
+  }
+  if (level !== undefined) {
+    updates.push(`level = $${idx++}`);
+    values.push(level);
+  }
+
+  if (!updates.length) {
+    res.status(400).json({ error: "No fields to update" });
+    return;
+  }
+
+  updates.push(`updated_at = NOW()`);
+  values.push(req.params.id);
+
+  try {
+    const { rows } = await pool.query(
+      `UPDATE users SET ${updates.join(", ")} WHERE id = $${idx} RETURNING *`,
+      values
+    );
+    if (!rows.length) {
+      res.status(404).json({ error: "User not found" });
+      return;
+    }
+    res.json(rows[0]);
+  } catch (err) {
+    console.error("Failed to update user:", err);
     res.status(500).json({ error: "Server error" });
   }
 });

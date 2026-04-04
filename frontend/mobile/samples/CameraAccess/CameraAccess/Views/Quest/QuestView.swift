@@ -8,70 +8,49 @@
 
 import SwiftUI
 
-struct QuestStep: Identifiable {
-  let id: Int
-  let type: String
-  let title: String
-  let subtitle: String
-  let icon: String
-  let done: Bool
-  var active: Bool = false
-}
-
-struct ActionLogEntry: Identifiable {
-  let id = UUID()
-  let time: String
-  let action: String
-  let xp: Int
-}
-
 struct QuestView: View {
-  @State private var expandedStep: Int? = 3
-
-  private let questSteps: [QuestStep] = [
-    QuestStep(id: 1, type: "document", title: "Mission Briefing", subtitle: "Read the intel report", icon: "doc.text", done: true),
-    QuestStep(id: 2, type: "video", title: "Surveillance Footage", subtitle: "Watch the 2min recon clip", icon: "video", done: true),
-    QuestStep(id: 3, type: "conversation", title: "Interrogation with Agent K", subtitle: "3 dialogue choices remaining", icon: "message", done: false, active: true),
-    QuestStep(id: 4, type: "action", title: "Infiltrate the Compound", subtitle: "Complete the stealth sequence", icon: "target", done: false),
-    QuestStep(id: 5, type: "action", title: "Extract the Package", subtitle: "Final objective", icon: "star", done: false),
-  ]
-
-  private let previousActions: [ActionLogEntry] = [
-    ActionLogEntry(time: "14:32", action: "Decoded encrypted message", xp: 50),
-    ActionLogEntry(time: "14:28", action: "Chose stealth approach over combat", xp: 30),
-    ActionLogEntry(time: "14:15", action: "Gathered 3/3 evidence pieces", xp: 75),
-  ]
-
-  private var completedSteps: Int {
-    questSteps.filter(\.done).count
-  }
-
-  private var progress: Double {
-    Double(completedSteps) / Double(questSteps.count)
-  }
+  @StateObject private var vm = QuestViewModel()
+  @State private var expandedStep: Int? = nil
 
   var body: some View {
     ScrollView {
       VStack(spacing: 0) {
-        // Header
-        headerSection
-
-        // Quest Steps
-        stepsSection
-
-        // Action Log
-        actionLogSection
-
-        // Post-Quest CTA
-        ctaSection
+        if vm.isLoading {
+          ProgressView()
+            .padding(.top, 80)
+        } else if vm.hasNoQuest {
+          noQuestView
+        } else if let quest = vm.quest {
+          headerSection(quest: quest)
+          stepsSection(steps: quest.steps)
+          actionLogSection(actions: quest.actions)
+          ctaSection
+        }
       }
     }
     .background(Color.white)
+    .onAppear { vm.load() }
+  }
+
+  // MARK: - No Quest
+
+  private var noQuestView: some View {
+    VStack(spacing: 12) {
+      Spacer().frame(height: 80)
+      Image(systemName: "shield.lefthalf.filled")
+        .font(.system(size: 40))
+        .foregroundColor(.gray)
+      Text("No Active Quest")
+        .font(.system(size: 18, weight: .semibold))
+      Text("Generate a quest to get started")
+        .font(.system(size: 13))
+        .foregroundColor(.gray)
+    }
   }
 
   // MARK: - Header
 
-  private var headerSection: some View {
+  private func headerSection(quest: ActiveQuestResponse) -> some View {
     VStack(alignment: .leading, spacing: 4) {
       HStack {
         Text("Active Quest")
@@ -82,30 +61,33 @@ struct QuestView: View {
 
         Spacer()
 
-        HStack(spacing: 3) {
-          Image(systemName: "clock")
-            .font(.system(size: 10))
-          Text("2h 34m left")
-            .font(.system(size: 10))
+        if let limit = quest.timeLimitMinutes {
+          HStack(spacing: 3) {
+            Image(systemName: "clock")
+              .font(.system(size: 10))
+            Text("\(limit)m left")
+              .font(.system(size: 10))
+          }
+          .foregroundColor(.gray)
         }
-        .foregroundColor(.gray)
       }
 
-      Text("Operation Nightfall")
+      Text(quest.title)
         .font(.system(size: 20, weight: .semibold))
 
-      Text("Infiltrate the Syndicate's HQ and retrieve classified data")
-        .font(.system(size: 13))
-        .foregroundColor(.gray)
+      if let desc = quest.description {
+        Text(desc)
+          .font(.system(size: 13))
+          .foregroundColor(.gray)
+      }
 
-      // Progress bar
       VStack(spacing: 4) {
         HStack {
-          Text("\(completedSteps) of \(questSteps.count) steps")
+          Text("\(quest.completedSteps) of \(quest.totalSteps) steps")
             .font(.system(size: 11))
             .foregroundColor(.gray)
           Spacer()
-          Text("\(Int(progress * 100))%")
+          Text("\(Int(quest.progress * 100))%")
             .font(.system(size: 11, weight: .medium))
         }
 
@@ -117,8 +99,8 @@ struct QuestView: View {
 
             RoundedRectangle(cornerRadius: 2)
               .fill(Color.black)
-              .frame(width: geometry.size.width * progress, height: 3)
-              .animation(.easeInOut(duration: 0.7), value: progress)
+              .frame(width: geometry.size.width * quest.progress, height: 3)
+              .animation(.easeInOut(duration: 0.7), value: quest.progress)
           }
         }
         .frame(height: 3)
@@ -138,9 +120,9 @@ struct QuestView: View {
 
   // MARK: - Steps
 
-  private var stepsSection: some View {
+  private func stepsSection(steps: [QuestStepResponse]) -> some View {
     VStack(spacing: 6) {
-      ForEach(questSteps) { step in
+      ForEach(steps) { step in
         stepCard(step)
       }
     }
@@ -148,7 +130,7 @@ struct QuestView: View {
     .padding(.vertical, 20)
   }
 
-  private func stepCard(_ step: QuestStep) -> some View {
+  private func stepCard(_ step: QuestStepResponse) -> some View {
     Button {
       withAnimation(.easeInOut(duration: 0.2)) {
         expandedStep = expandedStep == step.id ? nil : step.id
@@ -156,7 +138,6 @@ struct QuestView: View {
     } label: {
       VStack(alignment: .leading, spacing: 0) {
         HStack(spacing: 10) {
-          // Circle icon
           ZStack {
             Circle()
               .fill(step.done ? Color.black : Color.clear)
@@ -168,7 +149,7 @@ struct QuestView: View {
                 .frame(width: 30, height: 30)
             }
 
-            Image(systemName: step.done ? "checkmark" : step.icon)
+            Image(systemName: step.done ? "checkmark" : (step.icon ?? "star"))
               .font(.system(size: 12, weight: step.done ? .bold : .regular))
               .foregroundColor(step.done ? .white : .gray)
           }
@@ -191,9 +172,11 @@ struct QuestView: View {
               }
             }
 
-            Text(step.subtitle)
-              .font(.system(size: 11))
-              .foregroundColor(.gray)
+            if let subtitle = step.subtitle {
+              Text(subtitle)
+                .font(.system(size: 11))
+                .foregroundColor(.gray)
+            }
           }
 
           Spacer()
@@ -205,12 +188,28 @@ struct QuestView: View {
         }
         .padding(10)
 
-        // Expanded content
-        if expandedStep == step.id {
-          expandedContent(for: step)
-            .padding(.leading, 40)
-            .padding(.trailing, 10)
-            .padding(.bottom, 10)
+        if expandedStep == step.id, let content = step.content {
+          VStack(alignment: .leading, spacing: 0) {
+            Rectangle()
+              .fill(Color(.systemGray5))
+              .frame(height: 0.5)
+              .padding(.bottom, 10)
+
+            Text(content)
+              .font(.system(size: 11))
+              .foregroundColor(.gray)
+              .lineSpacing(2)
+              .padding(10)
+              .background(Color.white)
+              .cornerRadius(8)
+              .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                  .stroke(Color(.systemGray5), lineWidth: 0.5)
+              )
+          }
+          .padding(.leading, 40)
+          .padding(.trailing, 10)
+          .padding(.bottom, 10)
         }
       }
       .background(step.active ? Color(.systemGray6) : Color.white)
@@ -223,173 +222,54 @@ struct QuestView: View {
     .buttonStyle(.plain)
   }
 
-  @ViewBuilder
-  private func expandedContent(for step: QuestStep) -> some View {
-    VStack(alignment: .leading, spacing: 0) {
-      Rectangle()
-        .fill(Color(.systemGray5))
-        .frame(height: 0.5)
-        .padding(.bottom, 10)
-
-      switch step.type {
-      case "document":
-        VStack(alignment: .leading, spacing: 8) {
-          Text("CLASSIFIED — Eyes Only. The Syndicate has been identified operating from a warehouse district. Intelligence suggests the data is stored on an air-gapped server in sublevel B2...")
-            .font(.system(size: 11))
-            .foregroundColor(.gray)
-            .lineSpacing(2)
-
-          HStack(spacing: 3) {
-            Text("Read full document")
-              .font(.system(size: 11, weight: .medium))
-            Image(systemName: "chevron.right")
-              .font(.system(size: 10))
-          }
-          .foregroundColor(.black)
-        }
-        .padding(10)
-        .background(Color.white)
-        .cornerRadius(8)
-        .overlay(
-          RoundedRectangle(cornerRadius: 8)
-            .stroke(Color(.systemGray5), lineWidth: 0.5)
-        )
-
-      case "video":
-        ZStack {
-          RoundedRectangle(cornerRadius: 8)
-            .fill(Color(.systemGray6))
-            .aspectRatio(16/9, contentMode: .fit)
-
-          Image(systemName: "play.fill")
-            .font(.system(size: 24))
-            .foregroundColor(.gray)
-
-          VStack {
-            Spacer()
-            HStack {
-              Spacer()
-              Text("2:14")
-                .font(.system(size: 9))
-                .foregroundColor(.gray)
-                .padding(.horizontal, 6)
-                .padding(.vertical, 3)
-                .background(Color.white.opacity(0.8))
-                .cornerRadius(4)
-                .padding(6)
-            }
-          }
-        }
-        .overlay(
-          RoundedRectangle(cornerRadius: 8)
-            .stroke(Color(.systemGray5), lineWidth: 0.5)
-        )
-
-      case "conversation":
-        VStack(spacing: 6) {
-          // Agent K message
-          HStack(alignment: .top, spacing: 6) {
-            Text("K")
-              .font(.system(size: 9, weight: .medium))
-              .frame(width: 22, height: 22)
-              .background(Color(.systemGray6))
-              .clipShape(Circle())
-              .overlay(Circle().stroke(Color(.systemGray5), lineWidth: 0.5))
-
-            Text("\"You have 3 minutes. Choose your next words carefully, agent.\"")
-              .font(.system(size: 11))
-              .foregroundColor(.gray)
-              .padding(.horizontal, 10)
-              .padding(.vertical, 6)
-              .background(Color(.systemGray6))
-              .cornerRadius(8)
-
-            Spacer()
-          }
-
-          // Player message
-          HStack(alignment: .top, spacing: 6) {
-            Spacer()
-
-            Text("\"I know about the shipment. Tell me about sublevel B2.\"")
-              .font(.system(size: 11))
-              .foregroundColor(.white)
-              .padding(.horizontal, 10)
-              .padding(.vertical, 6)
-              .background(Color.black)
-              .cornerRadius(8)
-
-            Text("Y")
-              .font(.system(size: 9, weight: .medium))
-              .frame(width: 22, height: 22)
-              .background(Color(.systemGray6))
-              .clipShape(Circle())
-              .overlay(Circle().stroke(Color(.systemGray5), lineWidth: 0.5))
-          }
-
-          // Continue button
-          Text("Continue conversation →")
-            .font(.system(size: 11, weight: .medium))
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 8)
-            .overlay(
-              RoundedRectangle(cornerRadius: 8)
-                .stroke(Color(.systemGray5), lineWidth: 0.5)
-            )
-        }
-
-      default:
-        Text(step.active ? "Available now" : "Unlocks after previous step")
-          .font(.system(size: 11))
-          .foregroundColor(.gray)
-      }
-    }
-  }
-
   // MARK: - Action Log
 
-  private var actionLogSection: some View {
-    VStack(alignment: .leading, spacing: 0) {
-      Text("Action Log")
-        .font(.system(size: 10, weight: .medium))
-        .foregroundColor(.gray)
-        .textCase(.uppercase)
-        .tracking(1)
-        .padding(.bottom, 8)
-
-      ForEach(previousActions) { action in
-        HStack(spacing: 10) {
-          Text(action.time)
-            .font(.system(size: 11, design: .monospaced))
+  private func actionLogSection(actions: [QuestActionResponse]) -> some View {
+    Group {
+      if !actions.isEmpty {
+        VStack(alignment: .leading, spacing: 0) {
+          Text("Action Log")
+            .font(.system(size: 10, weight: .medium))
             .foregroundColor(.gray)
-            .frame(width: 36, alignment: .leading)
+            .textCase(.uppercase)
+            .tracking(1)
+            .padding(.bottom, 8)
 
-          Text(action.action)
-            .font(.system(size: 11))
-            .frame(maxWidth: .infinity, alignment: .leading)
+          ForEach(actions) { action in
+            HStack(spacing: 10) {
+              Text(formatTime(action.createdAt))
+                .font(.system(size: 11, design: .monospaced))
+                .foregroundColor(.gray)
+                .frame(width: 36, alignment: .leading)
 
-          Text("+\(action.xp)")
-            .font(.system(size: 11, weight: .medium))
-            .foregroundColor(.gray)
+              Text(action.action)
+                .font(.system(size: 11))
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+              Text("+\(action.xp)")
+                .font(.system(size: 11, weight: .medium))
+                .foregroundColor(.gray)
+            }
+            .padding(.vertical, 10)
+            .overlay(
+              Rectangle()
+                .fill(Color(.systemGray5))
+                .frame(height: 0.5),
+              alignment: .bottom
+            )
+          }
         }
-        .padding(.vertical, 10)
-        .overlay(
-          Rectangle()
-            .fill(Color(.systemGray5))
-            .frame(height: 0.5),
-          alignment: .bottom
-        )
+        .padding(.horizontal, 20)
+        .padding(.bottom, 20)
       }
     }
-    .padding(.horizontal, 20)
-    .padding(.bottom, 20)
   }
 
   // MARK: - CTA
 
   private var ctaSection: some View {
     NavigationLink(destination: PostQuestView()) {
-      Text("View Quest Summary →")
+      Text("View Quest Summary")
         .font(.system(size: 14, weight: .medium))
         .foregroundColor(.white)
         .frame(maxWidth: .infinity)
@@ -399,5 +279,12 @@ struct QuestView: View {
     }
     .padding(.horizontal, 20)
     .padding(.bottom, 24)
+  }
+
+  private func formatTime(_ date: Date?) -> String {
+    guard let date = date else { return "--:--" }
+    let f = DateFormatter()
+    f.dateFormat = "HH:mm"
+    return f.string(from: date)
   }
 }

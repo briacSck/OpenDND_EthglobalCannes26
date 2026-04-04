@@ -9,27 +9,13 @@
 import SwiftUI
 import DynamicSDKSwift
 
-struct Transaction: Identifiable {
-  let id: Int
-  let type: String // "credit" or "debit"
-  let label: String
-  let amount: String
-  let date: String
-}
-
 struct WalletView: View {
   @StateObject private var vm = WalletViewModel()
   @State private var otpCode = ""
   @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = true
 
-  private let transactions: [Transaction] = [
-    Transaction(id: 1, type: "credit", label: "Operation Nightfall", amount: "+$24.50", date: "Mar 28"),
-    Transaction(id: 2, type: "debit", label: "Quest unlock: Sunrise", amount: "-$5.00", date: "Mar 28"),
-    Transaction(id: 3, type: "credit", label: "The Moscow Exchange", amount: "+$18.00", date: "Mar 22"),
-    Transaction(id: 4, type: "debit", label: "Premium gear pack", amount: "-$8.00", date: "Mar 20"),
-    Transaction(id: 5, type: "credit", label: "Dead Drop", amount: "+$12.50", date: "Mar 15"),
-    Transaction(id: 6, type: "credit", label: "Weekly bonus", amount: "+$5.00", date: "Mar 14"),
-  ]
+  @State private var walletData: WalletResponse?
+  @State private var isLoadingWallet = false
 
   var body: some View {
     ScrollView {
@@ -42,10 +28,26 @@ struct WalletView: View {
       }
     }
     .background(Color.white)
-    .onAppear { vm.startListening() }
+    .onAppear {
+      vm.startListening()
+      loadWallet()
+    }
     .onDisappear { vm.stopListening() }
     .sheet(isPresented: $vm.showEmailOtpSheet) {
       otpSheet
+    }
+  }
+
+  private func loadWallet() {
+    guard let userId = APIService.shared.currentUserId else { return }
+    isLoadingWallet = true
+    Task {
+      do {
+        walletData = try await APIService.shared.fetchWallet(userId: userId)
+      } catch {
+        NSLog("[Wallet] Error: \(error)")
+      }
+      isLoadingWallet = false
     }
   }
 
@@ -53,7 +55,6 @@ struct WalletView: View {
 
   private var connectWalletSection: some View {
     VStack(spacing: 0) {
-      // Header
       VStack(spacing: 8) {
         ZStack {
           Circle()
@@ -78,7 +79,6 @@ struct WalletView: View {
       }
       .padding(.bottom, 28)
 
-      // Email login
       VStack(spacing: 10) {
         TextField("Enter email", text: $vm.email)
           .font(.system(size: 14))
@@ -111,7 +111,6 @@ struct WalletView: View {
       .padding(.horizontal, 20)
       .padding(.bottom, 12)
 
-      // Divider
       HStack {
         Rectangle().fill(Color(.systemGray5)).frame(height: 0.5)
         Text("or")
@@ -123,7 +122,6 @@ struct WalletView: View {
       .padding(.horizontal, 20)
       .padding(.vertical, 12)
 
-      // Dynamic Auth Flow button
       Button {
         vm.openAuthFlow()
       } label: {
@@ -169,7 +167,6 @@ struct WalletView: View {
 
           Spacer()
 
-          // Wallet address badge
           if !vm.truncatedAddress.isEmpty {
             Text(vm.truncatedAddress)
               .font(.system(size: 10, design: .monospaced))
@@ -181,9 +178,13 @@ struct WalletView: View {
           }
         }
 
-        Text("$67.00")
-          .font(.system(size: 34, weight: .semibold))
-          .tracking(-0.5)
+        if isLoadingWallet {
+          ProgressView().padding(.vertical, 8)
+        } else {
+          Text("$\(String(format: "%.2f", walletData?.available ?? 0))")
+            .font(.system(size: 34, weight: .semibold))
+            .tracking(-0.5)
+        }
       }
       .frame(maxWidth: .infinity, alignment: .leading)
       .padding(.horizontal, 20)
@@ -215,7 +216,7 @@ struct WalletView: View {
           }
           .foregroundColor(.gray)
 
-          Text("$35.00")
+          Text("$\(String(format: "%.2f", walletData?.locked ?? 0))")
             .font(.system(size: 17, weight: .semibold))
 
           Text("Reserved for quests")
@@ -240,10 +241,10 @@ struct WalletView: View {
           }
           .foregroundColor(.gray)
 
-          Text("$24.50")
+          Text("$\(String(format: "%.2f", walletData?.pending ?? 0))")
             .font(.system(size: 17, weight: .semibold))
 
-          Text("Arriving in ~2h")
+          Text("Arriving soon")
             .font(.system(size: 9))
             .foregroundColor(.gray)
         }
@@ -274,42 +275,49 @@ struct WalletView: View {
           .textCase(.uppercase)
           .tracking(1)
 
-        VStack(spacing: 0) {
-          ForEach(transactions) { tx in
-            HStack(spacing: 10) {
-              ZStack {
-                Circle()
-                  .fill(Color(.systemGray6))
-                  .frame(width: 28, height: 28)
+        if let txs = walletData?.transactions, !txs.isEmpty {
+          VStack(spacing: 0) {
+            ForEach(txs) { tx in
+              HStack(spacing: 10) {
+                ZStack {
+                  Circle()
+                    .fill(Color(.systemGray6))
+                    .frame(width: 28, height: 28)
 
-                Image(systemName: tx.type == "credit" ? "arrow.down.left" : "arrow.up.right")
-                  .font(.system(size: 12))
+                  Image(systemName: tx.type == "credit" ? "arrow.down.left" : "arrow.up.right")
+                    .font(.system(size: 12))
+                    .foregroundColor(tx.type == "credit" ? .black : .gray)
+                }
+
+                VStack(alignment: .leading, spacing: 1) {
+                  Text(tx.label)
+                    .font(.system(size: 13))
+                  Text(formatDate(tx.date))
+                    .font(.system(size: 11))
+                    .foregroundColor(.gray)
+                }
+
+                Spacer()
+
+                Text("\(tx.type == "credit" ? "+" : "-")$\(String(format: "%.2f", abs(tx.amount)))")
+                  .font(.system(size: 13, weight: .medium))
                   .foregroundColor(tx.type == "credit" ? .black : .gray)
+                  .monospacedDigit()
               }
-
-              VStack(alignment: .leading, spacing: 1) {
-                Text(tx.label)
-                  .font(.system(size: 13))
-                Text(tx.date)
-                  .font(.system(size: 11))
-                  .foregroundColor(.gray)
-              }
-
-              Spacer()
-
-              Text(tx.amount)
-                .font(.system(size: 13, weight: .medium))
-                .foregroundColor(tx.type == "credit" ? .black : .gray)
-                .monospacedDigit()
+              .padding(.vertical, 10)
+              .overlay(
+                Rectangle()
+                  .fill(Color(.systemGray5))
+                  .frame(height: 0.5),
+                alignment: .bottom
+              )
             }
-            .padding(.vertical, 10)
-            .overlay(
-              Rectangle()
-                .fill(Color(.systemGray5))
-                .frame(height: 0.5),
-              alignment: .bottom
-            )
           }
+        } else {
+          Text("No transactions yet")
+            .font(.system(size: 13))
+            .foregroundColor(.gray)
+            .padding(.top, 12)
         }
       }
       .padding(.horizontal, 20)
@@ -502,5 +510,12 @@ struct WalletView: View {
   private func truncateAddress(_ addr: String) -> String {
     guard addr.count > 12 else { return addr }
     return "\(addr.prefix(6))...\(addr.suffix(4))"
+  }
+
+  private func formatDate(_ date: Date?) -> String {
+    guard let date = date else { return "-" }
+    let f = DateFormatter()
+    f.dateFormat = "MMM d"
+    return f.string(from: date)
   }
 }
