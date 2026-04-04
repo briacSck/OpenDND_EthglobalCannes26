@@ -4,6 +4,11 @@ import asyncio
 import json
 import glob
 import os
+import sys
+
+_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(_ROOT, "backend"))
+os.chdir(_ROOT)
 
 from dotenv import load_dotenv
 load_dotenv()

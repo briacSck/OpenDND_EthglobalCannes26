@@ -1,0 +1,113 @@
+﻿OpenD&D : We live in an open world. Start treating it like one.
+
+
+Objectif du projet:
+* créer des sidequests narratifs qui te permettent d’atteindre des buts de manière super fun et te donne l’impression d’être le main character absolu - help you romanticize your life
+* use AI agents and IoT like Meta Glasses to boost your life and your flow maxxing
+
+
+A l’intersection de dungeon and dragons x pokemon go x strava x skyrim.
+
+
+Produit: 
+* L’ia te génère une quête qui correspond à ton temps, avec des amis ou seuls, et ton budget. Elle crée des personnages, un arc narratif qui évolue en live dépend de tes actions, décisions et interactions avec les personnages, book les activités en avance si besoin. Tu reçois avant le début de ta quête un package crée par l’ia (un appel, documents, vidéo, email etc) qui te donne le contexte de l’intrigue. L’ia te guide au fur et à mesure pour que tu avances dans ta quête: les activités bookée restent le même, mais les interactions avec les personnages, l’arc narratif peut changer.
+* Tu utilises les ray-ban/ ton tel pour valider que tu es en train d’accomplir une étape de la quête, obtenir stuff qui pourrait être utile prochaine quête/tradable avec d’autres joueurs. 
+Goal:
+* sport 
+* culture 
+* discovering 
+* music
+* specific skill (embroidery etc)
+* travel
+* meeting new people
+* fun 
+* gagner le hackathon ?
+
+
+Il est également possible de demander une vibe générale => ce que tu as envie de vivre. 
+
+
+
+
+Modality:
+* play alone
+* multijoueur ?
+
+
+Time quest:
+
+
+* 4 hours
+* 5 mn (démo finale)
+
+
+Moyen d’action de l’IA:
+
+
+* documents/images/vidéos générée
+* peut faire des réservations d’activités / de restaurant, avec paiement
+* peut te parler en live/mettre n’importe quel type de son en live/commenter ce que tu vois en live
+* génération playlist spotify
+* tu peux parler aux personnages depuis ton téléphone (whatsapp/email)
+
+
+
+
+Interaction physique:
+
+
+* localisation (gps tel)
+* mouvement (tel aussi)
+* caméra (meta rayban sdk)
+* micro (meta rayban sdk)
+* son (meta rayban sdk)
+
+
+Digital interactions:
+* Payments on blockchain and traditional networks. (openclaw + dynamic) 
+* Vidéo calls en Whatsapp (openclaw)
+* Web browsing and applications. (openclaw)
+
+
+Tracks of interest:
+* Hedera: AI & Agentic Payments on Hedera ⸺ $6,000 (3000 first place)
+* OG: 🤖 Best OpenClaw Agent on 0G ⸺ $6,000 (3000 first place)
+* Dynamic: Best use of Dynamic in a mobile experience ⸺ $1,667
+
+
+
+
+User story:
+
+
+-onboarding initial:
+connexion lunettes + app
+setup openclaw 
+connexion dynamic
+
+
+-launch a quest:
+choose a theme, a duration for the quest , an objective, a difficulty and the data+time (easy-peasy ; life-maxing ; god mode)
+connect to the call with open claw
+start the question at the first check point
+
+
+-during the quest: 
+TO BE DEFINED IN FUNCTION OF THE DEMO QUESTS
+
+
+-after the quest :
+a bit like a “ready or not” after-action review, with quests that were a success or not, a grade etc
+best clip of the quest to share and/or mint as a nft + item/skills (nft to be traded ?) => preview next quest/ see what other friends have done 
+
+
+-Other:
+dashboard with achievements
+connect wallet
+perks/nft/trophees
+friends 
+
+
+
+
+Architecture :
