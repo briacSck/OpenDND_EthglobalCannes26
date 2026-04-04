@@ -45,6 +45,7 @@ ANTHROPIC_API_KEY: str = _require("ANTHROPIC_API_KEY")
 
 RPC_URL: str = os.getenv("RPC_URL", "https://evmrpc-testnet.0g.ai")
 STORAGE_INDEXER: str = os.getenv("STORAGE_INDEXER", "https://indexer-storage-testnet-turbo.0g.ai")
+ZG_BALANCE_THRESHOLD: str = os.getenv("ZG_BALANCE_THRESHOLD", "0.01")
 
 if DEMO_MODE:
     PRIVATE_KEY: str | None = os.getenv("PRIVATE_KEY") or None

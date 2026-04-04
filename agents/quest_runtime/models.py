@@ -26,7 +26,7 @@ class Artifact(BaseModel):
 class OrchestratorEvent(BaseModel):
     """An event the orchestrator decides to send to the player."""
     event_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    type: str = Field(description="character_message | artifact | timer | group_chat | forwarded_message | arg_event | quest.reward.confirmed")
+    type: str = Field(description="character_message | artifact | timer | group_chat | forwarded_message | arg_event | quest.reward.confirmed | booking.prepared | booking.completed | booking.pending_human")
     character: str = Field(default="", description="Which character sends this, if applicable")
     content: str = Field(default="", description="Text content of the event")
     voice_script: str = Field(default="", description="Script for voice delivery if applicable")

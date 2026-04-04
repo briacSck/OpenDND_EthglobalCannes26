@@ -21,6 +21,8 @@ from agents.memory.player_profile import (
     save_quest_memory, update_player_profile, load_player_profile,
 )
 from agents.reward.hedera_reward import RewardTx, trigger_reward
+from agents.booking.booking_agent import prepare_booking, complete_booking
+from agents.booking.models import BookingIntent, BookingResult
 from agents.memory import index as memory_index
 from config import DEMO_MODE
 
@@ -342,6 +344,113 @@ async def quest_reward(quest_id: str, player_wallet: str = "", grade: str = "") 
     return reward_tx
 
 
+# --- Booking endpoint ---
+
+
+@app.post("/quests/{quest_id}/booking")
+async def quest_booking(quest_id: str, session_id: str = "") -> dict:
+    """Prepare and attempt a booking for the current step's activity.
+
+    Finds the active session's current step, extracts its activity, runs
+    prepare_booking + complete_booking, then notifies the orchestrator via
+    an event so a character can narrate the outcome.
+    If booking fails: the checkpoint is NOT blocked — falls back to manual proof.
+    """
+    quest = _quests.get(quest_id)
+    if not quest:
+        raise HTTPException(status_code=404, detail=f"Quest {quest_id} not found.")
+
+    # Find the session (by explicit id or by quest_id lookup)
+    session: QuestSession | None = None
+    orchestrator: OrchestratorAgent | None = None
+    if session_id:
+        session = _sessions.get(session_id)
+    else:
+        for s in _sessions.values():
+            if s.quest_id == quest_id and s.active:
+                session = s
+                break
+    if not session:
+        raise HTTPException(status_code=404, detail="No active session found for this quest.")
+    orchestrator = _orchestrators.get(session.session_id)
+
+    # Resolve the current step's activity
+    current_step = None
+    for step in quest.steps:
+        if step.step_id == session.state.current_step:
+            current_step = step
+            break
+    if not current_step or not current_step.activity.name:
+        raise HTTPException(status_code=400, detail="Current step has no bookable activity.")
+
+    activity = current_step.activity
+
+    # Prepare
+    intent = await prepare_booking(
+        activity_name=activity.name,
+        location=quest.narrative_universe.context if quest.narrative_universe else "",
+        url=activity.booking_url or None,
+        budget_eur=activity.price_eur,
+    )
+
+    session.events_log.append(
+        OrchestratorEvent(
+            type="booking.prepared",
+            content=json.dumps(intent.model_dump(), ensure_ascii=False),
+        )
+    )
+
+    # Complete
+    result = await complete_booking(intent)
+
+    if result.status == "completed":
+        event_type = "booking.completed"
+    elif result.status == "pending_human":
+        event_type = "booking.pending_human"
+    else:
+        event_type = "booking.completed"  # failed also goes here
+
+    booking_event = OrchestratorEvent(
+        type=event_type,
+        content=json.dumps(result.model_dump(), ensure_ascii=False),
+    )
+    session.events_log.append(booking_event)
+
+    # Notify the orchestrator so a character can narrate the outcome
+    if orchestrator:
+        if result.status == "completed":
+            directive = (
+                f"La réservation pour '{activity.name}' est confirmée "
+                f"(ref: {result.booking_ref}). Annonce-le au joueur in-character."
+            )
+        elif result.status == "pending_human":
+            directive = (
+                f"La réservation pour '{activity.name}' nécessite une action manuelle. "
+                f"Dis au joueur d'aller sur {result.confirmation_url} pour finaliser."
+            )
+        else:
+            directive = (
+                f"La réservation automatique pour '{activity.name}' a échoué. "
+                f"Rassure le joueur — il peut prouver sa visite autrement (photo, check-in)."
+            )
+
+        narration_events = await orchestrator.react(
+            trigger="action",
+            player_action=PlayerAction(type="custom", content=f"[booking:{result.status}] {directive}"),
+        )
+    else:
+        narration_events = []
+
+    return {
+        "quest_id": quest_id,
+        "session_id": session.session_id,
+        "activity": activity.name,
+        "intent": intent.model_dump(),
+        "result": result.model_dump(),
+        "narration_events": [e.model_dump() for e in narration_events],
+    }
+
+
 # --- Memory / completion helpers ---
 
 
@@ -398,6 +507,13 @@ async def get_player_memory(player_id: str) -> dict:
     if profile is None:
         raise HTTPException(status_code=404, detail=f"No profile found for player {player_id}")
     return profile.model_dump()
+
+
+@app.get("/compute/status")
+async def compute_status() -> dict:
+    """Returns 0G Compute provider status, balance, and fallback mode."""
+    from integrations.compute.compute_client import compute_client
+    return await compute_client.get_status()
 
 
 @app.get("/health")

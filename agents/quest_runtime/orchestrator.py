@@ -10,8 +10,6 @@ from __future__ import annotations
 import json
 import os
 from datetime import datetime
-from dotenv import load_dotenv
-from anthropic import AsyncAnthropic
 
 from agents.quest_generation.models import QuestOutput, Character
 from agents.quest_runtime.models import (
@@ -19,8 +17,7 @@ from agents.quest_runtime.models import (
     CharacterTrust, Artifact,
 )
 from agents.quest_runtime.character_agent import CharacterAgent
-
-load_dotenv()
+from integrations.compute.compute_client import compute_client
 
 ORCHESTRATOR_SYSTEM_PROMPT = """\
 Tu es l'orchestrateur invisible d'une quête immersive en monde réel.
@@ -224,11 +221,6 @@ class OrchestratorAgent:
     """The invisible runtime agent that drives the quest live."""
 
     def __init__(self, quest: QuestOutput, session: QuestSession, allow_arg: bool = False, memory_context: str = ""):
-        self.client = AsyncAnthropic(
-            base_url=os.getenv("ANTHROPIC_BASE_URL"),
-            api_key=os.getenv("ANTHROPIC_AUTH_TOKEN"),
-        )
-        self.model = os.getenv("ANTHROPIC_MODEL", "claude-opus-4-6")
         self.quest = quest
         self.session = session
         self.allow_arg = allow_arg
@@ -262,12 +254,11 @@ class OrchestratorAgent:
 
         # Let the orchestrator make multiple tool calls
         for _ in range(5):
-            response = await self.client.messages.create(
-                model=self.model,
-                max_tokens=4000,
+            response = await compute_client.create_message(
                 system=system,
-                tools=self.tools,
                 messages=messages,
+                max_tokens=4000,
+                tools=self.tools,
             )
 
             if response.stop_reason == "tool_use":
