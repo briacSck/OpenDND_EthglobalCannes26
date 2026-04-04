@@ -8,8 +8,27 @@ import uuid
 from config import DEMO_MODE
 
 from agents.booking.models import BookingIntent, BookingResult
+from agents.quest_generation.models import ActivityRef
 
 logger = logging.getLogger(__name__)
+
+
+async def prepare_booking_from_activity(
+    activity: ActivityRef,
+    quest_location: str,
+) -> BookingIntent | None:
+    """Adapter: map an ActivityRef from quest generation to a BookingIntent.
+
+    Returns None for narrative-only steps (no concrete activity or no booking URL).
+    """
+    if not activity.name or not activity.booking_url:
+        return None
+    return await prepare_booking(
+        activity_name=activity.name,
+        location=activity.address or quest_location,
+        url=activity.booking_url,
+        budget_eur=activity.price_eur,
+    )
 
 
 async def prepare_booking(

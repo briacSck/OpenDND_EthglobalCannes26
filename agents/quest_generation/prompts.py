@@ -269,7 +269,8 @@ Pour chaque activité proposée :
 - Durée estimée
 - Catégorie
 - Disponibilité (ouvert à la date/heure de la quête ?)
-- URL de réservation si applicable
+- booking_required: true si réservation à l'avance nécessaire, false si on peut y aller sans réserver (reprends le champ "bookable" des données)
+- URL de réservation si booking_required est true
 
 Termine toujours par un résumé budget :
 ```

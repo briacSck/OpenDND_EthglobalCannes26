@@ -29,6 +29,7 @@ class ActivityRef(BaseModel):
     price_eur: float = 0
     duration_minutes: int = 0
     booking_url: str = ""
+    booking_required: bool = False
     category: str = ""
 
 

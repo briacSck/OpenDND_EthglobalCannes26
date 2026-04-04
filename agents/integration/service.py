@@ -12,8 +12,8 @@ import json
 import logging
 from datetime import datetime
 
-from agents.booking.booking_agent import prepare_booking, complete_booking
-from agents.booking.models import BookingResult
+from agents.booking.booking_agent import prepare_booking, prepare_booking_from_activity, complete_booking
+from agents.booking.models import BookingIntent, BookingResult
 from agents.integration.models import (
     BookingConfirmationInput,
     ImageProofInput,
@@ -105,6 +105,35 @@ async def start_quest_session(
 
     events = await orchestrator.react(trigger="start")
     return session, orchestrator, serialize_events(events)
+
+
+# ---------------------------------------------------------------------------
+# 1b. prepare_quest_bookings
+# ---------------------------------------------------------------------------
+
+
+async def prepare_quest_bookings(quest: QuestOutput) -> list[BookingIntent]:
+    """Extract bookable activities from a generated quest and prepare BookingIntents.
+
+    Call after quest generation, before session start. The app backend uses the
+    returned intents to show the player which activities need advance booking.
+
+    Filter uses OR: booking_required OR booking_url present. Before the Curator
+    prompt update is fully effective, booking_required will be False on all
+    existing quests — booking_url != "" is the reliable fallback for now.
+    """
+    quest_location = quest.narrative_universe.context or ""
+    intents: list[BookingIntent] = []
+
+    for step in quest.steps:
+        activity = step.activity
+        if not activity.booking_required and not activity.booking_url:
+            continue
+        intent = await prepare_booking_from_activity(activity, quest_location)
+        if intent is not None:
+            intents.append(intent)
+
+    return intents
 
 
 # ---------------------------------------------------------------------------

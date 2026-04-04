@@ -398,3 +398,54 @@ recap = await generate_quest_recap(quest=quest, session=session)
 # recap.highlights → ["Premier contact...", "La révélation...", ...]
 # recap.grade → "B"
 ```
+
+---
+
+## Booking Integration
+
+### Field Flow: quest_generation → booking_agent
+
+| `ActivityRef` field (quest_generation) | `prepare_booking()` param | Notes |
+|----------------------------------------|---------------------------|-------|
+| `name` | `activity_name` | Required — adapter returns `None` if empty |
+| `address` | `location` | Falls back to quest location if empty |
+| `booking_url` | `url` | Required — adapter returns `None` if empty |
+| `price_eur` | `budget_eur` | Used as budget ceiling for the booking |
+| `booking_required` | _(filter only)_ | Used to select which activities need booking |
+
+### Automatic vs Manual Booking
+
+Activities are selected for booking preparation when `booking_required == True` **OR** `booking_url != ""` (fallback for quests generated before the Curator prompt update).
+
+After `prepare_booking()` inspects the booking page:
+
+| `BookingIntent.requires_human_action` | Meaning | App behavior |
+|---------------------------------------|---------|--------------|
+| `False` | No login, CAPTCHA, or payment wall | `complete_booking()` can finish automatically |
+| `True` | Login, CAPTCHA, or payment form detected | App shows `confirmation_url` + `instructions` to player |
+
+### Usage
+
+```python
+from agents.integration import prepare_quest_bookings
+
+# After quest generation, before session start
+quest = ...  # QuestOutput from /generate
+bookings = await prepare_quest_bookings(quest)
+
+for intent in bookings:
+    if intent.requires_human_action:
+        # → emit booking.pending_human event to app
+        # → app shows intent.booking_url + intent.reason to player
+    else:
+        result = await complete_booking(intent)
+        # → emit booking.completed event
+```
+
+### Events Emitted
+
+| Event | When |
+|-------|------|
+| `booking.prepared` | After `prepare_quest_bookings()` returns intents |
+| `booking.pending_human` | Intent requires manual player action |
+| `booking.completed` | Booking confirmed (auto or via `confirm_booking()`) |
