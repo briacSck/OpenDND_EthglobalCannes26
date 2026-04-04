@@ -242,11 +242,6 @@ class OrchestratorAgent:
     """The invisible runtime agent that drives the quest live."""
 
     def __init__(self, quest: QuestOutput, session: QuestSession, allow_arg: bool = False, memory_context: str = "", debug_callback=None):
-        self.client = AsyncAnthropic(
-            base_url=os.getenv("ANTHROPIC_BASE_URL"),
-            api_key=os.getenv("ANTHROPIC_AUTH_TOKEN"),
-        )
-        self.model = os.getenv("ANTHROPIC_MODEL", "claude-opus-4-6")
         self.quest = quest
         self.session = session
         self.allow_arg = allow_arg

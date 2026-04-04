@@ -129,11 +129,39 @@ async def prepare_quest_bookings(quest: QuestOutput) -> list[BookingIntent]:
         activity = step.activity
         if not activity.booking_required and not activity.booking_url:
             continue
-        intent = await prepare_booking_from_activity(activity, quest_location)
+        intent = await prepare_booking_from_activity(
+            activity,
+            quest_location,
+            desired_datetime=quest.quest_datetime,
+            guest_count=quest.quest_players,
+            budget_eur=quest.quest_budget,
+        )
         if intent is not None:
             intents.append(intent)
 
     return intents
+
+
+async def attempt_automated_bookings(
+    quest: QuestOutput,
+    intents: list[BookingIntent],
+) -> list[BookingResult]:
+    """Attempt to complete all automatable bookings."""
+    from agents.booking.models import BookingFormData
+
+    form_data = BookingFormData(
+        player_name=quest.player_name,
+        player_email=quest.player_email,
+        datetime_str=quest.quest_datetime,
+        guest_count=quest.quest_players,
+        location=quest.narrative_universe.context or "",
+    )
+    results: list[BookingResult] = []
+    for intent in intents:
+        if not intent.requires_human_action:
+            result = await complete_booking(intent, form_data)
+            results.append(result)
+    return results
 
 
 # ---------------------------------------------------------------------------

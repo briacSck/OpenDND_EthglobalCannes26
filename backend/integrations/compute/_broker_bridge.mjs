@@ -131,6 +131,13 @@ async function processResponse(addr, chatID, usage) {
   return { ok: true };
 }
 
+async function deposit(amount) {
+  const broker = await getBroker();
+  // depositFund expects a plain number in 0G units (not wei BigInt)
+  await broker.ledger.depositFund(parseFloat(amount));
+  return { ok: true, amount: String(amount) };
+}
+
 async function transfer(providerAddr, amount) {
   const broker = await getBroker();
   const weiAmount = ethers.parseEther(String(amount));
@@ -193,6 +200,11 @@ async function handleRequest(req, res) {
       if (!body.addr) { json(res, 400, { error: 'addr required' }); return; }
       json(res, 200, await acknowledge(body.addr));
 
+    } else if (req.method === 'POST' && path === '/deposit') {
+      const body = await readBody(req);
+      if (!body.amount) { json(res, 400, { error: 'amount required' }); return; }
+      json(res, 200, await deposit(body.amount));
+
     } else if (req.method === 'POST' && path === '/transfer') {
       const body = await readBody(req);
       if (!body.addr || !body.amount) { json(res, 400, { error: 'addr and amount required' }); return; }
@@ -244,12 +256,16 @@ async function cli(args) {
       if (!args[1]) throw new Error('Usage: acknowledge <addr>');
       result = await acknowledge(args[1]);
       break;
+    case 'deposit':
+      if (!args[1]) throw new Error('Usage: deposit <amount>');
+      result = await deposit(args[1]);
+      break;
     case 'transfer':
       if (!args[1] || !args[2]) throw new Error('Usage: transfer <addr> <amount>');
       result = await transfer(args[1], args[2]);
       break;
     default:
-      console.error('Commands: serve | discover | balance [addr] | metadata <addr> | acknowledge <addr> | transfer <addr> <amount>');
+      console.error('Commands: serve | discover | balance [addr] | metadata <addr> | acknowledge <addr> | deposit <amount> | transfer <addr> <amount>');
       process.exit(1);
   }
 

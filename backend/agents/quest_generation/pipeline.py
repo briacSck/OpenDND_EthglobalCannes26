@@ -318,4 +318,9 @@ def _assemble_quest(
                 ),
             ),
         ),
+        # Booking-relevant fields — carried from QuestRequest
+        quest_datetime=request.datetime,
+        quest_players=request.players,
+        quest_budget=request.budget,
+        player_email=getattr(request, "player_email", ""),
     )

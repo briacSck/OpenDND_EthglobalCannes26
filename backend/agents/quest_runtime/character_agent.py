@@ -9,7 +9,6 @@ from __future__ import annotations
 from datetime import datetime
 from typing import AsyncIterator
 from dotenv import load_dotenv
-from anthropic import AsyncAnthropic
 
 from agents.quest_generation.models import QuestOutput, Character
 from agents.quest_runtime.models import (
@@ -113,8 +112,8 @@ class CharacterAgent:
         messages.append({"role": "user", "content": player_message})
 
         full_reply = ""
-        async with self.client.messages.stream(
-            model=self.model,
+        async with compute_client._anthropic.messages.stream(
+            model=compute_client._anthropic_model,
             max_tokens=1000,
             system=system,
             messages=messages,

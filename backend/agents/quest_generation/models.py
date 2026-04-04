@@ -19,6 +19,7 @@ class QuestRequest(BaseModel):
     datetime: str = Field(description="When the quest starts: 2026-04-05 10:00")
     tone: str = Field(default="loufoque", description="loufoque | high_stakes")
     skill: str = Field(default="", description="Skill to develop: exploration urbaine, cuisine, etc.")
+    player_email: str = Field(default="", description="Player email for booking forms (optional)")
 
 
 # --- Sub-models ---
@@ -265,3 +266,9 @@ class QuestOutput(BaseModel):
     resolution_principles: list[str] = Field(default_factory=list, description="Rules for building the ending at runtime")
     trust_dynamics: dict[str, dict] = Field(default_factory=dict, description="Per-character behavior by trust level (low/medium/high)")
     resolution: Resolution = Field(default_factory=Resolution)
+
+    # Booking-relevant fields — copied from QuestRequest so they survive generation
+    quest_datetime: str = Field(default="", description="When the quest starts, from QuestRequest.datetime")
+    quest_players: int = Field(default=1, description="Number of players, from QuestRequest.players")
+    quest_budget: float = Field(default=0, description="Budget in EUR, from QuestRequest.budget")
+    player_email: str = Field(default="", description="Player email for booking forms")
