@@ -69,6 +69,9 @@ class Verification(BaseModel):
     method: str = Field(default="zk_location", description="zk_location | camera_ai | text_answer")
     target: str = ""
     success_condition: str = ""
+    success_reaction: str = Field(default="", description="Narrative reaction if the player succeeds")
+    failure_fallback: str = Field(default="", description="What happens if the player fails — the story ALWAYS continues")
+    timeout_reaction: str = Field(default="", description="Character message if the player takes too long")
 
 
 class Step(BaseModel):
@@ -82,6 +85,10 @@ class Step(BaseModel):
     tension: Tension = Field(default_factory=Tension)
     character_interactions: list[CharacterInteraction] = Field(default_factory=list)
     verification: Verification = Field(default_factory=Verification)
+    walking_minutes_from_previous: int = Field(default=0, description="Walking minutes from previous step (max 5)")
+    player_action: str = Field(default="", description="Concrete action the player performs at this step")
+    gps_trigger: dict = Field(default_factory=dict, description="Content unlocked by GPS proximity")
+    camera_prompt: str = Field(default="", description="What to photograph and how AI interprets it")
     blockchain_event: str | None = None
     unlock_message: str = ""
     skill_xp: int = 0
@@ -100,12 +107,14 @@ class MemoryState(BaseModel):
 class Character(BaseModel):
     name: str
     age: int = 0
-    type: str = Field(default="principal", description="principal | secondaire | invoque")
+    type: str = Field(default="principal", description="principal | secondary | invoked")
     archetype: str = Field(default="", description="mastermind | electron_libre | genie_arrogant | fantome | love_interest")
     personality: str = ""
-    speech_pattern: str = Field(default="", description="Tics de langage distinctifs, exemples de répliques typiques")
-    relationship_to_player: str = Field(default="", description="Comment ce perso perçoit le joueur initialement")
+    speech_pattern: str = Field(default="", description="Distinctive speech quirks, examples of typical lines")
+    relationship_to_player: str = Field(default="", description="How this character perceives the player initially")
     secret: str = ""
+    evolution_rules: str = Field(default="", description="How this character changes based on player behavior")
+    reactions_imprevues: str = Field(default="", description="How this character handles the unexpected, their red lines")
     voice_id: str = "elevenlabs_placeholder"
     memory_state: MemoryState = Field(default_factory=MemoryState)
     unlock_conditions: list[str] = Field(default_factory=list)
@@ -248,9 +257,10 @@ class QuestOutput(BaseModel):
     character_system: CharacterSystem = Field(default_factory=CharacterSystem)
     characters: list[Character] = Field(default_factory=list)
     budget_confirmed: BudgetConfirmed = Field(default_factory=BudgetConfirmed)
-    decision_tree: DecisionTree = Field(default_factory=DecisionTree)
     steps: list[Step] = Field(default_factory=list)
     narrative_beats: list[NarrativeBeat] = Field(default_factory=list, description="Flexible story moments the orchestrator can place dynamically")
-    possible_arcs: list[str] = Field(default_factory=list, description="Possible narrative directions based on player choices")
-    trust_dynamics: dict[str, dict] = Field(default_factory=dict, description="Per-character relationship evolution rules")
+    narrative_tensions: list[str] = Field(default_factory=list, description="Forces/dilemmas at play — not predefined endings")
+    twist: dict = Field(default_factory=dict, description="Central twist + revelation_variants")
+    resolution_principles: list[str] = Field(default_factory=list, description="Rules for building the ending at runtime")
+    trust_dynamics: dict[str, dict] = Field(default_factory=dict, description="Per-character behavior by trust level (low/medium/high)")
     resolution: Resolution = Field(default_factory=Resolution)

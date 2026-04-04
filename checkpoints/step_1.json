@@ -1,0 +1,101 @@
+{
+  "step_id": 1,
+  "title": "The Dead Man's Receipt",
+  "activity": {
+    "name": "Palais des Festivals et des Congrès — Esplanade Georges Pompidou",
+    "address": "1 Boulevard de la Croisette, 06400 Cannes",
+    "price_eur": 0,
+    "duration_minutes": 20,
+    "category": "exploration"
+  },
+  "narrative_intro": "The 0.0001 ETH hit your wallet seventeen minutes ago. You've read the memo four times. NOTAIRE — confirm the Castre Protocol before 16:00 or the ledger burns. They killed me for this. Don't let them win. The sender address traces back to a wallet last active during ETH Global Cannes — an event that ended forty-eight hours ago at the Palais des Festivals. The wallet's owner, Soren Kask, was found dead in his hotel room Sunday morning. Cardiac arrest, according to Nice-Matin. You've never met Soren Kask. But his smart contract lists your wallet as the sole validator, hardcoded six weeks ago. He chose you. He planned this. And now a dead man's clock is ticking down to 16:00 and you're the only one who can stop it. Your phone buzzes. An unknown number. The message is one line: \"You received Kask's ping. So did they. Get to the Palais NOW. —V\"",
+  "instruction": "Go to the esplanade in front of the Palais des Festivals on the Croisette. When you arrive, you'll receive critical intel. Kask attended ETH Global here — his last public appearance was on this esplanade. You need to find and photograph the main entrance of the Palais des Festivals, specifically the famous red carpet staircase and the facade above it. Kask embedded a visual reference to this building in his smart contract metadata — the AI needs to confirm you're at the right location before the first decryption shard can be released to your vault.",
+  "player_action": "Photograph the main facade of the Palais des Festivals, capturing the iconic staircase and the building's front entrance. Then report to Voss: count the number of large poster/billboard display frames visible on the facade and message her the count. This confirms you're physically present and not spoofing GPS.",
+  "gps_trigger": {
+    "type": "document",
+    "character": "Soren Kask (posthumous)",
+    "content_brief": "A digital document auto-releases to the player's vault: Kask's final research brief, a one-page PDF titled 'CASTRE PROTOCOL — VALIDATOR INSTRUCTIONS.' It contains a timeline: July 28, 2013 — Carlton heist, €103M in jewels. March 2016 — first crypto conversion detected. 2017-2024 — MIPIM-cycle laundering through Cannes/Antibes luxury real estate. It names no names but references 'The Builder' (a developer), 'The Captain' (a yacht-linked oligarch), and 'The Panthers' (remnants of the gang). The final line reads: 'The validator will be contacted by those who want the ledger to live and those who want it to die. Trust the silence, not the warmth. —SK'"
+  },
+  "camera_prompt": "The player photographs the Palais des Festivals facade. AI vision identifies the brutalist concrete architecture, the red carpet staircase, the Cannes Film Festival branding, and the large billboard frames on the building's front. The AI character (Voss) uses the photo to confirm location and narratively notes: 'Kask stood right there, Thursday night, 22:47. Security camera timestamp. He was photographing the same facade. We think he was encoding visual markers from the building into his contract metadata — architectural measurements, angles. You're literally standing in his last footsteps.'\"",
+  "walking_minutes_from_previous": 0,
+  "tension": {
+    "type": "time_pressure",
+    "description": "The player has just learned the 16:00 auto-destruct is real. Voss is pressuring them to move fast. But Kask's own posthumous document warns 'trust the silence, not the warmth' — an immediate contradiction with the urgent, warm, helpful voice pushing them forward. The seed of doubt is planted before the player has even taken a step.",
+    "resolution": "The player sends the photo and the billboard count, confirming their presence. The first decryption shard unlocks. The clock is real. The danger is real. And someone is already watching the blockchain for validator activity."
+  },
+  "character_interactions": [
+    {
+      "character": "Lena Voss",
+      "trigger": "GPS arrival at Palais des Festivals",
+      "phone_version": "Text message from unknown number, now identified as Voss: 'Good. You're there. I'm Senior Analyst Lena Voss, Europol Financial Intelligence. I know what just hit your wallet — we've been monitoring Kask's dead-drop contracts since Sunday. Listen carefully: you are the ONLY address that can validate the Castre Protocol. That makes you the most important person in Cannes right now, and also the most exposed. I need you to photograph the Palais facade and tell me how many billboard frames you count on the front. This isn't busywork — Kask used architectural measurements as entropy seeds. Your photo confirms you're real and you're there. Do this and I'll unlock what we know about how he died. Move fast. The network already knows about the transaction.'",
+      "rayban_version": {
+        "script": "Voss speaks in a clipped, controlled cadence — a woman who has rehearsed being calm under fire. 'You're at the Palais. Good. I'm Lena Voss, Europol Financial Intelligence. What hit your wallet is not a mistake. Soren Kask selected you as his validator six weeks before he died. I need you to do something for me right now — photograph the Palais facade. Count the billboard frames on the front of the building. Send me both. I know it sounds strange. Kask used architectural geometry as entropy seeds for his encryption. Your photo starts the first decryption sequence. And it confirms to me that you are physically present and not a bot. Clock's running. The people who killed Kask are monitoring validator wallet activity. They saw that transaction hit your address. They're already moving.'",
+        "audio_type": "voice_message",
+        "duration_seconds": 38,
+        "camera_mode": {
+          "enabled": true,
+          "purpose": "Capture Palais facade for location confirmation and narrative progression"
+        },
+        "contextual_music": {
+          "enabled": true,
+          "track_type": "dark_ambient_tension",
+          "duration_seconds": 120
+        }
+      },
+      "awaits_response": true
+    },
+    {
+      "character": "Specter",
+      "trigger": "After player sends photo of the Palais facade",
+      "phone_version": "A message appears from an address with no name, no avatar, no number — just a wallet address as the sender ID. The message contains only: '6 weeks. He watched you that long before choosing. Ask yourself why. Don't ask her.' Then the sender vanishes from the chat — the message remains but the contact shows as inactive.",
+      "rayban_version": {
+        "script": "A synthetic, gender-neutral voice, barely above a whisper, distorted through what sounds like multiple layers of voice processing. 'Six weeks. He watched you that long before he chose your wallet. Ask yourself why you. Don't ask her.' The audio cuts. No identification. No callback option.",
+        "audio_type": "voice_message",
+        "duration_seconds": 8,
+        "camera_mode": {
+          "enabled": false,
+          "purpose": ""
+        },
+        "contextual_music": {
+          "enabled": false,
+          "track_type": "",
+          "duration_seconds": 0
+        }
+      },
+      "awaits_response": false
+    },
+    {
+      "character": "Enzo Castaldi",
+      "trigger": "90 seconds after Specter's message",
+      "phone_version": "A text from a new contact — 'Enzo Castaldi' with a profile photo showing a tan, silver-haired man in an impeccable linen suit. 'Buongiorno. You don't know me yet, but you will. I was Soren's friend — his only friend in Cannes, if I'm honest. I heard what happened to his protocol and I know you've been contacted by certain... institutional parties. Before you trust anyone with a badge, come talk to me. I knew Soren. I knew what he found. And I know why he picked YOU specifically. I'm not far. But first — finish what the Europol woman is asking you to do. She's not wrong about the clock. She's wrong about almost everything else. À bientôt.'",
+      "rayban_version": {
+        "script": "A warm Italian-accented voice, unhurried, the kind of voice that owns the restaurant instead of eating in it. 'Buongiorno. My name is Enzo Castaldi. I was Soren's friend — maybe his only real friend in this city. I know you're standing at the Palais. I know what arrived in your wallet. And I know you've already been contacted by someone claiming authority. Do what she asks — the photo, the count. She's right about the urgency. She's wrong about nearly everything else. When you're done there, we should talk. I'll tell you why Soren chose your wallet out of eight billion people. He had a reason. It's a good one. À bientôt.'",
+        "audio_type": "voice_message",
+        "duration_seconds": 32,
+        "camera_mode": {
+          "enabled": false,
+          "purpose": ""
+        },
+        "contextual_music": {
+          "enabled": false,
+          "track_type": "",
+          "duration_seconds": 0
+        }
+      },
+      "awaits_response": false
+    }
+  ],
+  "verification": {
+    "method": "photo_ai",
+    "target": "Palais des Festivals main facade showing the iconic staircase and billboard frames",
+    "success_condition": "AI vision confirms the Palais des Festivals architecture — brutalist concrete facade, red carpet staircase area, and billboard display frames are visible. Player also messages a billboard frame count.",
+    "success_reaction": "Voss responds: 'Frame count matches Kask's metadata anchor. First decryption shard is releasing to your vault now.' A new document appears: a partial blockchain transaction map showing a cluster of crypto-to-fiat conversions dated March 2016, routed through a Malta-registered exchange that was later shut down by the EU. Voss adds: 'This is the first layer. Kask mapped nine years of laundering. But the full ledger requires all five shards — and each one is locked to a different location in Cannes. You're not just validating. You're retracing his investigation. Next location incoming.' Player gains +15 trust with Voss. Castaldi's earlier claim that he knows why Kask chose the player is flagged as unresolved.",
+    "failure_fallback": "Voss messages after 3 minutes: 'I'm not getting a usable image. It's fine — your GPS confirms you're at the Palais. I'll release the first shard on proximity alone, but the decryption will be partial. You'll be working with incomplete data at the next location. Not ideal, but the clock doesn't care about ideal. Moving you to the next point.' The shard releases but with redacted sections — the player will have less context at Step 2, making cross-referencing harder. Story continues without penalty to progression.",
+    "timeout_reaction": "After 5 minutes with no photo or response, Voss sends: 'I'm losing you. Are you still at the Palais? The network monitors validator wallet activity — if they've triangulated your position, you need to MOVE. I'm sending the next coordinates regardless. First shard will release in transit. Go NOW.' Castaldi also pings: 'Still there? Don't freeze. Freezing is how Soren ended up in a body bag. Walk. I'll guide you.'"
+  },
+  "blockchain_event": "Validator wallet receives first decryption shard — a signed token representing 1/5 of the Castre Protocol key. Transaction is visible on-chain, meaning all parties monitoring the contract can now see the validator is active and in Cannes.",
+  "unlock_message": "CASTRE PROTOCOL — SHARD 1/5 UNLOCKED. Validator confirmed at origin point. Decryption sequence initiated. Four shards remain. Auto-destruct: 16:00. The ledger lives or dies with you.",
+  "skill_xp": 0,
+  "is_skill_step": false,
+  "is_collaborative": false
+}
