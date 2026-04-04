@@ -54,33 +54,6 @@ struct StreamSessionView: View {
           },
           rayBanPhoto: nil
         )
-
-        // Start streaming button if device available
-        if viewModel.hasActiveDevice {
-          VStack {
-            HStack {
-              Spacer()
-              Button {
-                Task { await viewModel.handleStartStreaming() }
-              } label: {
-                HStack(spacing: 6) {
-                  Image(systemName: "glasses")
-                    .font(.system(size: 12))
-                  Text("Ray-Ban")
-                    .font(.system(size: 11, weight: .medium))
-                }
-                .foregroundColor(.white)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 8)
-                .background(Color.black.opacity(0.6))
-                .cornerRadius(20)
-              }
-              .padding(.trailing, 16)
-              .padding(.top, 80)
-            }
-            Spacer()
-          }
-        }
       }
     }
     .alert("Error", isPresented: $viewModel.showError) {
@@ -89,6 +62,18 @@ struct StreamSessionView: View {
       }
     } message: {
       Text(viewModel.errorMessage)
+    }
+    .onChange(of: viewModel.hasActiveDevice) { hasDevice in
+      // Auto-start streaming when Ray-Ban glasses are detected
+      if hasDevice && !viewModel.isStreaming {
+        Task { await viewModel.handleStartStreaming() }
+      }
+    }
+    .onAppear {
+      // Try to start streaming if device is already available
+      if viewModel.hasActiveDevice && !viewModel.isStreaming {
+        Task { await viewModel.handleStartStreaming() }
+      }
     }
     .onChange(of: viewModel.capturedPhoto) { photo in
       // When Ray-Ban captures a photo, send it for verification
