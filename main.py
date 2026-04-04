@@ -25,10 +25,12 @@ from agents.booking.booking_agent import prepare_booking, complete_booking
 from agents.booking.models import BookingIntent, BookingResult
 from agents.memory import index as memory_index
 from config import DEMO_MODE
+from blockchain import blockchain_router
 
 logger = logging.getLogger(__name__)
 
 app = FastAPI(title="OpenD&D", description="AI-powered real-life quest system")
+app.include_router(blockchain_router)
 
 # In-memory stores (replace with DB later)
 _quests: dict[str, QuestOutput] = {}

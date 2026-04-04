@@ -21,8 +21,12 @@ def get_client() -> Client:
     network = Network(network_name)
     _client = Client(network)
 
-    _operator_id = AccountId.from_string(os.environ["HEDERA_OPERATOR_ID"])
-    _operator_key = PrivateKey.from_string(os.environ["HEDERA_OPERATOR_KEY"])
+    # Accept both naming conventions (blockchain/ and config.py)
+    account_id = os.getenv("HEDERA_OPERATOR_ID") or os.environ["HEDERA_ACCOUNT_ID"]
+    private_key = os.getenv("HEDERA_OPERATOR_KEY") or os.environ["HEDERA_PRIVATE_KEY"]
+
+    _operator_id = AccountId.from_string(account_id)
+    _operator_key = PrivateKey.from_string(private_key)
     _client.set_operator(_operator_id, _operator_key)
 
     return _client
