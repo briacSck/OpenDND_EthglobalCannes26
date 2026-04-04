@@ -2,3 +2,6 @@
 __pycache__/
 *.pyc
 .claude/
+.0g-skills/
+CLAUDE.md
+data/

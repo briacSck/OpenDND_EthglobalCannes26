@@ -10,8 +10,6 @@ from __future__ import annotations
 import json
 import os
 from datetime import datetime
-from dotenv import load_dotenv
-from anthropic import AsyncAnthropic
 
 from agents.quest_generation.models import QuestOutput, Character
 from agents.quest_runtime.models import (
@@ -19,8 +17,7 @@ from agents.quest_runtime.models import (
     CharacterTrust, Artifact,
 )
 from agents.quest_runtime.character_agent import CharacterAgent
-
-load_dotenv()
+from integrations.compute.compute_client import compute_client
 
 ORCHESTRATOR_SYSTEM_PROMPT = """\
 Tu es l'orchestrateur invisible d'une quête immersive en monde réel.
@@ -223,15 +220,11 @@ ORCHESTRATOR_TOOLS = [
 class OrchestratorAgent:
     """The invisible runtime agent that drives the quest live."""
 
-    def __init__(self, quest: QuestOutput, session: QuestSession, allow_arg: bool = False):
-        self.client = AsyncAnthropic(
-            base_url=os.getenv("ANTHROPIC_BASE_URL"),
-            api_key=os.getenv("ANTHROPIC_AUTH_TOKEN"),
-        )
-        self.model = os.getenv("ANTHROPIC_MODEL", "claude-opus-4-6")
+    def __init__(self, quest: QuestOutput, session: QuestSession, allow_arg: bool = False, memory_context: str = ""):
         self.quest = quest
         self.session = session
         self.allow_arg = allow_arg
+        self.memory_context = memory_context
         self.tools = ORCHESTRATOR_TOOLS if allow_arg else [
             t for t in ORCHESTRATOR_TOOLS if t["name"] != "trigger_arg_event"
         ]
@@ -239,7 +232,7 @@ class OrchestratorAgent:
         # Create a CharacterAgent per character
         self.character_agents: dict[str, CharacterAgent] = {}
         for char in quest.characters:
-            self.character_agents[char.name] = CharacterAgent(char, quest, session)
+            self.character_agents[char.name] = CharacterAgent(char, quest, session, memory_context=memory_context)
 
     def get_character_agent(self, name: str) -> CharacterAgent | None:
         """Get a character agent by name."""
@@ -261,12 +254,11 @@ class OrchestratorAgent:
 
         # Let the orchestrator make multiple tool calls
         for _ in range(5):
-            response = await self.client.messages.create(
-                model=self.model,
-                max_tokens=4000,
+            response = await compute_client.create_message(
                 system=system,
-                tools=self.tools,
                 messages=messages,
+                max_tokens=4000,
+                tools=self.tools,
             )
 
             if response.stop_reason == "tool_use":
@@ -420,7 +412,14 @@ class OrchestratorAgent:
             marker = "→" if s.step_id == session.state.current_step else " "
             steps_summary.append(f"{marker} Step {s.step_id}: {s.title} ({s.activity.name}) — {s.activity.duration_minutes}min")
 
-        return f"""## Quête : {quest.title}
+        memory_section = ""
+        if self.memory_context:
+            memory_section = f"""## Player memory
+{self.memory_context}
+
+"""
+
+        return f"""{memory_section}## Quête : {quest.title}
 Tone : {quest.tone} | Alias joueur : {quest.alias or 'Agent'}
 Arc narratif actuel : {session.state.narrative_arc or 'non défini'}
 Step actuel : {session.state.current_step}

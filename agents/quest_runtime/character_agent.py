@@ -6,17 +6,13 @@ ask a character to initiate contact (chime in) by providing a directive.
 
 from __future__ import annotations
 
-import os
 from datetime import datetime
-from dotenv import load_dotenv
-from anthropic import AsyncAnthropic
 
 from agents.quest_generation.models import QuestOutput, Character
 from agents.quest_runtime.models import (
     QuestSession, ConversationEntry, OrchestratorEvent,
 )
-
-load_dotenv()
+from integrations.compute.compute_client import compute_client
 
 CHARACTER_RUNTIME_RULES = """\
 
@@ -42,15 +38,11 @@ CHARACTER_RUNTIME_RULES = """\
 class CharacterAgent:
     """An autonomous AI agent for a single character."""
 
-    def __init__(self, character: Character, quest: QuestOutput, session: QuestSession):
-        self.client = AsyncAnthropic(
-            base_url=os.getenv("ANTHROPIC_BASE_URL"),
-            api_key=os.getenv("ANTHROPIC_AUTH_TOKEN"),
-        )
-        self.model = os.getenv("ANTHROPIC_MODEL", "claude-opus-4-6")
+    def __init__(self, character: Character, quest: QuestOutput, session: QuestSession, memory_context: str = ""):
         self.character = character
         self.quest = quest
         self.session = session
+        self.memory_context = memory_context
 
     async def respond(self, player_message: str, directive: str = "") -> OrchestratorEvent:
         """Player sends a message to this character. Returns the character's response."""
@@ -64,11 +56,10 @@ class CharacterAgent:
         # Add the new player message
         messages.append({"role": "user", "content": player_message})
 
-        response = await self.client.messages.create(
-            model=self.model,
-            max_tokens=1000,
+        response = await compute_client.create_message(
             system=system,
             messages=messages,
+            max_tokens=1000,
         )
 
         reply = ""
@@ -101,11 +92,10 @@ class CharacterAgent:
         )
         messages.append({"role": "user", "content": prompt})
 
-        response = await self.client.messages.create(
-            model=self.model,
-            max_tokens=1000,
+        response = await compute_client.create_message(
             system=system,
             messages=messages,
+            max_tokens=1000,
         )
 
         reply = ""
@@ -153,6 +143,13 @@ class CharacterAgent:
 - Step actuel : {step_info}
 - Temps écoulé : {session.state.total_elapsed_seconds // 60} min
 - Arc narratif : {session.state.narrative_arc or 'non défini'}
+"""
+
+        if self.memory_context:
+            dynamic += f"""
+## Mémoire joueur
+{self.memory_context}
+(Utilise ces infos subtilement — ne dis JAMAIS au joueur que tu connais son historique.)
 """
 
         if directive:
