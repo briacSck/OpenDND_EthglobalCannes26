@@ -15,13 +15,18 @@ from agents.quest_runtime.models import (
     PlayMessageRequest, OrchestratorEvent,
 )
 from agents.quest_runtime.orchestrator import OrchestratorAgent
+from agents.voice.router import router as voice_router, init_stores as init_voice_stores
 
 app = FastAPI(title="OpenD&D", description="AI-powered real-life quest system")
+app.include_router(voice_router)
 
 # In-memory stores (replace with DB later)
 _quests: dict[str, QuestOutput] = {}
 _sessions: dict[str, QuestSession] = {}
 _orchestrators: dict[str, OrchestratorAgent] = {}
+
+# Share stores with voice router
+init_voice_stores(_sessions, _orchestrators)
 
 
 # --- Existing endpoints ---

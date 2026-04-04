@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import os
 from datetime import datetime
+from typing import AsyncIterator
 from dotenv import load_dotenv
 from anthropic import AsyncAnthropic
 
@@ -27,7 +28,7 @@ CHARACTER_RUNTIME_RULES = """\
 - Your responses are 5-15 sentences. Be VERBOSE, give context, color, narrative
   details. The player needs substance to immerse themselves. Tell stories, explain,
   digress, add in-character anecdotes. No dry responses.
-- You call the player by their alias: "{alias}".
+- You call the player by their first name: "{player_name}".
 - You do NOT invent facts about the quest that aren't in your context.
 - You can lie if it's in your nature (e.g., if you're the character who lies).
 - Adapt your tone to the trust level:
@@ -107,6 +108,30 @@ class CharacterAgent:
             content=reply,
         )
 
+    async def respond_stream(self, player_message: str, directive: str = "") -> AsyncIterator[str]:
+        """Streaming version of respond(). Yields text chunks as they arrive from Claude.
+
+        Also records the full exchange in conversation history when done.
+        """
+        self._add_to_history("player", player_message)
+
+        system = self._build_system_prompt(directive)
+        messages = self._build_conversation_messages()
+        messages.append({"role": "user", "content": player_message})
+
+        full_reply = ""
+        async with self.client.messages.stream(
+            model=self.model,
+            max_tokens=1000,
+            system=system,
+            messages=messages,
+        ) as stream:
+            async for text in stream.text_stream:
+                full_reply += text
+                yield text
+
+        self._add_to_history("character", full_reply)
+
     async def initiate(self, directive: str) -> OrchestratorEvent:
         """Orchestrator asks this character to contact the player spontaneously."""
 
@@ -170,7 +195,7 @@ class CharacterAgent:
         # Dynamic context section
         dynamic = f"""
 ## Current session context
-- Player alias: "{quest.alias or 'Agent'}"
+- Player name: "{quest.player_name or 'Player'}"
 - Your trust level with the player: {trust}/100
 - Current step: {step_info}
 - Time elapsed: {session.state.total_elapsed_seconds // 60} min
@@ -186,7 +211,7 @@ class CharacterAgent:
 
         rules = CHARACTER_RUNTIME_RULES.format(
             name=char.name,
-            alias=quest.alias or "Agent",
+            player_name=quest.player_name or "Player",
         )
 
         # Use the rich system_prompt from CharacterInitializer + dynamic context + rules

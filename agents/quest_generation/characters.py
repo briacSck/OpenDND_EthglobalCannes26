@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 from anthropic import AsyncAnthropic
 
 from agents.quest_generation.models import Character, MemoryState
+from agents.voice.tts import ElevenLabsTTS
 
 load_dotenv()
 
@@ -142,7 +143,29 @@ class CharacterInitializer:
         for raw in characters_raw[:MAX_ACTIVE_CHARACTERS]:
             enriched = await self.enrich_one(raw)
             characters.append(enriched)
+
+        # Generate real ElevenLabs voices for each character (if API key is set)
+        if os.getenv("ELEVENLABS_API_KEY"):
+            await self._generate_voices(characters)
+
         return characters
+
+    async def _generate_voices(self, characters: list[Character]):
+        """Generate unique ElevenLabs voices for each character based on their description."""
+        for char in characters:
+            try:
+                # Build a voice description from character traits
+                description = (
+                    f"{char.name}. {char.personality[:150]}. "
+                    f"Speech style: {char.speech_pattern[:100]}. "
+                    f"Voice type hint: {char.voice_id}"
+                )
+                print(f"  [Voice] Generating ElevenLabs voice for {char.name}...", flush=True)
+                voice_id = await ElevenLabsTTS.generate_voice(description)
+                char.voice_id = voice_id
+                print(f"  [Voice] {char.name} → {voice_id}", flush=True)
+            except Exception as e:
+                print(f"  [Voice] Failed for {char.name}: {e} — keeping placeholder", flush=True)
 
     async def enrich_one(self, raw: dict) -> Character:
         """Enrich a single character with system prompt and voice."""
