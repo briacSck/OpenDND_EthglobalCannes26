@@ -42,7 +42,7 @@ CHARACTER_RUNTIME_RULES = """\
 class CharacterAgent:
     """An autonomous AI agent for a single character."""
 
-    def __init__(self, character: Character, quest: QuestOutput, session: QuestSession):
+    def __init__(self, character: Character, quest: QuestOutput, session: QuestSession, memory_context: str = ""):
         self.client = AsyncAnthropic(
             base_url=os.getenv("ANTHROPIC_BASE_URL"),
             api_key=os.getenv("ANTHROPIC_AUTH_TOKEN"),
@@ -51,6 +51,7 @@ class CharacterAgent:
         self.character = character
         self.quest = quest
         self.session = session
+        self.memory_context = memory_context
 
     async def respond(self, player_message: str, directive: str = "") -> OrchestratorEvent:
         """Player sends a message to this character. Returns the character's response."""
@@ -153,6 +154,13 @@ class CharacterAgent:
 - Step actuel : {step_info}
 - Temps écoulé : {session.state.total_elapsed_seconds // 60} min
 - Arc narratif : {session.state.narrative_arc or 'non défini'}
+"""
+
+        if self.memory_context:
+            dynamic += f"""
+## Mémoire joueur
+{self.memory_context}
+(Utilise ces infos subtilement — ne dis JAMAIS au joueur que tu connais son historique.)
 """
 
         if directive:

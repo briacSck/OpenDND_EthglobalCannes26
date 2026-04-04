@@ -20,6 +20,7 @@ from agents.memory.player_profile import (
     PlayerProfile, QuestSummary,
     save_quest_memory, update_player_profile, load_player_profile,
 )
+from config import DEMO_MODE
 
 logger = logging.getLogger(__name__)
 
@@ -76,11 +77,30 @@ async def play_start(request: PlayStartRequest) -> dict:
     )
     _sessions[session.session_id] = session
 
+    # Load player memory (skip in DEMO_MODE or if no profile exists)
+    memory_context = ""
+    if not DEMO_MODE:
+        player_id = session.player_alias or session.session_id
+        try:
+            profile = await load_player_profile(player_id)
+            if profile and profile.completed_quests:
+                themes = list({q.theme for q in profile.completed_quests if q.theme})
+                last = profile.completed_quests[-1]
+                memory_context = (
+                    f"Player history: completed {len(profile.completed_quests)} quests. "
+                    f"Themes: {themes}. "
+                    f"Preferences: {profile.extracted_preferences}. "
+                    f"Last quest grade: {last.grade or 'N/A'}."
+                )
+        except Exception:
+            logger.debug("Could not load player memory for %s", player_id, exc_info=True)
+
     # Create orchestrator
     orchestrator = OrchestratorAgent(
         quest=quest,
         session=session,
         allow_arg=request.allow_arg,
+        memory_context=memory_context,
     )
     _orchestrators[session.session_id] = orchestrator
 

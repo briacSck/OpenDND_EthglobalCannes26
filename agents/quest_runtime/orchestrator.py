@@ -223,7 +223,7 @@ ORCHESTRATOR_TOOLS = [
 class OrchestratorAgent:
     """The invisible runtime agent that drives the quest live."""
 
-    def __init__(self, quest: QuestOutput, session: QuestSession, allow_arg: bool = False):
+    def __init__(self, quest: QuestOutput, session: QuestSession, allow_arg: bool = False, memory_context: str = ""):
         self.client = AsyncAnthropic(
             base_url=os.getenv("ANTHROPIC_BASE_URL"),
             api_key=os.getenv("ANTHROPIC_AUTH_TOKEN"),
@@ -232,6 +232,7 @@ class OrchestratorAgent:
         self.quest = quest
         self.session = session
         self.allow_arg = allow_arg
+        self.memory_context = memory_context
         self.tools = ORCHESTRATOR_TOOLS if allow_arg else [
             t for t in ORCHESTRATOR_TOOLS if t["name"] != "trigger_arg_event"
         ]
@@ -239,7 +240,7 @@ class OrchestratorAgent:
         # Create a CharacterAgent per character
         self.character_agents: dict[str, CharacterAgent] = {}
         for char in quest.characters:
-            self.character_agents[char.name] = CharacterAgent(char, quest, session)
+            self.character_agents[char.name] = CharacterAgent(char, quest, session, memory_context=memory_context)
 
     def get_character_agent(self, name: str) -> CharacterAgent | None:
         """Get a character agent by name."""
@@ -420,7 +421,14 @@ class OrchestratorAgent:
             marker = "→" if s.step_id == session.state.current_step else " "
             steps_summary.append(f"{marker} Step {s.step_id}: {s.title} ({s.activity.name}) — {s.activity.duration_minutes}min")
 
-        return f"""## Quête : {quest.title}
+        memory_section = ""
+        if self.memory_context:
+            memory_section = f"""## Player memory
+{self.memory_context}
+
+"""
+
+        return f"""{memory_section}## Quête : {quest.title}
 Tone : {quest.tone} | Alias joueur : {quest.alias or 'Agent'}
 Arc narratif actuel : {session.state.narrative_arc or 'non défini'}
 Step actuel : {session.state.current_step}
