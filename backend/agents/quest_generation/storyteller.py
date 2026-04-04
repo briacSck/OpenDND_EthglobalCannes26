@@ -625,7 +625,7 @@ Call submit_meta with all of this."""}]
             try:
                 response = await self.client.messages.create(
                     model=self.model,
-                    max_tokens=100000,
+                    max_tokens=16000,
                     temperature=self.temperature,
                     system=self.system_prompt,
                     tools=PHASE3_TOOLS,
@@ -697,7 +697,7 @@ Fix the quest based on this feedback. Call submit_quest with the corrected versi
         for i in range(4):
             response = await self.client.messages.create(
                 model=self.model,
-                max_tokens=100000,
+                max_tokens=16000,
                 system=self.system_prompt,
                 tools=tools,
                 tool_choice={"type": "tool", "name": "submit_quest"},
