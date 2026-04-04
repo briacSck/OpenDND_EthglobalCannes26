@@ -37,7 +37,7 @@ def _load_pregenerated_quest(request: QuestRequest) -> QuestOutput:
     """Load the pre-generated quest from checkpoints and assemble a QuestOutput."""
     import uuid as _uuid
 
-    base = os.path.join(os.path.dirname(__file__), "data")
+    base = os.path.join(os.path.dirname(__file__), "pregenerated")
     concept_path = os.path.join(base, "pregenerated_concept.json")
     steps_path = os.path.join(base, "pregenerated_steps.json")
 
