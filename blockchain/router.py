@@ -34,6 +34,19 @@ class MintRequest(BaseModel):
     metadata: dict
 
 
+class StakeRequest(BaseModel):
+    quest_id: str
+    player_account_id: str
+    amount: int  # tinybars
+    stake_tx_hash: str  # Hedera tx ID proving the player paid
+
+
+class ResolveRequest(BaseModel):
+    quest_id: str
+    outcome: str = Field(description="'win' or 'lose'")
+    nft_metadata: dict | None = None
+
+
 # ---------------------------------------------------------------------------
 # Endpoints
 # ---------------------------------------------------------------------------
@@ -91,6 +104,56 @@ async def mint_nft(req: MintRequest):
         return {"serial_number": serial}
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc))
+
+
+# ---------------------------------------------------------------------------
+# Stake / Lock endpoints
+# ---------------------------------------------------------------------------
+
+@router.post("/stake")
+async def stake(req: StakeRequest):
+    """Lock HBAR for a quest. The player must have already sent the HBAR to the operator."""
+    from .stake_service import stake_hbar
+
+    try:
+        tx = await stake_hbar(
+            quest_id=req.quest_id,
+            player_account_id=req.player_account_id,
+            amount=req.amount,
+            stake_tx_hash=req.stake_tx_hash,
+        )
+        return tx.model_dump()
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
+
+
+@router.post("/resolve")
+async def resolve(req: ResolveRequest):
+    """Resolve a quest: 'win' refunds stake + bonus + NFT, 'lose' burns the stake."""
+    from .stake_service import resolve_quest
+
+    try:
+        tx = await resolve_quest(
+            quest_id=req.quest_id,
+            outcome=req.outcome,
+            nft_metadata=req.nft_metadata,
+        )
+        return tx.model_dump()
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
+
+
+@router.get("/stake/{quest_id}")
+async def get_stake_status(quest_id: str):
+    """Get the stake status for a quest."""
+    from .stake_service import get_stake
+
+    stake = get_stake(quest_id)
+    if not stake:
+        raise HTTPException(status_code=404, detail=f"No stake found for quest {quest_id}")
+    return stake.model_dump()
 
 
 @router.get("/tx/{tx_id:path}")

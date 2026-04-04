@@ -14,6 +14,7 @@ from .hts_service import transfer_hbar, mint_quest_nft
 from .hcs_service import submit_event
 from .x402_middleware import X402PaymentMiddleware
 from .router import router as blockchain_router
+from .stake_service import stake_hbar, resolve_quest
 
 
 async def initialize_hedera() -> None:

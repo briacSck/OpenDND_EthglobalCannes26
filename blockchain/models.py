@@ -21,6 +21,21 @@ class RewardTx(BaseModel):
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
+class StakeTx(BaseModel):
+    """A stake/lock record for quest participation."""
+
+    id: str = Field(default_factory=lambda: uuid4().hex)
+    quest_id: str
+    player_account_id: str
+    amount: int  # tinybars
+    status: str = "locked"  # locked | won | lost
+    stake_tx_hash: str | None = None
+    refund_tx_hash: str | None = None
+    bonus: int = 0
+    nft_serial: int | None = None
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
 class HCSMessage(BaseModel):
     """A Hedera Consensus Service message record."""
 
