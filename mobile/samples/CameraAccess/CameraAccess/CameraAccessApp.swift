@@ -45,7 +45,7 @@ struct CameraAccessApp: App {
     // Initialize Dynamic SDK for wallet authentication
     _ = DynamicSDK.initialize(
       props: ClientProps(
-        environmentId: "YOUR_DYNAMIC_ENVIRONMENT_ID",
+        environmentId: "4318a350-b679-4850-b384-18379e5696bc",
         appLogoUrl: nil,
         appName: "OpenDND",
         redirectUrl: "opendnd://",
