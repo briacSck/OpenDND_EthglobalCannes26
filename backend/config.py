@@ -52,10 +52,11 @@ ZG_BALANCE_THRESHOLD: str = os.getenv("ZG_BALANCE_THRESHOLD", "0.01")
 
 if DEMO_MODE:
     PRIVATE_KEY: str | None = os.getenv("PRIVATE_KEY") or None
-    PROVIDER_ADDRESS: str | None = os.getenv("PROVIDER_ADDRESS") or None
 else:
     PRIVATE_KEY: str | None = _require("PRIVATE_KEY")
-    PROVIDER_ADDRESS: str | None = _require("PROVIDER_ADDRESS")
+
+# Discovered dynamically by compute_client — optional in all modes
+PROVIDER_ADDRESS: str | None = os.getenv("PROVIDER_ADDRESS") or None
 
 # ---------------------------------------------------------------------------
 # Hedera

@@ -88,7 +88,7 @@ def main() -> None:
             sys.exit(1)
     _print_step("npm deps", True)
 
-    # 3. Main account balance
+    # 3. Main account balance (auto-create ledger account if needed)
     try:
         bal = _run_bridge(["balance"])
         main_avail = float(bal.get("main", {}).get("available", "0"))
@@ -99,8 +99,22 @@ def main() -> None:
         else:
             _print_step("Main balance", True, f"{main_avail} 0G available ({main_total} total)")
     except Exception as exc:
-        _print_step("Main balance", False, str(exc)[:200])
-        errors.append(f"Balance check failed: {exc}")
+        msg = str(exc)
+        if "does not exist" in msg.lower() or "add-account" in msg.lower():
+            print("  [..] Ledger account not found — creating via deposit (min 3 0G)...")
+            try:
+                _run_bridge(["deposit", "3"])
+                _print_step("Initial deposit", True, "3 0G (account created)")
+                bal = _run_bridge(["balance"])
+                main_avail = float(bal.get("main", {}).get("available", "0"))
+                main_total = float(bal.get("main", {}).get("total", "0"))
+                _print_step("Main balance", True, f"{main_avail} 0G available ({main_total} total)")
+            except Exception as exc2:
+                _print_step("Account creation", False, str(exc2)[:200])
+                errors.append(f"Account creation failed: {exc2}")
+        else:
+            _print_step("Main balance", False, msg[:200])
+            errors.append(f"Balance check failed: {exc}")
 
     if errors:
         print("\n" + "\n".join(f"  ! {e}" for e in errors))

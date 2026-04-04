@@ -22,7 +22,7 @@ from agents.memory.player_profile import (
 )
 from agents.reward.hedera_reward import RewardTx, trigger_reward
 from agents.booking.booking_agent import prepare_booking, complete_booking
-from agents.booking.models import BookingIntent, BookingResult
+from agents.booking.models import BookingFormData, BookingIntent, BookingResult
 from agents.memory import index as memory_index
 from config import DEMO_MODE
 from blockchain import blockchain_router
@@ -407,8 +407,17 @@ async def quest_booking(quest_id: str, session_id: str = "") -> dict:
         )
     )
 
+    # Build form data from quest context
+    form_data = BookingFormData(
+        player_name=quest.player_name or session.player_alias,
+        player_email=getattr(quest, "player_email", ""),
+        datetime_str=getattr(quest, "quest_datetime", ""),
+        guest_count=getattr(quest, "quest_players", 1),
+        location=quest.narrative_universe.context if quest.narrative_universe else "",
+    )
+
     # Complete
-    result = await complete_booking(intent)
+    result = await complete_booking(intent, form_data=form_data)
 
     if result.status == "completed":
         event_type = "booking.completed"
