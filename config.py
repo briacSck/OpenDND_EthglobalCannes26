@@ -79,3 +79,9 @@ else:
     WHATSAPP_TOKEN: str | None = _require("WHATSAPP_TOKEN")
     WHATSAPP_PHONE_ID: str | None = _require("WHATSAPP_PHONE_ID")
     WHATSAPP_VERIFY_TOKEN: str | None = _require("WHATSAPP_VERIFY_TOKEN")
+
+# ---------------------------------------------------------------------------
+# OpenAI (Whisper transcription for voice proof)
+# ---------------------------------------------------------------------------
+
+OPENAI_API_KEY: str | None = os.getenv("OPENAI_API_KEY") or None

@@ -26,7 +26,7 @@ class Artifact(BaseModel):
 class OrchestratorEvent(BaseModel):
     """An event the orchestrator decides to send to the player."""
     event_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    type: str = Field(description="character_message | artifact | timer | group_chat | forwarded_message | arg_event | quest.reward.confirmed | booking.prepared | booking.completed | booking.pending_human")
+    type: str = Field(description="character_message | artifact | timer | group_chat | forwarded_message | arg_event | quest.reward.confirmed | booking.prepared | booking.completed | booking.pending_human | checkpoint.verified")
     character: str = Field(default="", description="Which character sends this, if applicable")
     content: str = Field(default="", description="Text content of the event")
     voice_script: str = Field(default="", description="Script for voice delivery if applicable")
@@ -75,6 +75,7 @@ class QuestSession(BaseModel):
     started_at: str = Field(default_factory=lambda: datetime.now().isoformat())
     active: bool = True
     completed_at: str | None = Field(default=None, description="ISO timestamp set once when quest completion is persisted")
+    best_proof_description: str | None = Field(default=None, description="Best verified image proof description for recap")
 
 
 class PlayStartRequest(BaseModel):
