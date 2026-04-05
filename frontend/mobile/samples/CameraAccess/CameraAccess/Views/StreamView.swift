@@ -43,21 +43,9 @@ struct StreamView: View {
           .foregroundColor(.white)
       }
 
-      // Bottom controls layer
-
-      VStack {
-        Spacer()
-        ControlsView(viewModel: viewModel)
-      }
-      .padding(.all, 24)
+      // Quest overlay handles all controls now
     }
-    .onDisappear {
-      Task {
-        if viewModel.streamingStatus != .stopped {
-          await viewModel.stopSession()
-        }
-      }
-    }
+    // Don't stop session on disappear — keep streaming across tab switches
     // Show captured photos from DAT SDK in a preview sheet
     .sheet(isPresented: $viewModel.showPhotoPreview) {
       if let photo = viewModel.capturedPhoto {

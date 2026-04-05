@@ -20,44 +20,56 @@ final class QuestCameraViewModel: ObservableObject {
   private let api = APIService.shared
 
   func load() {
-    guard let userId = api.currentUserId else { return }
+    guard let userId = api.currentUserId else {
+      print("[QuestCamera] No userId found")
+      return
+    }
     Task {
       do {
         let result = try await api.fetchActiveQuest(userId: userId)
         quest = result
         currentStep = result?.steps.first(where: { $0.active })
+        print("[QuestCamera] Loaded quest: \(result?.title ?? "none"), activeStep: \(currentStep?.title ?? "none")")
       } catch {
+        print("[QuestCamera] Load error: \(error)")
         errorMessage = error.localizedDescription
       }
     }
   }
 
   func verifyWithImage(_ image: UIImage) {
-    guard let quest = quest, let step = currentStep else { return }
+    print("[QuestCamera] verifyWithImage called, quest=\(quest?.title ?? "nil"), step=\(currentStep?.title ?? "nil")")
+    guard let quest = quest, let step = currentStep else {
+      print("[QuestCamera] No quest or step — skipping verification")
+      return
+    }
     isVerifying = true
     errorMessage = nil
 
     Task {
       do {
+        print("[QuestCamera] Sending to verify API: quest=\(quest.id) step=\(step.stepOrder)")
         let result = try await api.verifyStep(
           questId: quest.id,
           stepOrder: step.stepOrder,
           image: image,
           step: step
         )
+        print("[QuestCamera] Result: validated=\(result.validated), xp=\(result.xpEarned)")
         verificationResult = result
         showResult = true
+        isVerifying = false
 
         if result.validated {
           totalXP += result.xpEarned
-          // Reload quest to get updated steps
           try? await Task.sleep(nanoseconds: 500_000_000)
           await reloadQuest()
         }
       } catch {
+        print("[QuestCamera] Verify error: \(error)")
         errorMessage = "Verification failed: \(error.localizedDescription)"
+        isVerifying = false
       }
-      isVerifying = false
     }
   }
 

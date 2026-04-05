@@ -59,7 +59,8 @@ struct StreamSessionView: View {
     }
     .onAppear {
       questVM.load()
-      if viewModel.hasActiveDevice && !viewModel.isStreaming {
+      // Restart streaming if it was stopped (e.g. tab switch)
+      if viewModel.hasActiveDevice && viewModel.streamingStatus == .stopped {
         Task { await viewModel.handleStartStreaming() }
       }
     }

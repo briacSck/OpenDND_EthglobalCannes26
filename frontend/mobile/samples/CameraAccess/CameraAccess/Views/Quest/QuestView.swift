@@ -30,6 +30,9 @@ struct QuestView: View {
     }
     .background(Color.white)
     .onAppear { vm.load() }
+    .sheet(isPresented: $vm.showGenerateSheet) {
+      generateQuestSheet
+    }
   }
 
   // MARK: - No Quest
@@ -45,7 +48,125 @@ struct QuestView: View {
       Text("Generate a quest to get started")
         .font(.system(size: 13))
         .foregroundColor(.gray)
+
+      Button {
+        vm.showGenerateSheet = true
+      } label: {
+        HStack(spacing: 8) {
+          Image(systemName: "wand.and.stars")
+            .font(.system(size: 14))
+          Text("Generate Quest")
+            .font(.system(size: 14, weight: .medium))
+        }
+        .foregroundColor(.white)
+        .frame(maxWidth: .infinity)
+        .frame(height: 48)
+        .background(Color.black)
+        .cornerRadius(12)
+      }
+      .padding(.horizontal, 40)
+      .padding(.top, 16)
+
+      if let error = vm.errorMessage {
+        Text(error)
+          .font(.system(size: 11))
+          .foregroundColor(.red)
+          .padding(.horizontal, 20)
+      }
     }
+  }
+
+  // MARK: - Generate Quest Sheet
+
+  private var generateQuestSheet: some View {
+    NavigationView {
+      VStack(spacing: 16) {
+        VStack(alignment: .leading, spacing: 6) {
+          Text("Quest Goal")
+            .font(.system(size: 12, weight: .medium))
+            .foregroundColor(.gray)
+          TextField("e.g. Explore hidden spots in the city", text: $vm.goal)
+            .font(.system(size: 14))
+            .padding(12)
+            .background(Color(.systemGray6))
+            .cornerRadius(10)
+        }
+
+        VStack(alignment: .leading, spacing: 6) {
+          Text("Location")
+            .font(.system(size: 12, weight: .medium))
+            .foregroundColor(.gray)
+          TextField("City, Country", text: $vm.location)
+            .font(.system(size: 14))
+            .padding(12)
+            .background(Color(.systemGray6))
+            .cornerRadius(10)
+        }
+
+        VStack(alignment: .leading, spacing: 6) {
+          Text("Duration (minutes)")
+            .font(.system(size: 12, weight: .medium))
+            .foregroundColor(.gray)
+          Picker("Duration", selection: $vm.duration) {
+            Text("30 min").tag(30)
+            Text("60 min").tag(60)
+            Text("90 min").tag(90)
+            Text("120 min").tag(120)
+          }
+          .pickerStyle(.segmented)
+        }
+
+        VStack(alignment: .leading, spacing: 6) {
+          Text("Difficulty")
+            .font(.system(size: 12, weight: .medium))
+            .foregroundColor(.gray)
+          Picker("Difficulty", selection: $vm.difficulty) {
+            Text("Easy").tag("easy")
+            Text("Medium").tag("medium")
+            Text("Hard").tag("hard")
+          }
+          .pickerStyle(.segmented)
+        }
+
+        Spacer()
+
+        Button {
+          vm.generateQuest()
+        } label: {
+          HStack(spacing: 8) {
+            if vm.isGenerating {
+              ProgressView()
+                .scaleEffect(0.8)
+                .tint(.white)
+            }
+            Text(vm.isGenerating ? "Generating..." : "Generate Quest")
+              .font(.system(size: 14, weight: .medium))
+          }
+          .foregroundColor(.white)
+          .frame(maxWidth: .infinity)
+          .frame(height: 48)
+          .background(vm.isGenerating ? Color(.systemGray3) : Color.black)
+          .cornerRadius(12)
+        }
+        .disabled(vm.isGenerating)
+
+        if let error = vm.errorMessage {
+          Text(error)
+            .font(.system(size: 11))
+            .foregroundColor(.red)
+        }
+      }
+      .padding(20)
+      .navigationTitle("New Quest")
+      .navigationBarTitleDisplayMode(.inline)
+      .toolbar {
+        ToolbarItem(placement: .cancellationAction) {
+          Button("Cancel") { vm.showGenerateSheet = false }
+            .disabled(vm.isGenerating)
+        }
+      }
+    }
+    .presentationDetents([.medium, .large])
   }
 
   // MARK: - Header

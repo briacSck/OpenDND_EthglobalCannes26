@@ -119,14 +119,17 @@ final class APIService {
 
   func verifyStep(questId: String, stepOrder: Int, image: UIImage, step: QuestStepResponse) async throws -> VerifyStepResponse {
     guard let url = URL(string: "\(baseURL)/api/quests/\(questId)/steps/\(stepOrder)/verify") else { throw APIError.invalidURL }
-    guard let imageData = image.jpegData(compressionQuality: 0.7) else { throw APIError.noData }
+
+    // Resize image to max 800px and compress to keep payload small
+    let resized = Self.resizeImage(image, maxDimension: 800)
+    guard let imageData = resized.jpegData(compressionQuality: 0.5) else { throw APIError.noData }
 
     let base64 = imageData.base64EncodedString()
 
     var request = URLRequest(url: url)
     request.httpMethod = "POST"
     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-    request.timeoutInterval = 30
+    request.timeoutInterval = 60
 
     let body: [String: Any] = [
       "imageBase64": base64,
@@ -179,6 +182,20 @@ final class APIService {
 
   func fetchUser(userId: String) async throws -> UserResponse {
     return try await get("/api/users/\(userId)")
+  }
+
+  // MARK: - Helpers
+
+  private static func resizeImage(_ image: UIImage, maxDimension: CGFloat) -> UIImage {
+    let size = image.size
+    guard max(size.width, size.height) > maxDimension else { return image }
+    let scale = maxDimension / max(size.width, size.height)
+    let newSize = CGSize(width: size.width * scale, height: size.height * scale)
+    UIGraphicsBeginImageContextWithOptions(newSize, true, 1.0)
+    image.draw(in: CGRect(origin: .zero, size: newSize))
+    let resized = UIGraphicsGetImageFromCurrentImageContext() ?? image
+    UIGraphicsEndImageContext()
+    return resized
   }
 }
 
