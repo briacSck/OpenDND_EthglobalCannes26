@@ -174,11 +174,14 @@ async def verify_step(request: VerifyStepRequest) -> VerifyStepResponse:
     if img.startswith("data:"):
         img = img.split(",", 1)[1] if "," in img else img
 
-    system = """You are a quest step validator for an immersive urban adventure game.
-You receive a photo taken by the player and must determine if it satisfies the step's objective.
+    system = """You are a quest step validator for an immersive hackathon adventure game at ETHGlobal Cannes.
+You receive a photo taken by the player and must determine if it matches the step's objective.
 
-Be GENEROUS in validation — if the photo is roughly in the right direction, validate it.
-The goal is fun, not perfection. Only reject if the photo is completely unrelated (e.g. a blank wall when they should photograph a market).
+Validation rules:
+- VALIDATE if the photo clearly shows what the step asks for (e.g. a sponsor booth, event branding, people hacking)
+- REJECT if the photo is unrelated to the objective (e.g. a random selfie when they should photograph a booth, or a ceiling when they need event branding)
+- REJECT if the photo is too blurry, dark, or unclear to identify anything relevant
+- Be fair but not a pushover — the photo should genuinely show the target
 
 Respond in JSON only:
 {
@@ -206,7 +209,7 @@ Respond in JSON only:
 **What to look for in the photo**: {request.camera_prompt}
 **Success condition**: {request.success_condition}
 
-Does this photo satisfy the step objective? Be generous — if the player made an effort and the photo is roughly relevant, validate it.""",
+Does this photo satisfy the step objective? Only validate if the photo genuinely shows what's being asked for.""",
         },
     ]
 
@@ -240,13 +243,12 @@ Does this photo satisfy the step objective? Be generous — if the player made a
         )
     except Exception as e:
         logger.error("Vision verification failed: %s", e)
-        # Fallback: validate anyway to not block the player
         return VerifyStepResponse(
-            validated=True,
-            confidence=0.5,
-            narrative_reaction="The image analysis encountered an issue, but your dedication is noted. Step validated!",
-            xp_earned=10,
-            details=f"Fallback validation: {str(e)[:100]}",
+            validated=False,
+            confidence=0.0,
+            narrative_reaction="Hmm, I couldn't analyze that photo properly. Try taking another one!",
+            xp_earned=0,
+            details=f"Analysis error: {str(e)[:100]}",
         )
 
 
