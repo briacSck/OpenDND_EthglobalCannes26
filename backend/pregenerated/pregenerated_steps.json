@@ -152,7 +152,7 @@
         "method": "photo_analysis",
         "target": "Hackathon hacking floor atmosphere",
         "success_condition": "Photo shows people working on laptops, hackathon workspace, screens with code, or busy event atmosphere",
-        "success_reaction": "Satoshi: 'Proof-of-work confirmed. This is what decentralization looks like IRL — hundreds of independent nodes all building toward a shared vision. +20 XP. Now go find some AI agents.'",
+        "success_reaction": "Satoshi: 'Proof-of-work confirmed. This is what decentralization looks like IRL — hundreds of independent nodes all building toward a shared vision. +20 XP. One more step to go.'",
         "failure_fallback": "Satoshi: 'I need to see the builders. Find the main hacking hall — it's where the real work happens.'",
         "timeout_reaction": "Satoshi: 'Time is a block parameter, hacker. The submission deadline doesn't care about your quest progress.'"
       },
@@ -164,60 +164,6 @@
     },
     {
       "step_id": 4,
-      "title": "The AI Agent Arena",
-      "activity": {
-        "name": "Fetch.ai / ASI Alliance Booth",
-        "address": "Sponsor Hall, Palais des Festivals, Cannes",
-        "price_eur": 0,
-        "duration_minutes": 10,
-        "category": "sponsor_booth"
-      },
-      "narrative_intro": "Vitalik chimes in: 'AI agents are the next frontier. Autonomous software that can make decisions, transact onchain, and coordinate with other agents. The ASI Alliance — Fetch.ai, Ocean Protocol, SingularityNET — they're building the infrastructure for this. Find their booth and document the future of autonomous AI.' Satoshi adds: 'The intersection of AI and crypto is where the next billion-dollar protocols will emerge. Prove you understand it.'",
-      "instruction": "Find the Fetch.ai or ASI Alliance (Artificial Superintelligence Alliance) booth in the sponsor area. They're showcasing AI agents that can transact autonomously on blockchain. Photograph their booth, demos, or any ASI/Fetch.ai branded material.",
-      "player_action": "Find and photograph the Fetch.ai, ASI Alliance, or any AI-focused sponsor booth showing AI agent technology",
-      "gps_trigger": {
-        "type": "message",
-        "character": "Vitalik",
-        "content_brief": "Explanation of why AI agents + crypto is the most exciting intersection right now"
-      },
-      "camera_prompt": "The player should photograph the Fetch.ai booth, ASI Alliance branding, or any AI-focused sponsor booth at the hackathon. Logos for Fetch.ai, ASI Alliance, Ocean Protocol, or SingularityNET all count. Any AI or agent-related demo or presentation also works. Be generous — any sponsor booth with AI or agent themes is valid.",
-      "walking_minutes_from_previous": 3,
-      "tension": {
-        "type": "discovery",
-        "description": "Understanding the convergence of AI and blockchain through real demos",
-        "resolution": "Seeing autonomous agents in action and understanding their potential"
-      },
-      "character_interactions": [
-        {
-          "character": "Vitalik",
-          "trigger": "Photo validated",
-          "phone_version": "AI agents that can hold wallets, make transactions, and coordinate — this is genuinely new. The ASI Alliance is combining three of the biggest AI-crypto projects. If you're building at this hackathon, think about how agents could use your protocol autonomously.",
-          "rayban_version": {
-            "script": "AI agents with wallets and onchain coordination — this is genuinely new and exciting. Think about how agents could autonomously use whatever you're building this weekend.",
-            "audio_type": "philosophical_excitement",
-            "duration_seconds": 15,
-            "camera_mode": { "enabled": false },
-            "contextual_music": { "enabled": true, "track_type": "futuristic_synth", "duration_seconds": 20 }
-          },
-          "awaits_response": false
-        }
-      ],
-      "verification": {
-        "method": "photo_analysis",
-        "target": "AI/agent-focused sponsor booth",
-        "success_condition": "Photo shows Fetch.ai, ASI Alliance, or any AI-focused sponsor booth or demo at the event",
-        "success_reaction": "Satoshi: 'Agent intelligence verified. You've seen the future — autonomous AI that transacts onchain. +25 XP. Two more steps to complete the quest.' Vitalik: 'Now THAT is what I'm talking about.'",
-        "failure_fallback": "Satoshi: 'Can't confirm AI agent presence. Look for Fetch.ai or ASI Alliance logos — they're usually near the center of the sponsor hall.'",
-        "timeout_reaction": "Claire: 'The AI booth is literally the one with the robot demos. How are you missing it?'"
-      },
-      "blockchain_event": "AI_AGENT_ARENA_VISITED",
-      "unlock_message": "AI agent knowledge unlocked. The future is autonomous, decentralized, and intelligent.",
-      "skill_xp": 25,
-      "is_skill_step": false,
-      "is_collaborative": false
-    },
-    {
-      "step_id": 5,
       "title": "The Hedera Hashgraph Challenge",
       "activity": {
         "name": "Hedera Sponsor Booth",
@@ -245,67 +191,13 @@
         {
           "character": "Satoshi",
           "trigger": "Photo validated",
-          "phone_version": "Hashgraph verified. Hedera proves that innovation isn't limited to one chain. Their AI track is especially interesting — $3.5K for the best AI project on Hedera. Keep that in mind for your hackathon project. +25 XP.",
+          "phone_version": "Hashgraph verified. Hedera proves that innovation isn't limited to one chain. Their AI track is especially interesting — $3.5K for the best AI project on Hedera. Keep that in mind for your hackathon project. +25 XP. QUEST COMPLETE — you've explored the ecosystem, hacker. GG.",
           "rayban_version": {
-            "script": "Hashgraph verified. Hedera's AI track is especially spicy — 3.5K for AI on Hedera. Keep that in mind when you're choosing what to build.",
-            "audio_type": "strategic_advice",
-            "duration_seconds": 12,
-            "camera_mode": { "enabled": false },
-            "contextual_music": { "enabled": true, "track_type": "tech_ambient", "duration_seconds": 15 }
-          },
-          "awaits_response": false
-        }
-      ],
-      "verification": {
-        "method": "photo_analysis",
-        "target": "Hedera sponsor booth or branding",
-        "success_condition": "Photo shows Hedera logo, booth, HBAR branding, or any Hedera-related material at the event",
-        "success_reaction": "Satoshi: 'Multichain explorer confirmed. You see beyond the EVM — that's a rare trait. +25 XP. One final step remains, hacker. This is the big one.'",
-        "failure_fallback": "Satoshi: 'Can't verify Hedera presence. Look for the green/black logo with the hashgraph symbol. They're in the sponsor hall.'",
-        "timeout_reaction": "Claire: 'Hedera is the one that ISN'T a blockchain technically. Hashgraph. Different consensus. Same hall though.'"
-      },
-      "blockchain_event": "HEDERA_HASHGRAPH_EXPLORED",
-      "unlock_message": "Multichain vision acquired. The future isn't one chain — it's all of them.",
-      "skill_xp": 25,
-      "is_skill_step": false,
-      "is_collaborative": false
-    },
-    {
-      "step_id": 6,
-      "title": "Ship It — The Final Demo",
-      "activity": {
-        "name": "Demo Stage / Submission Area",
-        "address": "Main Stage, Palais des Festivals, Cannes",
-        "price_eur": 0,
-        "duration_minutes": 15,
-        "category": "finale"
-      },
-      "narrative_intro": "Satoshi's final message: 'Every hackathon ends the same way — with demos. The real proof isn't in the code, it's in the shipping. Find the demo stage or project submission area. Photograph where it all comes together — where 48 hours of caffeine-fueled building meets 3 minutes of live presentation. This is the endgame, hacker. Show me proof of ship.' The demo stage at ETHGlobal is where dreams become dApps and where judges decide who takes home $150K+ in prizes.",
-      "instruction": "Find the main stage, demo area, or project submission zone at ETHGlobal Cannes. This is where teams present their projects to judges. Photograph the stage, the submission screens, or any team presenting their demo.",
-      "player_action": "Photograph the ETHGlobal demo stage, presentation area, judging zone, or any team presenting their hackathon project",
-      "gps_trigger": {
-        "type": "message",
-        "character": "Satoshi",
-        "content_brief": "Final quest message about the importance of shipping and the completion of the Decentralized Quest"
-      },
-      "camera_prompt": "The player should photograph the main stage, demo area, presentation screens, judging table, or any team presenting a project. A stage with ETHGlobal branding, presentation setup, projector screens, or people watching demos all count. Be generous — any event stage, large screen, or presentation setup works.",
-      "walking_minutes_from_previous": 3,
-      "tension": {
-        "type": "climax",
-        "description": "The culmination of the quest and the hackathon — where building meets shipping",
-        "resolution": "Completing the quest and witnessing the ecosystem in action"
-      },
-      "character_interactions": [
-        {
-          "character": "Satoshi",
-          "trigger": "Photo validated",
-          "phone_version": "Block #6 — FINAL BLOCK confirmed. You've completed the Decentralized Quest, hacker. You've explored oracles, AI agents, alternative consensus, and the raw energy of 1000 builders shipping. This isn't just XP — it's proof that you understand the ecosystem. Your quest data has been recorded onchain. GG, hacker. Now go ship something legendary.",
-          "rayban_version": {
-            "script": "Final block confirmed. You've completed the Decentralized Quest. Oracles, AI agents, hashgraph, and the raw energy of a thousand builders. GG hacker. Now go ship something legendary.",
+            "script": "Hashgraph verified. Hedera's AI track is especially spicy — 3.5K for AI on Hedera. QUEST COMPLETE — you've speedrun the ecosystem, hacker. GG.",
             "audio_type": "triumphant_conclusion",
-            "duration_seconds": 18,
+            "duration_seconds": 15,
             "camera_mode": { "enabled": false },
-            "contextual_music": { "enabled": true, "track_type": "triumphant_electronic", "duration_seconds": 25 }
+            "contextual_music": { "enabled": true, "track_type": "triumphant_electronic", "duration_seconds": 20 }
           },
           "awaits_response": false
         },
@@ -325,14 +217,14 @@
       ],
       "verification": {
         "method": "photo_analysis",
-        "target": "Demo stage, presentation area, or submission zone",
-        "success_condition": "Photo shows a stage, presentation area, projector/screen, judging table, or team presenting a project",
-        "success_reaction": "Satoshi: 'QUEST COMPLETE. You've proven your knowledge of the ecosystem — oracles, AI, multichain, and the spirit of building. +150 XP bonus. Your Decentralized Quest NFT is being minted. Welcome to the inner circle, hacker.'",
-        "failure_fallback": "Satoshi: 'Almost there — I need to see the stage or demo area. This is the finale. Find where the presentations happen.'",
-        "timeout_reaction": "Satoshi: 'The quest doesn't close until the last block is mined. Take your time, but remember — legends ship.'"
+        "target": "Hedera sponsor booth or branding",
+        "success_condition": "Photo shows Hedera logo, booth, HBAR branding, or any Hedera-related material at the event",
+        "success_reaction": "Satoshi: 'QUEST COMPLETE. Multichain explorer confirmed. You've proven your knowledge — oracles, builder energy, and hashgraph. +150 XP bonus. Your Decentralized Quest NFT is being minted. Welcome to the inner circle, hacker.'",
+        "failure_fallback": "Satoshi: 'Can't verify Hedera presence. Look for the green/black logo with the hashgraph symbol. They're in the sponsor hall.'",
+        "timeout_reaction": "Claire: 'Hedera is the one that ISN'T a blockchain technically. Hashgraph. Different consensus. Same hall though.'"
       },
-      "blockchain_event": "QUEST_COMPLETED_SHIP_IT",
-      "unlock_message": "QUEST COMPLETE. You've explored the entire Web3 ecosystem at ETHGlobal Cannes. Oracles, AI agents, hashgraph, and the builder spirit. Your onchain quest credential has been recorded. GG, hacker.",
+      "blockchain_event": "QUEST_COMPLETED_HEDERA",
+      "unlock_message": "QUEST COMPLETE. You've explored the Web3 ecosystem at ETHGlobal Cannes — oracles, proof-of-work energy, and multichain vision. Your onchain quest credential has been recorded. GG, hacker.",
       "skill_xp": 150,
       "is_skill_step": true,
       "is_collaborative": false
