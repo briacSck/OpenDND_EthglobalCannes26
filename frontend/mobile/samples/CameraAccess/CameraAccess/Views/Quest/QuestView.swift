@@ -29,7 +29,14 @@ struct QuestView: View {
       }
     }
     .background(Color.white)
-    .onAppear { vm.load() }
+    .onAppear {
+      vm.load()
+    }
+    .onChange(of: vm.quest?.id) { questId in
+      if let qid = questId {
+        Task { await vm.loadStakeInfo(questId: qid) }
+      }
+    }
     .sheet(isPresented: $vm.showGenerateSheet) {
       generateQuestSheet
     }
@@ -128,27 +135,54 @@ struct QuestView: View {
           .pickerStyle(.segmented)
         }
 
+        // Stake amount
+        VStack(alignment: .leading, spacing: 6) {
+          Text("Stake Amount ($)")
+            .font(.system(size: 12, weight: .medium))
+            .foregroundColor(.gray)
+
+          HStack(spacing: 12) {
+            ForEach([0, 5, 10, 25], id: \.self) { amount in
+              Button {
+                vm.stakeAmount = Double(amount)
+              } label: {
+                Text(amount == 0 ? "Free" : "$\(amount)")
+                  .font(.system(size: 13, weight: .medium))
+                  .foregroundColor(vm.stakeAmount == Double(amount) ? .white : .black)
+                  .frame(maxWidth: .infinity)
+                  .frame(height: 36)
+                  .background(vm.stakeAmount == Double(amount) ? Color.black : Color(.systemGray6))
+                  .cornerRadius(8)
+              }
+            }
+          }
+
+          Text(vm.stakeAmount > 0 ? "Locked until quest completes. Win = stake + 50% bonus!" : "No stake — play for free")
+            .font(.system(size: 11))
+            .foregroundColor(.gray)
+        }
+
         Spacer()
 
         Button {
           vm.generateQuest()
         } label: {
           HStack(spacing: 8) {
-            if vm.isGenerating {
+            if vm.isGenerating || vm.isStaking {
               ProgressView()
                 .scaleEffect(0.8)
                 .tint(.white)
             }
-            Text(vm.isGenerating ? "Generating..." : "Generate Quest")
+            Text(vm.isGenerating ? "Generating..." : vm.isStaking ? "Staking..." : vm.stakeAmount > 0 ? "Generate & Stake $\(Int(vm.stakeAmount))" : "Generate Quest")
               .font(.system(size: 14, weight: .medium))
           }
           .foregroundColor(.white)
           .frame(maxWidth: .infinity)
           .frame(height: 48)
-          .background(vm.isGenerating ? Color(.systemGray3) : Color.black)
+          .background(vm.isGenerating || vm.isStaking ? Color(.systemGray3) : Color.black)
           .cornerRadius(12)
         }
-        .disabled(vm.isGenerating)
+        .disabled(vm.isGenerating || vm.isStaking)
 
         if let error = vm.errorMessage {
           Text(error)
@@ -200,6 +234,40 @@ struct QuestView: View {
         Text(desc)
           .font(.system(size: 13))
           .foregroundColor(.gray)
+      }
+
+      // Stake info
+      if let stake = vm.stakeInfo, let ps = stake.playerStake {
+        HStack(spacing: 12) {
+          HStack(spacing: 4) {
+            Image(systemName: "lock.fill")
+              .font(.system(size: 10))
+            Text("$\(String(format: "%.0f", ps.amount)) staked")
+              .font(.system(size: 11, weight: .medium))
+          }
+          .foregroundColor(.black)
+          .padding(.horizontal, 8)
+          .padding(.vertical, 4)
+          .background(Color(.systemGray6))
+          .cornerRadius(6)
+
+          if ps.status == "locked" {
+            Text("Win = $\(String(format: "%.0f", ps.amount * 1.5))")
+              .font(.system(size: 11))
+              .foregroundColor(.gray)
+          } else if ps.status == "won" {
+            Text("Won!")
+              .font(.system(size: 11, weight: .medium))
+              .foregroundColor(.green)
+          }
+
+          if !stake.bets.isEmpty {
+            Text("\(stake.bets.count) bet\(stake.bets.count > 1 ? "s" : "")")
+              .font(.system(size: 11))
+              .foregroundColor(.gray)
+          }
+        }
+        .padding(.top, 6)
       }
 
       VStack(spacing: 4) {

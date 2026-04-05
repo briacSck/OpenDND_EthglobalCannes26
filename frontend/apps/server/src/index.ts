@@ -5,6 +5,7 @@ import usersRouter from "./routes/users";
 import questsRouter from "./routes/quests";
 import walletRouter from "./routes/wallet";
 import socialRouter from "./routes/social";
+import blockchainRouter from "./routes/blockchain";
 
 const app = express();
 const PORT = process.env.PORT || 3002;
@@ -20,6 +21,7 @@ app.use("/api/users", usersRouter);
 app.use("/api/quests", questsRouter);
 app.use("/api/wallet", walletRouter);
 app.use("/api/social", socialRouter);
+app.use("/api/blockchain", blockchainRouter);
 
 async function start() {
   await initDb();

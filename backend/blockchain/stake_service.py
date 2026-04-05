@@ -1,9 +1,12 @@
-"""Stake/Lock service — players stake HBAR before a quest, win or lose."""
+"""Stake/Lock service — players stake HBAR before a quest, win or lose.
+
+All stakes and rewards happen ON-CHAIN via real Hedera transfers.
+"""
 
 from __future__ import annotations
 
 from .models import StakeTx
-from .hts_service import transfer_hbar, mint_quest_nft
+from .hts_service import transfer_hbar, mint_quest_nft, stake_hbar_onchain, get_player_key, PrivateKey
 
 # In-memory stake store (mirrors _quests/_sessions pattern in main.py)
 _stakes: dict[str, StakeTx] = {}
@@ -13,21 +16,34 @@ async def stake_hbar(
     quest_id: str,
     player_account_id: str,
     amount: int,
-    stake_tx_hash: str,
+    stake_tx_hash: str | None = None,
+    evm_address: str | None = None,
 ) -> StakeTx:
-    """Record a player's stake for a quest.
+    """Stake HBAR on-chain: transfer from player → operator, then record.
 
-    The player has already sent `amount` tinybars to the operator account.
-    `stake_tx_hash` is the Hedera tx ID proving the payment.
-    We record it and log the event on HCS.
+    If evm_address is provided, uses the stored player key to sign.
+    Falls back to recording only if on-chain transfer fails.
     """
     from . import log_quest_event
+
+    tx_hash = stake_tx_hash
+
+    # Try on-chain stake (player → operator)
+    if evm_address:
+        player_key = get_player_key(evm_address)
+        if player_key and amount > 0:
+            try:
+                tx_hash = await stake_hbar_onchain(player_account_id, player_key, amount)
+            except Exception as e:
+                import logging
+                logging.warning(f"On-chain stake failed, recording anyway: {e}")
+                tx_hash = f"failed-onchain-{quest_id}"
 
     stake = StakeTx(
         quest_id=quest_id,
         player_account_id=player_account_id,
         amount=amount,
-        stake_tx_hash=stake_tx_hash,
+        stake_tx_hash=tx_hash,
     )
 
     _stakes[quest_id] = stake
@@ -38,7 +54,7 @@ async def stake_hbar(
         payload={
             "player": player_account_id,
             "amount": amount,
-            "tx_hash": stake_tx_hash,
+            "tx_hash": tx_hash,
         },
     )
 

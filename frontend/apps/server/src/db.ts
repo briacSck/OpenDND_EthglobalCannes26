@@ -122,11 +122,28 @@ export async function initDb() {
     ALTER TABLE users ADD COLUMN IF NOT EXISTS level INTEGER DEFAULT 1;
     ALTER TABLE user_friends ADD COLUMN IF NOT EXISTS friend_id UUID REFERENCES users(id);
 
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS hedera_account_id TEXT;
+
     -- Quest step camera fields
     ALTER TABLE quest_steps ADD COLUMN IF NOT EXISTS camera_prompt TEXT;
     ALTER TABLE quest_steps ADD COLUMN IF NOT EXISTS success_condition TEXT;
     ALTER TABLE quest_steps ADD COLUMN IF NOT EXISTS player_action TEXT;
     ALTER TABLE quest_steps ADD COLUMN IF NOT EXISTS narrative_intro TEXT;
+
+    -- Quest stakes / bets
+    CREATE TABLE IF NOT EXISTS quest_stakes (
+      id SERIAL PRIMARY KEY,
+      quest_id UUID NOT NULL REFERENCES quests(id) ON DELETE CASCADE,
+      user_id UUID NOT NULL REFERENCES users(id),
+      amount REAL NOT NULL DEFAULT 0,
+      bonus REAL DEFAULT 0,
+      status TEXT NOT NULL DEFAULT 'locked',
+      is_bet BOOLEAN DEFAULT false,
+      prediction TEXT DEFAULT 'win',
+      tx_hash TEXT,
+      resolved_at TIMESTAMPTZ,
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    );
 
     -- Seed default badges if empty
     INSERT INTO badges (name, emoji, description) VALUES

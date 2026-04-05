@@ -184,6 +184,39 @@ final class APIService {
     return try await get("/api/users/\(userId)")
   }
 
+  // MARK: - Blockchain / Staking
+
+  func stakeForQuest(questId: String, userId: String, amount: Double) async throws -> StakeResponse {
+    guard let url = URL(string: "\(baseURL)/api/blockchain/stake") else { throw APIError.invalidURL }
+    var request = URLRequest(url: url)
+    request.httpMethod = "POST"
+    request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+    let body: [String: Any] = ["questId": questId, "userId": userId, "amount": amount]
+    request.httpBody = try JSONSerialization.data(withJSONObject: body)
+    let (data, response) = try await URLSession.shared.data(for: request)
+    guard let http = response as? HTTPURLResponse, (200...299).contains(http.statusCode) else {
+      throw APIError.serverError((response as? HTTPURLResponse)?.statusCode ?? 0)
+    }
+    return try decoder.decode(StakeResponse.self, from: data)
+  }
+
+  func placeBet(questId: String, userId: String, amount: Double, prediction: String = "win") async throws {
+    guard let url = URL(string: "\(baseURL)/api/blockchain/bet") else { throw APIError.invalidURL }
+    var request = URLRequest(url: url)
+    request.httpMethod = "POST"
+    request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+    let body: [String: Any] = ["questId": questId, "userId": userId, "amount": amount, "prediction": prediction]
+    request.httpBody = try JSONSerialization.data(withJSONObject: body)
+    let (_, response) = try await URLSession.shared.data(for: request)
+    guard let http = response as? HTTPURLResponse, (200...299).contains(http.statusCode) else {
+      throw APIError.serverError((response as? HTTPURLResponse)?.statusCode ?? 0)
+    }
+  }
+
+  func getStakeInfo(questId: String) async throws -> QuestStakeInfo {
+    return try await get("/api/blockchain/stake/\(questId)")
+  }
+
   // MARK: - Helpers
 
   private static func resizeImage(_ image: UIImage, maxDimension: CGFloat) -> UIImage {
@@ -281,6 +314,7 @@ struct CompletedQuestResponse: Codable, Identifiable {
 
 struct WalletResponse: Codable {
   let walletAddress: String?
+  let hederaAccountId: String?
   let available: Double
   let locked: Double
   let pending: Double
@@ -335,4 +369,31 @@ struct UserResponse: Codable {
   let xp: Int?
   let level: Int?
   let walletAddress: String?
+}
+
+struct StakeResponse: Codable {
+  let ok: Bool
+  let questId: String
+  let amount: Double
+  let status: String
+}
+
+struct QuestStakeInfo: Codable {
+  let questId: String
+  let totalStaked: Double
+  let playerStake: PlayerStakeInfo?
+  let bets: [BetInfo]
+}
+
+struct PlayerStakeInfo: Codable {
+  let amount: Double
+  let status: String
+}
+
+struct BetInfo: Codable {
+  let userId: String
+  let name: String
+  let amount: Double
+  let prediction: String
+  let status: String
 }

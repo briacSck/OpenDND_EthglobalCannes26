@@ -16,6 +16,11 @@ final class QuestViewModel: ObservableObject {
   @Published var difficulty = "medium"
   @Published var showGenerateSheet = false
 
+  // Staking
+  @Published var stakeAmount: Double = 5.0
+  @Published var stakeInfo: QuestStakeInfo?
+  @Published var isStaking = false
+
   private let api = APIService.shared
 
   func load() {
@@ -56,10 +61,30 @@ final class QuestViewModel: ObservableObject {
         quest = result
         hasNoQuest = false
         showGenerateSheet = false
+
+        // Auto-stake if amount > 0
+        if stakeAmount > 0 {
+          isStaking = true
+          do {
+            _ = try await api.stakeForQuest(questId: result.id, userId: userId, amount: stakeAmount)
+            await loadStakeInfo(questId: result.id)
+          } catch {
+            print("[Quest] Stake failed: \(error)")
+          }
+          isStaking = false
+        }
       } catch {
         errorMessage = "Generation failed: \(error.localizedDescription)"
       }
       isGenerating = false
+    }
+  }
+
+  func loadStakeInfo(questId: String) async {
+    do {
+      stakeInfo = try await api.getStakeInfo(questId: questId)
+    } catch {
+      print("[Quest] Failed to load stake info: \(error)")
     }
   }
 }

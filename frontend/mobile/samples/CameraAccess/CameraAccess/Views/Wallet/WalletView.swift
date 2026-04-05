@@ -167,14 +167,25 @@ struct WalletView: View {
 
           Spacer()
 
-          if !vm.truncatedAddress.isEmpty {
-            Text(vm.truncatedAddress)
-              .font(.system(size: 10, design: .monospaced))
-              .foregroundColor(.gray)
+          VStack(alignment: .trailing, spacing: 2) {
+            if let hederaId = walletData?.hederaAccountId {
+              HStack(spacing: 3) {
+                Image(systemName: "link")
+                  .font(.system(size: 8))
+                Text(hederaId)
+                  .font(.system(size: 10, design: .monospaced))
+              }
+              .foregroundColor(.black)
               .padding(.horizontal, 8)
               .padding(.vertical, 3)
               .background(Color(.systemGray6))
               .cornerRadius(6)
+            }
+            if !vm.truncatedAddress.isEmpty {
+              Text(vm.truncatedAddress)
+                .font(.system(size: 9, design: .monospaced))
+                .foregroundColor(.gray)
+            }
           }
         }
 
@@ -197,7 +208,61 @@ struct WalletView: View {
         alignment: .bottom
       )
 
-      // Wallets section
+      // Hedera account
+      if let hederaId = walletData?.hederaAccountId {
+        VStack(alignment: .leading, spacing: 6) {
+          Text("Hedera Account")
+            .font(.system(size: 10, weight: .medium))
+            .foregroundColor(.gray)
+            .textCase(.uppercase)
+            .tracking(1)
+
+          HStack(spacing: 10) {
+            ZStack {
+              Circle()
+                .fill(Color(.systemGray6))
+                .frame(width: 32, height: 32)
+              Text("H")
+                .font(.system(size: 14, weight: .bold))
+            }
+
+            VStack(alignment: .leading, spacing: 1) {
+              Text(hederaId)
+                .font(.system(size: 13, weight: .medium, design: .monospaced))
+              Text("Hedera Testnet")
+                .font(.system(size: 11))
+                .foregroundColor(.gray)
+            }
+
+            Spacer()
+
+            Button {
+              UIPasteboard.general.string = hederaId
+            } label: {
+              Image(systemName: "doc.on.doc")
+                .font(.system(size: 12))
+                .foregroundColor(.gray)
+            }
+          }
+          .padding(10)
+          .background(Color(.systemGray6).opacity(0.5))
+          .cornerRadius(10)
+          .overlay(
+            RoundedRectangle(cornerRadius: 10)
+              .stroke(Color(.systemGray5), lineWidth: 0.5)
+          )
+        }
+        .padding(.horizontal, 20)
+        .padding(.vertical, 14)
+        .overlay(
+          Rectangle()
+            .fill(Color(.systemGray5))
+            .frame(height: 0.5),
+          alignment: .bottom
+        )
+      }
+
+      // EVM Wallets section
       if !vm.wallets.isEmpty {
         walletsSection
       } else {

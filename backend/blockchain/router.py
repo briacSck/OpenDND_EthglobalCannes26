@@ -66,11 +66,17 @@ async def blockchain_health():
 async def reward(req: RewardRequest):
     """Issue a quest completion reward: HBAR transfer + optional NFT badge + HCS log."""
     from . import reward_player
+    from .hts_service import get_or_create_hedera_account
 
     try:
+        # If EVM address, resolve to Hedera account
+        player_id = req.player_account_id
+        if player_id.startswith("0x"):
+            player_id, _key = await get_or_create_hedera_account(player_id)
+
         tx = await reward_player(
             quest_id=req.quest_id,
-            player_account_id=req.player_account_id,
+            player_account_id=player_id,
             token_amount=req.token_amount,
             nft_metadata=req.nft_metadata,
         )
@@ -107,20 +113,62 @@ async def mint_nft(req: MintRequest):
 
 
 # ---------------------------------------------------------------------------
+# Account creation
+# ---------------------------------------------------------------------------
+
+class CreateAccountRequest(BaseModel):
+    evm_address: str
+
+
+@router.post("/create-account")
+async def create_account(req: CreateAccountRequest):
+    """Create a Hedera testnet account for an EVM wallet address."""
+    from .hts_service import get_or_create_hedera_account
+
+    try:
+        account_id, _key = await get_or_create_hedera_account(req.evm_address)
+        return {"evm_address": req.evm_address, "hedera_account_id": account_id}
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
+
+
+@router.get("/account/{evm_address}")
+async def get_account(evm_address: str):
+    """Get Hedera account ID for an EVM address (creates one if needed)."""
+    from .hts_service import get_or_create_hedera_account
+
+    try:
+        account_id, _key = await get_or_create_hedera_account(evm_address)
+        return {"evm_address": evm_address, "hedera_account_id": account_id}
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
+
+
+# ---------------------------------------------------------------------------
 # Stake / Lock endpoints
 # ---------------------------------------------------------------------------
 
 @router.post("/stake")
 async def stake(req: StakeRequest):
-    """Lock HBAR for a quest. The player must have already sent the HBAR to the operator."""
+    """Lock HBAR for a quest ON-CHAIN. Player → operator transfer."""
     from .stake_service import stake_hbar
+    from .hts_service import get_or_create_hedera_account
 
     try:
+        evm_address = None
+        player_id = req.player_account_id
+
+        # If EVM address, resolve to Hedera account (keeps key in memory for signing)
+        if player_id.startswith("0x"):
+            evm_address = player_id
+            player_id, _key = await get_or_create_hedera_account(player_id)
+
         tx = await stake_hbar(
             quest_id=req.quest_id,
-            player_account_id=req.player_account_id,
+            player_account_id=player_id,
             amount=req.amount,
             stake_tx_hash=req.stake_tx_hash,
+            evm_address=evm_address,
         )
         return tx.model_dump()
     except Exception as exc:

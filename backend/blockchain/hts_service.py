@@ -1,4 +1,4 @@
-"""Hedera Token Service — HBAR transfers and NFT badge minting."""
+"""Hedera Token Service — HBAR transfers, account creation, and NFT badge minting."""
 
 from __future__ import annotations
 
@@ -7,8 +7,10 @@ import json
 import os
 
 from hiero_sdk_python import (
+    AccountCreateTransaction,
     AccountId,
     Hbar,
+    PrivateKey,
     TokenCreateTransaction,
     TokenId,
     TokenMintTransaction,
@@ -18,6 +20,57 @@ from hiero_sdk_python import (
 )
 
 from .config import get_client, get_operator_id, get_operator_key
+
+
+# ---------------------------------------------------------------------------
+# Account creation (for EVM wallet users who don't have a Hedera account)
+# ---------------------------------------------------------------------------
+
+# In-memory mapping of EVM address → (Hedera account ID, private key)
+_evm_to_hedera: dict[str, tuple[str, str]] = {}
+
+
+def _create_hedera_account_sync(initial_balance: int = 100) -> tuple[str, str]:
+    """Create a new Hedera account funded by the operator. Returns (account_id, private_key_str)."""
+    client = get_client()
+    operator_key = get_operator_key()
+
+    new_key = PrivateKey.generate()
+
+    receipt = (
+        AccountCreateTransaction()
+        .set_key(new_key.public_key())
+        .set_initial_balance(Hbar(initial_balance))
+        .freeze_with(client)
+        .sign(operator_key)
+        .execute(client)
+    )
+
+    account_id = str(receipt.account_id)
+    return account_id, new_key.to_string_raw()
+
+
+async def create_hedera_account(initial_balance: int = 100) -> tuple[str, str]:
+    """Async wrapper — create a new Hedera account."""
+    return await asyncio.to_thread(_create_hedera_account_sync, initial_balance)
+
+
+async def get_or_create_hedera_account(evm_address: str) -> tuple[str, str]:
+    """Get or create a Hedera account for an EVM wallet address. Returns (account_id, private_key)."""
+    if evm_address in _evm_to_hedera:
+        return _evm_to_hedera[evm_address]
+
+    account_id, private_key = await create_hedera_account(initial_balance=100)
+    _evm_to_hedera[evm_address] = (account_id, private_key)
+    return account_id, private_key
+
+
+def get_player_key(evm_address: str) -> PrivateKey | None:
+    """Get the stored private key for a player's Hedera account."""
+    entry = _evm_to_hedera.get(evm_address)
+    if entry:
+        return PrivateKey.from_string(entry[1])
+    return None
 
 
 # ---------------------------------------------------------------------------
@@ -46,6 +99,31 @@ def _transfer_hbar_sync(to_account_id: str, amount: int) -> str:
 async def transfer_hbar(to_account_id: str, amount: int) -> str:
     """Async wrapper — transfer HBAR to a player account."""
     return await asyncio.to_thread(_transfer_hbar_sync, to_account_id, amount)
+
+
+def _stake_hbar_onchain_sync(player_account_id: str, player_key: "PrivateKey", amount: int) -> str:
+    """Transfer HBAR from player → operator (on-chain stake). Returns tx hash."""
+    client = get_client()
+    operator_id = get_operator_id()
+    operator_key = get_operator_key()
+    player_id = AccountId.from_string(player_account_id)
+
+    receipt = (
+        TransferTransaction()
+        .add_hbar_transfer(player_id, Hbar(-amount))
+        .add_hbar_transfer(operator_id, Hbar(amount))
+        .freeze_with(client)
+        .sign(player_key)
+        .sign(operator_key)
+        .execute(client)
+    )
+
+    return str(getattr(receipt, "transaction_id", receipt))
+
+
+async def stake_hbar_onchain(player_account_id: str, player_key: "PrivateKey", amount: int) -> str:
+    """Async wrapper — stake HBAR (player → operator) on-chain."""
+    return await asyncio.to_thread(_stake_hbar_onchain_sync, player_account_id, player_key, amount)
 
 
 # ---------------------------------------------------------------------------

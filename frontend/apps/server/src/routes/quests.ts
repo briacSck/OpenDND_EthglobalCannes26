@@ -251,6 +251,66 @@ router.post("/:questId/complete", async (req, res) => {
       [rows[0].user_id, "completed", rows[0].title, grade]
     );
 
+    // Auto-resolve stakes + send on-chain reward
+    const BACKEND_URL_INNER = process.env.BACKEND_URL || "https://backend-production-77f8.up.railway.app";
+    try {
+      // Resolve stakes in DB
+      const { rows: stakes } = await pool.query(
+        `SELECT * FROM quest_stakes WHERE quest_id = $1 AND status = 'locked'`,
+        [req.params.questId]
+      );
+      for (const stake of stakes) {
+        const bonus = stake.amount * 0.5;
+        const payout = stake.amount + bonus;
+
+        await pool.query(
+          `UPDATE quest_stakes SET status = 'won', bonus = $1, resolved_at = NOW() WHERE id = $2`,
+          [bonus, stake.id]
+        );
+        await pool.query(
+          `UPDATE users SET pool_amount = GREATEST(COALESCE(pool_amount, 0) - $1, 0) WHERE id = $2`,
+          [stake.amount, stake.user_id]
+        );
+        await pool.query(
+          `INSERT INTO transactions (user_id, type, label, amount) VALUES ($1, 'credit', $2, $3)`,
+          [stake.user_id, `Quest reward: ${rows[0].title}`, payout]
+        );
+      }
+      // Resolve on-chain stakes
+      fetch(`${BACKEND_URL_INNER}/blockchain/resolve`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ quest_id: req.params.questId, outcome: "win" }),
+      }).catch(() => {});
+    } catch (stakeErr) {
+      console.warn("[Complete] Failed to resolve stakes:", stakeErr);
+    }
+
+    // Send HBAR reward on-chain
+    try {
+      const walletAddress = rows[0].wallet_address || (
+        await pool.query(`SELECT wallet_address FROM users WHERE id = $1`, [rows[0].user_id])
+      ).rows[0]?.wallet_address;
+
+      if (walletAddress) {
+        fetch(`${BACKEND_URL_INNER}/blockchain/reward`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            quest_id: req.params.questId,
+            player_account_id: walletAddress,
+            token_amount: rewardAmount || 50,
+            nft_metadata: grade ? { quest: rows[0].title, grade, completed_at: new Date().toISOString() } : null,
+          }),
+        }).then(async (r) => {
+          if (r.ok) console.log("[Complete] On-chain reward sent:", await r.json());
+          else console.warn("[Complete] On-chain reward failed:", await r.text());
+        }).catch((e) => console.warn("[Complete] On-chain reward call failed:", e));
+      }
+    } catch (rewardErr) {
+      console.warn("[Complete] Failed to send on-chain reward:", rewardErr);
+    }
+
     res.json(rows[0]);
   } catch (err) {
     console.error("Failed to complete quest:", err);
@@ -279,6 +339,30 @@ router.post("/:questId/steps/:stepOrder/done", async (req, res) => {
         `UPDATE quests SET status = 'completed', completed_at = NOW() WHERE id = $1 AND status = 'active'`,
         [req.params.questId]
       );
+
+      // Resolve stakes on quest completion
+      const REWARD_BACKEND = process.env.BACKEND_URL || "https://backend-production-77f8.up.railway.app";
+      try {
+        const { rows: questRows } = await pool.query(`SELECT * FROM quests WHERE id = $1`, [req.params.questId]);
+        const quest = questRows[0];
+        const { rows: stakes } = await pool.query(
+          `SELECT * FROM quest_stakes WHERE quest_id = $1 AND status = 'locked'`, [req.params.questId]
+        );
+        for (const stake of stakes) {
+          const bonus = stake.amount * 0.5;
+          const payout = stake.amount + bonus;
+          await pool.query(`UPDATE quest_stakes SET status = 'won', bonus = $1, resolved_at = NOW() WHERE id = $2`, [bonus, stake.id]);
+          await pool.query(`UPDATE users SET pool_amount = GREATEST(COALESCE(pool_amount, 0) - $1, 0) WHERE id = $2`, [stake.amount, stake.user_id]);
+          await pool.query(`INSERT INTO transactions (user_id, type, label, amount) VALUES ($1, 'credit', $2, $3)`,
+            [stake.user_id, `Quest reward: ${quest?.title || 'Quest'}`, payout]);
+        }
+        fetch(`${REWARD_BACKEND}/blockchain/resolve`, {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ quest_id: req.params.questId, outcome: "win" }),
+        }).catch(() => {});
+      } catch (resolveErr) {
+        console.warn("[StepDone] Failed to resolve stakes:", resolveErr);
+      }
     }
     res.json({ ok: true });
   } catch (err) {
@@ -344,6 +428,52 @@ router.post("/:questId/steps/:stepOrder/verify", async (req, res) => {
           [req.params.questId, result.xp_earned || 15]
         );
         console.log(`[Verify] Quest ${req.params.questId} completed — all steps done`);
+
+        // Resolve stakes + send on-chain reward
+        const REWARD_BACKEND = process.env.BACKEND_URL || "https://backend-production-77f8.up.railway.app";
+        try {
+          // Get quest info for reward
+          const { rows: questRows } = await pool.query(`SELECT * FROM quests WHERE id = $1`, [req.params.questId]);
+          const quest = questRows[0];
+
+          // Resolve locked stakes as "win"
+          const { rows: stakes } = await pool.query(
+            `SELECT * FROM quest_stakes WHERE quest_id = $1 AND status = 'locked'`, [req.params.questId]
+          );
+          for (const stake of stakes) {
+            const bonus = stake.amount * 0.5;
+            const payout = stake.amount + bonus;
+            await pool.query(`UPDATE quest_stakes SET status = 'won', bonus = $1, resolved_at = NOW() WHERE id = $2`, [bonus, stake.id]);
+            await pool.query(`UPDATE users SET pool_amount = GREATEST(COALESCE(pool_amount, 0) - $1, 0) WHERE id = $2`, [stake.amount, stake.user_id]);
+            await pool.query(`INSERT INTO transactions (user_id, type, label, amount) VALUES ($1, 'credit', $2, $3)`,
+              [stake.user_id, `Quest reward: ${quest?.title || 'Quest'}`, payout]);
+            console.log(`[Verify] Stake resolved: user=${stake.user_id} payout=${payout}`);
+          }
+
+          // On-chain resolve + reward
+          fetch(`${REWARD_BACKEND}/blockchain/resolve`, {
+            method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ quest_id: req.params.questId, outcome: "win" }),
+          }).catch(() => {});
+
+          // Get wallet for on-chain reward
+          const { rows: userRows } = await pool.query(`SELECT wallet_address FROM users WHERE id = $1`, [quest?.user_id]);
+          if (userRows[0]?.wallet_address) {
+            fetch(`${REWARD_BACKEND}/blockchain/reward`, {
+              method: "POST", headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                quest_id: req.params.questId,
+                player_account_id: userRows[0].wallet_address,
+                token_amount: result.xp_earned || 15,
+              }),
+            }).then(async (r) => {
+              if (r.ok) console.log("[Verify] On-chain reward sent:", await r.json());
+              else console.warn("[Verify] On-chain reward failed:", await r.text());
+            }).catch((e) => console.warn("[Verify] On-chain reward error:", e));
+          }
+        } catch (resolveErr) {
+          console.warn("[Verify] Failed to resolve stakes:", resolveErr);
+        }
       }
 
       // Log action
