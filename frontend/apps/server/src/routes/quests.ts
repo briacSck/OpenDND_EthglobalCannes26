@@ -268,10 +268,18 @@ router.post("/:questId/steps/:stepOrder/done", async (req, res) => {
     );
     // Activate next step
     const nextOrder = parseInt(req.params.stepOrder) + 1;
-    await pool.query(
+    const { rowCount } = await pool.query(
       `UPDATE quest_steps SET active = true WHERE quest_id = $1 AND step_order = $2`,
       [req.params.questId, nextOrder]
     );
+
+    // If no next step, complete the quest
+    if (rowCount === 0) {
+      await pool.query(
+        `UPDATE quests SET status = 'completed', completed_at = NOW() WHERE id = $1 AND status = 'active'`,
+        [req.params.questId]
+      );
+    }
     res.json({ ok: true });
   } catch (err) {
     console.error("Failed to update step:", err);
@@ -323,10 +331,20 @@ router.post("/:questId/steps/:stepOrder/verify", async (req, res) => {
         [req.params.questId, req.params.stepOrder]
       );
       const nextOrder = parseInt(req.params.stepOrder) + 1;
-      await pool.query(
+      const { rowCount } = await pool.query(
         `UPDATE quest_steps SET active = true WHERE quest_id = $1 AND step_order = $2`,
         [req.params.questId, nextOrder]
       );
+
+      // If no next step was activated, all steps are done — complete the quest
+      if (rowCount === 0) {
+        await pool.query(
+          `UPDATE quests SET status = 'completed', completed_at = NOW(), xp_earned = COALESCE(xp_earned, 0) + $2
+           WHERE id = $1 AND status = 'active'`,
+          [req.params.questId, result.xp_earned || 15]
+        );
+        console.log(`[Verify] Quest ${req.params.questId} completed — all steps done`);
+      }
 
       // Log action
       const { userId } = req.body;
