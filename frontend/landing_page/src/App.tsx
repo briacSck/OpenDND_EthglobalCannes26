@@ -23,10 +23,12 @@ export default function App() {
             <span>ETHGlobal Cannes 2026</span>
           </div>
           <a
-            href="#"
+            href="https://docs.google.com/forms/d/e/1FAIpQLSdUSYdRFqCImVTB5qUD0Lw27ss5pQKC8ufor-sS7vIw5iYq5A/viewform?usp=header"
+            target="_blank"
+            rel="noopener noreferrer"
             className="px-5 py-2.5 bg-terra text-cream text-sm font-semibold rounded-full hover:bg-terra-deep transition-colors"
           >
-            Download the app
+            Sign up for early access
           </a>
         </div>
       </footer>

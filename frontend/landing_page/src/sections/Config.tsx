@@ -151,9 +151,14 @@ export default function Config() {
                 <span className="w-1.5 h-1.5 rounded-full bg-olive animate-pulse-glow" />
                 all params set
               </span>
-              <button className="w-full sm:w-auto px-6 py-2.5 bg-terra text-cream font-mono text-sm font-semibold rounded-full hover:bg-terra-deep hover:shadow-lg hover:shadow-terra/20 transition-all duration-300 cursor-pointer active:scale-[0.97]">
+              <a
+                href="https://docs.google.com/forms/d/e/1FAIpQLSdUSYdRFqCImVTB5qUD0Lw27ss5pQKC8ufor-sS7vIw5iYq5A/viewform?usp=header"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full sm:w-auto px-6 py-2.5 bg-terra text-cream font-mono text-sm font-semibold rounded-full hover:bg-terra-deep hover:shadow-lg hover:shadow-terra/20 transition-all duration-300 cursor-pointer active:scale-[0.97] inline-block text-center"
+              >
                 instantiate quest &rarr;
-              </button>
+              </a>
             </div>
           </div>
         </ScrollReveal>

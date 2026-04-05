@@ -134,21 +134,22 @@ export default function Hero() {
           Actually fun.
         </motion.p>
 
-        {/* Single CTA — Download the app */}
+        {/* Single CTA — Sign up for early access */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.45 }}
         >
           <a
-            href="#"
+            href="https://docs.google.com/forms/d/e/1FAIpQLSdUSYdRFqCImVTB5qUD0Lw27ss5pQKC8ufor-sS7vIw5iYq5A/viewform?usp=header"
+            target="_blank"
+            rel="noopener noreferrer"
             className="group inline-flex items-center gap-2.5 px-7 sm:px-8 py-3 sm:py-3.5 bg-terra text-cream font-semibold text-sm sm:text-base rounded-full hover:bg-terra-deep hover:shadow-[0_8px_30px_rgba(196,112,75,0.3)] transition-all duration-300 active:scale-[0.97]"
           >
-            {/* Download icon */}
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V3" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
             </svg>
-            Download the app
+            Sign up for early access
           </a>
         </motion.div>
 
