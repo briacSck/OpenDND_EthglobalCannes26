@@ -32,6 +32,8 @@ class StreamSessionViewModel: ObservableObject {
   @Published var showError: Bool = false
   @Published var errorMessage: String = ""
   @Published var hasActiveDevice: Bool = false
+  /// When true, streaming errors are suppressed (phone camera fallback mode)
+  var suppressErrors: Bool = false
 
   var isStreaming: Bool {
     streamingStatus != .stopped
@@ -96,6 +98,11 @@ class StreamSessionViewModel: ObservableObject {
     errorListenerToken = streamSession.errorPublisher.listen { [weak self] error in
       Task { @MainActor [weak self] in
         guard let self else { return }
+        // In fallback mode, don't show errors to the user
+        guard !self.suppressErrors else {
+          print("[StreamSession] Suppressed error: \(error)")
+          return
+        }
         let newErrorMessage = formatStreamingError(error)
         if newErrorMessage != self.errorMessage {
           showError(newErrorMessage)

@@ -1,0 +1,119 @@
+{
+  "title": "The Underground Film Critics Society",
+  "player_name": "Alex",
+  "narrative_universe": {
+    "hook": "Alex, the tunnels beneath the Palais des Festivals are compromised. We've detected unauthorized star ratings appearing on municipal infrastructure. Your urban exploration skills are needed NOW.",
+    "context": "Cannes, 2026. Beneath the glamorous surface of the world's most famous film festival city lurks a secret society of rogue film critics who have gone completely feral. They live in the underground spaces and hidden corners of Cannes, rating everything they encounter with cryptic star systems carved into walls, spray-painted on utility boxes, and etched into manholes. These 'Souterrain Critics' believe that real life deserves more honest reviews than the films above ground. They've declared war on surface-level cinema and are planning something catastrophic for the next festival.",
+    "protagonist": "Alex, an urban explorer with a talent for finding hidden spaces and decoding the secret architecture of cities. Tonight, they've been recruited by a mysterious contact to investigate strange markings appearing throughout Cannes' infrastructure.",
+    "stakes": "If the Souterrain Critics aren't stopped, they plan to 'review' the entire Cannes Film Festival by projecting their brutal one-star ratings onto every major venue simultaneously, destroying the festival's reputation forever."
+  },
+  "pre_quest_bundle": {
+    "email": {
+      "from_character": "M. Critique",
+      "subject": "Infrastructure Anomaly - Urgent Response Required",
+      "body": "Alex,\n\nWe've been monitoring unusual activity in Cannes' underground systems. Star ratings (1-5) are appearing on city infrastructure at an alarming rate. Last night: ★★☆☆☆ carved into a storm drain near the Palais. This morning: ★☆☆☆☆ spray-painted on a telecommunications box on La Croisette.\n\nWe believe this is the work of the legendary 'Souterrain Critics' - a group of film critics who went underground (literally) after giving Transformers 7 five stars and being banned from every cinema in France.\n\nYour urban exploration expertise is essential. Meet my associate Margot at the first location. She'll guide you into their world.\n\nTime is critical. The festival opens in 72 hours.\n\n- M. Critique\nCannes Cultural Preservation Society"
+    },
+    "voicemail": {
+      "from_character": "Margot",
+      "duration_seconds": 45,
+      "script": "[Static, echoing voice] Alex? It's Margot. Listen, forget everything you think you know about film criticism. These aren't your typical Cahiers du Cinéma intellectuals. They've been living in utility tunnels, rating the texture of concrete walls and the dramatic tension of elevator shafts. I found a three-star review of a fire escape yesterday - complete with analysis of its 'ascending narrative arc.' Meet me at the Palais steps. Look for the woman arguing with a street lamp about its lighting choices. That'll be me."
+    },
+    "pdf": {
+      "type": "Research Dossier",
+      "content_brief": "A collection of photographs showing mysterious star ratings carved, painted, and etched throughout Cannes. Includes architectural diagrams of the city's underground utility systems, a partially decoded 'Rating Cipher' used by the critics, and a manifesto fragment titled 'Why Reality Deserves Better Reviews Than Marvel Movies.'"
+    },
+    "playlist": {
+      "name": "Soundscape for Urban Archaeology",
+      "mood": "mysterious, cinematic, slightly unhinged",
+      "genre_keywords": [
+        "ambient",
+        "electronic",
+        "film noir",
+        "experimental",
+        "urban"
+      ]
+    }
+  },
+  "characters": [
+    {
+      "name": "M. Critique",
+      "age": 52,
+      "type": "principal",
+      "archetype": "mastermind",
+      "personality": "Former film festival director turned underground resistance leader. Speaks in film terminology even when discussing mundane things. Obsessed with 'authentic narrative experiences.' Takes the critic conspiracy deadly seriously while being completely oblivious to how absurd it all sounds.",
+      "relationship_to_player": "Mission handler and mentor figure who recruited Alex for their urban exploration skills.",
+      "secret": "He's actually the founder of the Souterrain Critics but claims to be fighting them - he's testing Alex to see if they're worthy of joining the underground society.",
+      "speech_pattern": "This infrastructure has terrible pacing, Alex. The dramatic arc of this storm drain is simply atrocious. We must restore proper narrative flow to this city.",
+      "evolution_rules": "Starts as authoritative mentor, becomes increasingly eccentric as player discovers clues. If player shows appreciation for his 'artistic vision,' he reveals more truth. If player mocks the critics, he becomes defensive and cryptic.",
+      "reactions_imprevues": "When surprised, immediately starts rating the unexpected situation out of 5 stars. Under pressure, begins speaking entirely in film critic jargon. Red line: cannot tolerate anyone calling the critics 'just vandals' - will cut communication."
+    },
+    {
+      "name": "Margot",
+      "age": 29,
+      "type": "principal",
+      "archetype": "electron_libre",
+      "personality": "Former cinema studies PhD turned urban explorer. Fluent in both academic film theory and street-level exploration. Has a habit of psychoanalyzing architectural features. Thinks the critics are brilliant but dangerous.",
+      "relationship_to_player": "Field partner and guide through Cannes' hidden spaces.",
+      "secret": "She's been secretly documenting the critics' work for her own research - planning to write a book called 'Five Stars for the Apocalypse: When Film Critics Go Feral.'",
+      "speech_pattern": "This staircase has serious daddy issues, Alex. Look at how it desperately reaches toward the light but never quite makes it. Pure Oedipal architecture. Also, watch for broken glass on step seven.",
+      "evolution_rules": "Becomes more trusting and reveals her book project if player engages with her theories. If player dismisses her academic approach, she becomes more practical but less informative.",
+      "reactions_imprevues": "When caught off guard, immediately starts deconstructing the situation like a film scene. Under extreme pressure, reverts to academic lecture mode. Red line: won't tolerate anyone dismissing cinema studies as 'useless' - will abandon mission."
+    },
+    {
+      "name": "Jean-Claude",
+      "age": 67,
+      "type": "principal",
+      "archetype": "fantome",
+      "personality": "Veteran Cannes security guard who's worked every festival since 1982. Claims he first spotted the critics in 1987. Knows every secret passage, service tunnel, and hidden door in the city. Pretends to be just a simple guard but actually has encyclopedic knowledge.",
+      "relationship_to_player": "Local informant with decades of institutional memory.",
+      "secret": "He's been feeding information to the critics for years because he agrees that most modern films are terrible and the underground ratings are more honest than official reviews.",
+      "speech_pattern": "Ah, mon petit, you want to know about the tunnels? I remember when Tarantino got lost in the service corridors in '94. Took three hours to find him. He was writing dialogue on the walls with a Sharpie.",
+      "evolution_rules": "Opens up more about the critics' history if player shows respect for his experience. If player treats him like 'just security,' he gives minimal information and watches them struggle.",
+      "reactions_imprevues": "When surprised, immediately switches to official security protocol language. Under pressure, becomes protective and paternal. Red line: will not compromise festival security even for the mission."
+    },
+    {
+      "name": "Clémentine",
+      "age": 24,
+      "type": "secondary",
+      "archetype": "genie_arrogant",
+      "personality": "Youngest member of the Souterrain Critics. Genius-level film knowledge but socially awkward from living underground. Communicates primarily through star ratings and considers most surface-dwellers intellectually inferior.",
+      "relationship_to_player": "Reluctant contact within the critics' organization.",
+      "secret": "She's homesick for the surface world but too proud to admit it. Still secretly watches Netflix on a stolen tablet in the tunnels.",
+      "speech_pattern": "★★☆☆☆ conversation attempt, Alex. Your urban exploration technique shows promise but lacks thematic coherence. The way you approached that utility box? Pure amateur hour. ★☆☆☆☆.",
+      "evolution_rules": "Warms up if player demonstrates genuine appreciation for cinema beyond blockbusters. If player proves they can think critically about space and architecture, she becomes an ally.",
+      "reactions_imprevues": "When surprised, immediately assigns star ratings to everything around her including the surprise itself. Under pressure, becomes extremely verbose and condescending. Red line: cannot handle criticism of her film knowledge."
+    },
+    {
+      "name": "Philippe",
+      "age": 45,
+      "type": "secondary",
+      "archetype": "love_interest",
+      "personality": "Charming local café owner who serves as unofficial communications hub for the critics. Makes the best coffee in Cannes and has a philosophy about how brewing coffee is like editing film - timing is everything.",
+      "relationship_to_player": "Romantic tension builds as he provides crucial intelligence while flirting through film metaphors.",
+      "secret": "He's not actually French - he's a former Hollywood film editor who burned out, moved to Cannes, and now finds the critics' approach refreshingly honest compared to studio politics.",
+      "speech_pattern": "Alex, this espresso has better character development than most Hollywood films. The way it builds to that perfect crema finale? Pure cinematic genius. Speaking of finales, I heard something interesting about the Palais tonight...",
+      "evolution_rules": "Romance develops if player appreciates his film/coffee metaphors and treats his information seriously. If player is purely business-focused, he remains helpful but distant.",
+      "reactions_imprevues": "When surprised, immediately offers coffee and starts explaining the situation through brewing analogies. Under pressure, becomes protective and offers sanctuary in his café. Red line: won't betray the critics even for romance."
+    }
+  ],
+  "narrative_tensions": [
+    "The critics' genuine artistic vision vs. their destructive methods - are they visionary artists or dangerous vandals?",
+    "Alex's growing appreciation for the critics' perspective vs. their original mission to stop them",
+    "M. Critique's hidden agenda as the critics' founder vs. his public role as their opponent",
+    "The surface world's commercial film industry vs. the underground's pure artistic integrity",
+    "Margot's academic research ambitions vs. her loyalty to the people she's studying",
+    "Jean-Claude's duty as festival security vs. his sympathy for the critics' cause",
+    "The approaching festival deadline creating urgency vs. the player's growing understanding that the critics might be right",
+    "Philippe's desire for Alex to understand the critics' truth vs. the potential consequences for his business"
+  ],
+  "twist": {
+    "description": "M. Critique is actually the founder and secret leader of the Souterrain Critics. He didn't recruit Alex to stop them - he recruited Alex to join them. The entire mission was an elaborate initiation test. The 'catastrophic festival ratings' are actually a plan to replace all the commercial film posters with honest, artistic reviews of the city's architecture, transforming Cannes into a living gallery where buildings are celebrated as masterpieces instead of just backdrops for celebrity photos.",
+    "revelation_variants": [
+      "If Alex finds M. Critique's hidden workshop in the underground passages, complete with rating stencils and architectural blueprints",
+      "If Alex earns Clémentine's trust, she reveals that 'the old man above' is actually their beloved founder",
+      "If Alex discovers that all the locations they visited were rated by M. Critique himself in previous years",
+      "If Jean-Claude accidentally calls M. Critique by his critic codename 'Le Directeur' during a tense moment",
+      "If Philippe shows Alex a photo from 1987 of a young M. Critique spray-painting the first star rating in a tunnel"
+    ]
+  }
+}

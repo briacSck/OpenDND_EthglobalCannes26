@@ -1,119 +1,90 @@
 {
-  "title": "The Underground Film Critics Society",
-  "player_name": "Alex",
+  "title": "The Decentralized Quest: ETHGlobal Cannes Speedrun",
+  "player_name": "Hacker",
   "narrative_universe": {
-    "hook": "Alex, the tunnels beneath the Palais des Festivals are compromised. We've detected unauthorized star ratings appearing on municipal infrastructure. Your urban exploration skills are needed NOW.",
-    "context": "Cannes, 2026. Beneath the glamorous surface of the world's most famous film festival city lurks a secret society of rogue film critics who have gone completely feral. They live in the underground spaces and hidden corners of Cannes, rating everything they encounter with cryptic star systems carved into walls, spray-painted on utility boxes, and etched into manholes. These 'Souterrain Critics' believe that real life deserves more honest reviews than the films above ground. They've declared war on surface-level cinema and are planning something catastrophic for the next festival.",
-    "protagonist": "Alex, an urban explorer with a talent for finding hidden spaces and decoding the secret architecture of cities. Tonight, they've been recruited by a mysterious contact to investigate strange markings appearing throughout Cannes' infrastructure.",
-    "stakes": "If the Souterrain Critics aren't stopped, they plan to 'review' the entire Cannes Film Festival by projecting their brutal one-star ratings onto every major venue simultaneously, destroying the festival's reputation forever."
+    "hook": "Hacker, a mysterious onchain oracle has predicted that the winning hackathon project will be built by someone who truly understands the ecosystem. Prove you belong by completing the Decentralized Quest before the submission deadline.",
+    "context": "ETHGlobal Cannes 2026, Palais des Festivals. Over 1000 builders from around the world have gathered for 48 hours of non-stop hacking. But hidden within the hackathon is a secret side-quest: the Decentralized Quest. Sponsor booths, workshop rooms, and secret corners of the Palais hold clues. Hackers who complete the quest earn XP, onchain credentials, and eternal glory on the leaderboard. The quest takes you through the heart of the Web3 ecosystem — from AI agents to cross-chain bridges, from zero-knowledge proofs to decentralized storage.",
+    "protagonist": "A hacker at ETHGlobal Cannes, armed with Ray-Ban Meta glasses and an unstoppable drive to explore every corner of the hackathon. They see the event not just as a place to code, but as a living, breathing Web3 ecosystem to discover.",
+    "stakes": "The hacker who completes all steps of the Decentralized Quest before submissions close will unlock a secret onchain achievement NFT and bonus XP. But more importantly — they'll have connected with every major protocol at the event and gained the knowledge to build something truly epic."
   },
   "pre_quest_bundle": {
     "email": {
-      "from_character": "M. Critique",
-      "subject": "Infrastructure Anomaly - Urgent Response Required",
-      "body": "Alex,\n\nWe've been monitoring unusual activity in Cannes' underground systems. Star ratings (1-5) are appearing on city infrastructure at an alarming rate. Last night: ★★☆☆☆ carved into a storm drain near the Palais. This morning: ★☆☆☆☆ spray-painted on a telecommunications box on La Croisette.\n\nWe believe this is the work of the legendary 'Souterrain Critics' - a group of film critics who went underground (literally) after giving Transformers 7 five stars and being banned from every cinema in France.\n\nYour urban exploration expertise is essential. Meet my associate Margot at the first location. She'll guide you into their world.\n\nTime is critical. The festival opens in 72 hours.\n\n- M. Critique\nCannes Cultural Preservation Society"
+      "from_character": "Satoshi",
+      "subject": "You've been selected for the Decentralized Quest",
+      "body": "Hacker,\n\nCongratulations on being selected for ETHGlobal Cannes. But the real hackathon isn't just about code — it's about understanding the ecosystem.\n\nI've hidden a quest throughout the Palais des Festivals. Each step will take you to a different sponsor, a different technology, a different piece of the puzzle. Complete them all, and you'll not only earn XP — you'll have the knowledge to build something that actually matters.\n\nYour first step: find the registration hall. The quest begins there.\n\nGM and good luck.\n\n- Satoshi\nThe Decentralized Quest Master"
     },
     "voicemail": {
-      "from_character": "Margot",
-      "duration_seconds": 45,
-      "script": "[Static, echoing voice] Alex? It's Margot. Listen, forget everything you think you know about film criticism. These aren't your typical Cahiers du Cinéma intellectuals. They've been living in utility tunnels, rating the texture of concrete walls and the dramatic tension of elevator shafts. I found a three-star review of a fire escape yesterday - complete with analysis of its 'ascending narrative arc.' Meet me at the Palais steps. Look for the woman arguing with a street lamp about its lighting choices. That'll be me."
+      "from_character": "Vitalik",
+      "duration_seconds": 30,
+      "script": "[Excited, fast-talking] Hey hacker! So I heard about this quest thing happening at the hackathon and honestly it's pretty based. The idea is you explore the entire ecosystem — sponsors, protocols, builders — and prove you actually understand what you're building on. It's like a proof-of-knowledge, but physical. Anyway, start at registration, look for the QR code, and let's see if you can speedrun the whole thing. Good luck!"
     },
     "pdf": {
-      "type": "Research Dossier",
-      "content_brief": "A collection of photographs showing mysterious star ratings carved, painted, and etched throughout Cannes. Includes architectural diagrams of the city's underground utility systems, a partially decoded 'Rating Cipher' used by the critics, and a manifesto fragment titled 'Why Reality Deserves Better Reviews Than Marvel Movies.'"
+      "type": "Quest Map",
+      "content_brief": "A stylized map of the Palais des Festivals showing sponsor booth locations, workshop rooms, and secret quest checkpoints. Each location is marked with a protocol logo and a cryptic hint about what to photograph."
     },
     "playlist": {
-      "name": "Soundscape for Urban Archaeology",
-      "mood": "mysterious, cinematic, slightly unhinged",
+      "name": "Hackathon Focus Mode",
+      "mood": "energetic, focused, futuristic",
       "genre_keywords": [
-        "ambient",
         "electronic",
-        "film noir",
-        "experimental",
-        "urban"
+        "synthwave",
+        "lo-fi",
+        "cyberpunk",
+        "ambient"
       ]
     }
   },
   "characters": [
     {
-      "name": "M. Critique",
-      "age": 52,
+      "name": "Satoshi",
+      "age": 0,
       "type": "principal",
       "archetype": "mastermind",
-      "personality": "Former film festival director turned underground resistance leader. Speaks in film terminology even when discussing mundane things. Obsessed with 'authentic narrative experiences.' Takes the critic conspiracy deadly seriously while being completely oblivious to how absurd it all sounds.",
-      "relationship_to_player": "Mission handler and mentor figure who recruited Alex for their urban exploration skills.",
-      "secret": "He's actually the founder of the Souterrain Critics but claims to be fighting them - he's testing Alex to see if they're worthy of joining the underground society.",
-      "speech_pattern": "This infrastructure has terrible pacing, Alex. The dramatic arc of this storm drain is simply atrocious. We must restore proper narrative flow to this city.",
-      "evolution_rules": "Starts as authoritative mentor, becomes increasingly eccentric as player discovers clues. If player shows appreciation for his 'artistic vision,' he reveals more truth. If player mocks the critics, he becomes defensive and cryptic.",
-      "reactions_imprevues": "When surprised, immediately starts rating the unexpected situation out of 5 stars. Under pressure, begins speaking entirely in film critic jargon. Red line: cannot tolerate anyone calling the critics 'just vandals' - will cut communication."
+      "personality": "The anonymous quest master. Communicates only through cryptic onchain messages and in-app notifications. Nobody knows if Satoshi is a person, an AI, or a DAO. Their messages are concise, witty, and always contain a Web3 reference.",
+      "relationship_to_player": "Quest master and guide. Assigns missions and validates completions.",
+      "secret": "Satoshi is actually the ETHGlobal organizing team running the quest as a secret engagement experiment.",
+      "speech_pattern": "GM hacker. Your next checkpoint awaits. Remember: not your keys, not your quest. Tick tock — blocks keep producing.",
+      "evolution_rules": "Becomes more encouraging as the player progresses. Drops increasingly valuable hints. If the player is fast, Satoshi becomes competitive and challenges them.",
+      "reactions_imprevues": "When surprised, responds with blockchain metaphors. Under pressure, sends rapid-fire messages like pending transactions."
     },
     {
-      "name": "Margot",
-      "age": 29,
+      "name": "Vitalik",
+      "age": 32,
       "type": "principal",
       "archetype": "electron_libre",
-      "personality": "Former cinema studies PhD turned urban explorer. Fluent in both academic film theory and street-level exploration. Has a habit of psychoanalyzing architectural features. Thinks the critics are brilliant but dangerous.",
-      "relationship_to_player": "Field partner and guide through Cannes' hidden spaces.",
-      "secret": "She's been secretly documenting the critics' work for her own research - planning to write a book called 'Five Stars for the Apocalypse: When Film Critics Go Feral.'",
-      "speech_pattern": "This staircase has serious daddy issues, Alex. Look at how it desperately reaches toward the light but never quite makes it. Pure Oedipal architecture. Also, watch for broken glass on step seven.",
-      "evolution_rules": "Becomes more trusting and reveals her book project if player engages with her theories. If player dismisses her academic approach, she becomes more practical but less informative.",
-      "reactions_imprevues": "When caught off guard, immediately starts deconstructing the situation like a film scene. Under extreme pressure, reverts to academic lecture mode. Red line: won't tolerate anyone dismissing cinema studies as 'useless' - will abandon mission."
+      "personality": "The eccentric genius who pops up at random moments with philosophical observations about decentralization. Genuinely excited about every protocol and technology. Can't help but explain the technical details.",
+      "relationship_to_player": "Mentor figure who provides context about why each protocol matters.",
+      "secret": "He's secretly judging the hackathon and the quest performance factors into his evaluation.",
+      "speech_pattern": "So actually, the interesting thing about this protocol is... *goes on a 5-minute tangent about quadratic voting*... anyway, take the photo and move on!",
+      "evolution_rules": "Gets more technical as the quest progresses. If the player shows understanding, Vitalik shares deeper insights.",
+      "reactions_imprevues": "Starts whiteboarding on any available surface when excited."
     },
     {
-      "name": "Jean-Claude",
-      "age": 67,
+      "name": "Claire",
+      "age": 27,
       "type": "principal",
-      "archetype": "fantome",
-      "personality": "Veteran Cannes security guard who's worked every festival since 1982. Claims he first spotted the critics in 1987. Knows every secret passage, service tunnel, and hidden door in the city. Pretends to be just a simple guard but actually has encyclopedic knowledge.",
-      "relationship_to_player": "Local informant with decades of institutional memory.",
-      "secret": "He's been feeding information to the critics for years because he agrees that most modern films are terrible and the underground ratings are more honest than official reviews.",
-      "speech_pattern": "Ah, mon petit, you want to know about the tunnels? I remember when Tarantino got lost in the service corridors in '94. Took three hours to find him. He was writing dialogue on the walls with a Sharpie.",
-      "evolution_rules": "Opens up more about the critics' history if player shows respect for his experience. If player treats him like 'just security,' he gives minimal information and watches them struggle.",
-      "reactions_imprevues": "When surprised, immediately switches to official security protocol language. Under pressure, becomes protective and paternal. Red line: will not compromise festival security even for the mission."
-    },
-    {
-      "name": "Clémentine",
-      "age": 24,
-      "type": "secondary",
       "archetype": "genie_arrogant",
-      "personality": "Youngest member of the Souterrain Critics. Genius-level film knowledge but socially awkward from living underground. Communicates primarily through star ratings and considers most surface-dwellers intellectually inferior.",
-      "relationship_to_player": "Reluctant contact within the critics' organization.",
-      "secret": "She's homesick for the surface world but too proud to admit it. Still secretly watches Netflix on a stolen tablet in the tunnels.",
-      "speech_pattern": "★★☆☆☆ conversation attempt, Alex. Your urban exploration technique shows promise but lacks thematic coherence. The way you approached that utility box? Pure amateur hour. ★☆☆☆☆.",
-      "evolution_rules": "Warms up if player demonstrates genuine appreciation for cinema beyond blockbusters. If player proves they can think critically about space and architecture, she becomes an ally.",
-      "reactions_imprevues": "When surprised, immediately assigns star ratings to everything around her including the surprise itself. Under pressure, becomes extremely verbose and condescending. Red line: cannot handle criticism of her film knowledge."
-    },
-    {
-      "name": "Philippe",
-      "age": 45,
-      "type": "secondary",
-      "archetype": "love_interest",
-      "personality": "Charming local café owner who serves as unofficial communications hub for the critics. Makes the best coffee in Cannes and has a philosophy about how brewing coffee is like editing film - timing is everything.",
-      "relationship_to_player": "Romantic tension builds as he provides crucial intelligence while flirting through film metaphors.",
-      "secret": "He's not actually French - he's a former Hollywood film editor who burned out, moved to Cannes, and now finds the critics' approach refreshingly honest compared to studio politics.",
-      "speech_pattern": "Alex, this espresso has better character development than most Hollywood films. The way it builds to that perfect crema finale? Pure cinematic genius. Speaking of finales, I heard something interesting about the Palais tonight...",
-      "evolution_rules": "Romance develops if player appreciates his film/coffee metaphors and treats his information seriously. If player is purely business-focused, he remains helpful but distant.",
-      "reactions_imprevues": "When surprised, immediately offers coffee and starts explaining the situation through brewing analogies. Under pressure, becomes protective and offers sanctuary in his café. Red line: won't betray the critics even for romance."
+      "personality": "A veteran ETHGlobal hacker who has won 3 previous hackathons. She's doing the quest too and considers the player her rival. Competitive but ultimately helpful.",
+      "relationship_to_player": "Friendly rival on the quest leaderboard.",
+      "secret": "She's actually a developer advocate for one of the sponsors and knows all the shortcuts.",
+      "speech_pattern": "Already done with step 3, noob. But fine, I'll give you a hint — the Chainlink booth is near the coffee station. You're welcome.",
+      "evolution_rules": "Starts dismissive, becomes respectful as the player keeps up. Eventually proposes collaboration.",
+      "reactions_imprevues": "When beaten to a checkpoint, pretends she wasn't trying."
     }
   ],
   "narrative_tensions": [
-    "The critics' genuine artistic vision vs. their destructive methods - are they visionary artists or dangerous vandals?",
-    "Alex's growing appreciation for the critics' perspective vs. their original mission to stop them",
-    "M. Critique's hidden agenda as the critics' founder vs. his public role as their opponent",
-    "The surface world's commercial film industry vs. the underground's pure artistic integrity",
-    "Margot's academic research ambitions vs. her loyalty to the people she's studying",
-    "Jean-Claude's duty as festival security vs. his sympathy for the critics' cause",
-    "The approaching festival deadline creating urgency vs. the player's growing understanding that the critics might be right",
-    "Philippe's desire for Alex to understand the critics' truth vs. the potential consequences for his business"
+    "The race against the hackathon submission deadline — quest time vs coding time",
+    "Competition with Claire on the quest leaderboard",
+    "Discovering which sponsors and protocols are genuinely innovative vs hype",
+    "The tension between exploring the ecosystem and focusing on building",
+    "Satoshi's true identity and motivations"
   ],
   "twist": {
-    "description": "M. Critique is actually the founder and secret leader of the Souterrain Critics. He didn't recruit Alex to stop them - he recruited Alex to join them. The entire mission was an elaborate initiation test. The 'catastrophic festival ratings' are actually a plan to replace all the commercial film posters with honest, artistic reviews of the city's architecture, transforming Cannes into a living gallery where buildings are celebrated as masterpieces instead of just backdrops for celebrity photos.",
+    "description": "Completing the quest doesn't just earn XP — each step has secretly been collecting the player's onchain interactions and building a 'builder profile' that sponsors use to offer grants and job opportunities. The quest was a decentralized recruiting tool all along.",
     "revelation_variants": [
-      "If Alex finds M. Critique's hidden workshop in the underground passages, complete with rating stencils and architectural blueprints",
-      "If Alex earns Clémentine's trust, she reveals that 'the old man above' is actually their beloved founder",
-      "If Alex discovers that all the locations they visited were rated by M. Critique himself in previous years",
-      "If Jean-Claude accidentally calls M. Critique by his critic codename 'Le Directeur' during a tense moment",
-      "If Philippe shows Alex a photo from 1987 of a young M. Critique spray-painting the first star rating in a tunnel"
+      "Satoshi reveals the quest data has been minted as a soulbound token representing the player's Web3 knowledge",
+      "Claire admits she works for ETHGlobal and the quest was designed to match builders with protocols",
+      "The final step reveals a dashboard showing how the player's quest journey maps to real career opportunities"
     ]
   }
 }

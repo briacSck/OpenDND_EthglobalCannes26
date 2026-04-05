@@ -1,0 +1,613 @@
+{
+  "steps": [
+    {
+      "step_id": 1,
+      "title": "The Rating Conspiracy",
+      "activity": {
+        "name": "Café des Arts",
+        "address": "73 Rue d'Antibes, 06400 Cannes",
+        "price_eur": 4.5,
+        "duration_minutes": 20,
+        "category": "café",
+        "booking_url": ""
+      },
+      "narrative_intro": "Your phone buzzes urgently as you walk down Rue d'Antibes. The message from M. Critique is terse: \"The situation is worse than we thought. They've infiltrated the morning coffee circuit. Every espresso cup is being rated. Every croissant is under surveillance. Meet me at Café des Arts - but first, I need photographic evidence of what they've done to the neighborhood. Look for their markings. They're everywhere now.\" The bustling street suddenly feels different - are those really random scratches on that lamppost, or something more sinister?",
+      "instruction": "Walk along Rue d'Antibes toward Café des Arts, carefully examining street furniture, walls, and urban infrastructure. Look for any unusual markings, scratches, or symbols that could be the critics' secret rating system. Photograph the most suspicious marking you find and send it to M. Critique for analysis.",
+      "player_action": "Photograph the most suspicious marking or symbol you discover on street infrastructure and send it to M. Critique through the app",
+      "gps_trigger": {
+        "type": "message",
+        "character": "M. Critique",
+        "content_brief": "Urgent message about the critics' latest activity and instructions for investigating their rating system"
+      },
+      "camera_prompt": "The player should photograph any unusual markings, scratches, symbols, or graffiti on street furniture, walls, or infrastructure. The AI will interpret these as part of the Souterrain Critics' secret rating system - star symbols, cryptic numbers, or abstract marks that represent their reviews of urban life.",
+      "walking_minutes_from_previous": 0,
+      "tension": {
+        "type": "mystery",
+        "description": "The player discovers that the underground critics have been secretly rating everything in plain sight",
+        "resolution": "Understanding the scope of the critics' influence on daily life in Cannes"
+      },
+      "character_interactions": [
+        {
+          "character": "M. Critique",
+          "trigger": "GPS proximity to Café des Arts",
+          "phone_version": "Alex, I can see you're getting close. These Souterrain Critics have turned urban infrastructure into their personal review platform. Every scratch could be a one-star rating for 'disappointing municipal lighting' or 'uninspired sidewalk texture.' Find me evidence - photograph their most obvious marking. The festival is in three days, and if we don't understand their system, we can't predict their next move.",
+          "rayban_version": {
+            "script": "Alex, I can see you're getting close. These Souterrain Critics have turned urban infrastructure into their personal review platform. Every scratch could be a one-star rating for 'disappointing municipal lighting' or 'uninspired sidewalk texture.' Find me evidence - photograph their most obvious marking. The festival is in three days, and if we don't understand their system, we can't predict their next move.",
+            "audio_type": "urgent_briefing",
+            "duration_seconds": 25,
+            "camera_mode": {
+              "enabled": true,
+              "purpose": "Document suspicious markings on infrastructure"
+            },
+            "contextual_music": {
+              "enabled": true,
+              "track_type": "investigative_tension",
+              "duration_seconds": 30
+            }
+          },
+          "awaits_response": false
+        },
+        {
+          "character": "Philippe",
+          "trigger": "Photo sent to M. Critique",
+          "phone_version": "Mon dieu, Alex! You found one of their marks already? *nervous laughter* I run walking tours here every day, and I never... wait. Maybe I have seen these symbols. I thought they were just... urban decay. But if they're rating my beloved Cannes street by street... This is personal now. Meet me at the café - I have something to show you.",
+          "rayban_version": {
+            "script": "Mon dieu, Alex! You found one of their marks already? I run walking tours here every day, and I never... wait. Maybe I have seen these symbols. I thought they were just urban decay. But if they're rating my beloved Cannes street by street... This is personal now. Meet me at the café - I have something to show you.",
+            "audio_type": "shocked_realization",
+            "duration_seconds": 20,
+            "camera_mode": {
+              "enabled": false
+            },
+            "contextual_music": {
+              "enabled": true,
+              "track_type": "emotional_strings",
+              "duration_seconds": 25
+            }
+          },
+          "awaits_response": false
+        },
+        {
+          "character": "Margot",
+          "trigger": "Arrival at Café des Arts",
+          "phone_version": "Alex, I've been monitoring communications in this area. The critics use a sophisticated symbolic language - what you photographed isn't random vandalism. It's part of a complex aesthetic evaluation system. Each mark corresponds to specific criteria: composition, cultural relevance, emotional impact. They're treating the entire city as a living artwork. Fascinating, really. Almost... admirable?",
+          "rayban_version": {
+            "script": "Alex, I've been monitoring communications in this area. The critics use a sophisticated symbolic language - what you photographed isn't random vandalism. It's part of a complex aesthetic evaluation system. Each mark corresponds to specific criteria: composition, cultural relevance, emotional impact. They're treating the entire city as a living artwork. Fascinating, really. Almost... admirable?",
+            "audio_type": "academic_analysis",
+            "duration_seconds": 30,
+            "camera_mode": {
+              "enabled": false
+            },
+            "contextual_music": {
+              "enabled": true,
+              "track_type": "thoughtful_ambient",
+              "duration_seconds": 35
+            }
+          },
+          "awaits_response": true
+        }
+      ],
+      "verification": {
+        "method": "photo_analysis",
+        "target": "Street marking or symbol",
+        "success_condition": "Photo shows a marking, scratch, symbol, or graffiti on urban infrastructure",
+        "success_reaction": "M. Critique: 'Excellent work! This symbol confirms they're using the Modified Truffaut Scale - see those three diagonal lines? That's their signature for 'cinematically disappointing urban design.' You have a good eye for their aesthetic. +15 XP for discovering the rating system.'",
+        "failure_fallback": "M. Critique: 'No matter - the critics are subtle, but they're there. Your urban exploration instincts will develop. For now, focus on getting to the café. Philippe has something important to show us about their recent activities.'",
+        "timeout_reaction": "Philippe: 'Alex, don't get lost in the details! The critics work fast - every minute we spend analyzing is another neighborhood they're rating. Come to the café, we need to move quickly.'"
+      },
+      "blockchain_event": "FIRST_MARKING_DISCOVERED",
+      "unlock_message": "You've discovered evidence of the Souterrain Critics' secret rating system. The city will never look the same.",
+      "skill_xp": 15,
+      "is_skill_step": false,
+      "is_collaborative": false
+    },
+    {
+      "step_id": 2,
+      "title": "The Star Chamber Discovery",
+      "activity": {
+        "name": "Underground passage exploration near Palais des Festivals",
+        "address": "Bd de la Croisette, 06400 Cannes",
+        "price_eur": 0.0,
+        "duration_minutes": 25,
+        "category": "urban_exploration",
+        "booking_url": ""
+      },
+      "narrative_intro": "Your coffee at Café des Arts revealed the first clue — a napkin bearing Margot's hastily scrawled coordinates and a cryptic message: \"The real reviews are written in the dark, Alex. Look for the five-star constellation beneath the festival's heart.\" The coordinates lead you to a maintenance access near the Palais des Festivals, where the glamorous surface world meets Cannes' hidden underground. Street cleaners ignore you as you approach what appears to be an ordinary utility area, but Margot's coordinates suggest something far more significant lurks below.",
+      "instruction": "Locate and photograph the hidden rating system carved into the underground passage walls, then decode the star pattern to understand the Souterrain Critics' classification method.",
+      "player_action": "Find the underground passage entrance using Margot's coordinates, photograph the carved star rating system on the tunnel walls, and count the different star configurations to decode their meaning.",
+      "gps_trigger": {
+        "type": "audio",
+        "character": "Jean-Claude",
+        "content_brief": "Panicked voicemail about unauthorized access detected in the underground maintenance areas"
+      },
+      "camera_prompt": "The player should photograph the carved star ratings on concrete walls, drainage pipes, and metal fixtures in the underground passage. The AI should interpret these as an elaborate review system where different star patterns represent categories: single stars for 'surface cinema mediocrity', constellation patterns for 'authentic artistic vision', and crossed-out stars for 'commercial betrayal of art'.",
+      "walking_minutes_from_previous": 3,
+      "tension": {
+        "type": "discovery",
+        "description": "Alex discovers the sophisticated artistic vision behind what appeared to be mere vandalism",
+        "resolution": "The underground reveals itself as an gallery of profound film criticism"
+      },
+      "character_interactions": [
+        {
+          "character": "Jean-Claude",
+          "trigger": "GPS proximity to maintenance area",
+          "phone_version": "URGENT VOICEMAIL: Alex, security sensors show someone accessing restricted maintenance tunnels. If that's you, GET OUT NOW. The festival committee will have my head if civilians are found in the underground areas. Call me back immediately.",
+          "rayban_version": {
+            "script": "Alex, this is Jean-Claude from festival security. Our sensors are going crazy - someone's in the maintenance tunnels beneath the Palais. If that's you following those coordinates, you need to understand - these aren't just empty passages. The Souterrain Critics have been... active down there. Be careful what you touch, and for God's sake, don't let anyone see you.",
+            "duration_seconds": 45,
+            "audio_type": "panicked_whisper",
+            "camera_mode": {
+              "enabled": false,
+              "purpose": ""
+            },
+            "contextual_music": {
+              "enabled": true,
+              "track_type": "tense_underground_ambient",
+              "duration_seconds": 120
+            }
+          },
+          "awaits_response": true
+        },
+        {
+          "character": "Margot",
+          "trigger": "Player photographs star carvings",
+          "phone_version": "TEXT: Incredible, isn't it? Each constellation tells a story - not just about films, but about the soul of cinema itself. The five-pointed stars are for works that 'touch the underground truth.' The crossed stars mark what they call 'surface betrayals.' Count them all, Alex. Their system is more sophisticated than any academic framework I've studied.",
+          "rayban_version": {
+            "script": "You're seeing it now, aren't you Alex? The true artistry of the Souterrain Critics. Each carving is deliberate, meaningful. They don't just rate films - they rate the very essence of storytelling. Look closer at the patterns. The way they've arranged the stars tells you which films achieved transcendence and which sold their souls to commerce.",
+            "duration_seconds": 35,
+            "audio_type": "academic_excitement",
+            "camera_mode": {
+              "enabled": true,
+              "purpose": "document_star_patterns"
+            },
+            "contextual_music": {
+              "enabled": true,
+              "track_type": "mysterious_discovery",
+              "duration_seconds": 90
+            }
+          },
+          "awaits_response": false
+        },
+        {
+          "character": "Philippe",
+          "trigger": "Player spends more than 15 minutes in tunnels",
+          "phone_version": "Alex, you've been down there long enough to see past the surface. The Souterrain Critics aren't vandals - they're the last honest voices in cinema. But understanding them and stopping them are different things. The festival is in 72 hours. What will you choose when the moment comes?",
+          "rayban_version": {
+            "script": "My friend, I can feel you beginning to understand. The underground doesn't just hide critics - it reveals truth. Every star they carve is a verdict on our industry's soul. But remember, Alex - with great understanding comes terrible responsibility. Are you prepared for what you're about to uncover?",
+            "duration_seconds": 40,
+            "audio_type": "philosophical_warning",
+            "camera_mode": {
+              "enabled": false,
+              "purpose": ""
+            },
+            "contextual_music": {
+              "enabled": true,
+              "track_type": "contemplative_strings",
+              "duration_seconds": 60
+            }
+          },
+          "awaits_response": true
+        }
+      ],
+      "verification": {
+        "method": "photo_analysis",
+        "target": "star_rating_carvings",
+        "success_condition": "Player photographs at least 3 different star configurations and provides accurate count",
+        "success_reaction": "Margot sends encrypted document revealing the complete Souterrain Critics rating methodology + 50 XP bonus + Jean-Claude shares insider festival security codes",
+        "failure_fallback": "Margot guides Alex through the basic pattern recognition, story progresses with partial understanding",
+        "timeout_reaction": "Philippe sends cryptic message about time running out, urging Alex to move to the next location"
+      },
+      "blockchain_event": "Discovery of the Souterrain Rating System logged on Cannes Underground Network",
+      "unlock_message": "SKILL UNLOCK: Urban exploration techniques - Underground navigation and hidden infrastructure analysis",
+      "is_skill_step": true,
+      "skill_xp": 75,
+      "is_collaborative": false
+    },
+    {
+      "step_id": 3,
+      "title": "The Critics' Canvas",
+      "activity": {
+        "name": "Marché Forville",
+        "address": "Rue du Marché Forville, 06400 Cannes",
+        "price_eur": 0.0,
+        "duration_minutes": 25,
+        "category": "Cultural Exploration"
+      },
+      "narrative_intro": "The underground passage led you to an even stranger discovery — the Souterrain Critics aren't just hiding in tunnels. They're operating in plain sight, disguised as ordinary Cannes residents. Your phone buzzes with an encrypted message from Margot: \"The market is their gallery. Every vendor stall, every price tag, every tomato has been secretly rated. Find their hidden review system before the morning rush discovers it.\"",
+      "instruction": "Navigate to Marché Forville and systematically photograph the critics' hidden rating system. Work with other players to decode their bizarre methodology — they're rating everything from the ripeness of melons to the authenticity of vendor smiles. Document at least 5 different \"reviews\" carved into market infrastructure and identify the pattern behind their star system.",
+      "player_action": "Photograph hidden star ratings and cryptic symbols carved into market stalls, utility poles, and vendor signs, then work collaboratively to decode the critics' rating methodology",
+      "gps_trigger": {
+        "type": "audio",
+        "character": "Jean-Claude",
+        "content_brief": "Panicked security briefing about suspicious activity detected at the market overnight - vendors reporting mysterious symbols appearing on their stalls"
+      },
+      "camera_prompt": "Look for subtle star ratings (★½ to ★★★★★) etched into wooden stall frames, spray-painted on metal posts, or scratched into price signs. The AI will interpret these as part of the critics' elaborate review system, revealing their absurd criteria: they rate fish based on 'narrative arc,' vegetables on 'character development,' and vendors on 'authentic performance.' Each photo reveals more of their twisted artistic vision.",
+      "walking_minutes_from_previous": 4,
+      "character_interactions": [
+        {
+          "character": "Margot",
+          "trigger": "Player photographs first market rating",
+          "phone_version": "Fascinating! You've found their 'Everyday Cinema Theory' in action. Notice how they rate that cheese vendor 2.5 stars for 'unconvincing passion about camembert.' They believe all human interactions are performances deserving critique.",
+          "rayban_version": {
+            "script": "This is incredible documentation, Alex. The critics have turned the entire market into their review laboratory. Look at that fish vendor - they've given him 4 stars for 'authentic maritime tragedy in his eyes.' They're reviewing life itself.",
+            "audio_type": "excited_academic",
+            "duration_seconds": 15,
+            "camera_mode": {
+              "enabled": true,
+              "purpose": "Document market ratings while Margot explains the critics' philosophy"
+            },
+            "contextual_music": {
+              "enabled": true,
+              "track_type": "investigative_discovery",
+              "duration_seconds": 20
+            }
+          },
+          "awaits_response": false
+        },
+        {
+          "character": "M. Critique",
+          "trigger": "Player discovers pattern in ratings",
+          "phone_version": "You're beginning to see, aren't you? The surface world rates films in dark theaters, but we rate life in broad daylight. That baker earned 5 stars - not for his bread, but for the poetry in his flour-dusted hands.",
+          "rayban_version": {
+            "script": "Ah, you understand now. We don't just critique cinema - we critique existence. That woman buying oranges? 3.5 stars for her authentic indecision. The fruit itself? 4 stars for perfect seasonal timing. Everything deserves honest evaluation.",
+            "audio_type": "philosophical_monologue",
+            "duration_seconds": 20,
+            "camera_mode": {
+              "enabled": false,
+              "purpose": ""
+            },
+            "contextual_music": {
+              "enabled": true,
+              "track_type": "mysterious_revelation",
+              "duration_seconds": 25
+            }
+          },
+          "awaits_response": true
+        },
+        {
+          "character": "Clémentine",
+          "trigger": "GPS proximity + other players present",
+          "phone_version": "Alex! I see you've brought company. Good. The market reviews require multiple perspectives - we critics never work alone. Check the flower stall - I left something special there last night. 3.5 stars for anticipation.",
+          "rayban_version": {
+            "script": "Perfect timing. The morning light hits the market just right for our reviews. Work together - one person documents, another interprets, a third validates. This is collaborative criticism at its finest. The flower vendor got 4.5 stars for her color theory.",
+            "audio_type": "instructional_guide",
+            "duration_seconds": 18,
+            "camera_mode": {
+              "enabled": true,
+              "purpose": "Coordinate group documentation of market reviews"
+            },
+            "contextual_music": {
+              "enabled": false,
+              "track_type": "",
+              "duration_seconds": 0
+            }
+          },
+          "awaits_response": false
+        }
+      ],
+      "tension": {
+        "type": "collaborative_mystery",
+        "description": "Players must work together to decode the critics' bizarre rating system while market vendors begin to notice their activity. The morning rush creates urgency.",
+        "resolution": "Team successfully identifies the pattern - critics rate real life using cinematic criteria, turning everyday interactions into performance art."
+      },
+      "verification": {
+        "method": "collaborative_photo_analysis",
+        "target": "5+ documented market ratings with decoded pattern",
+        "success_condition": "Team photographs different ratings and collectively identifies the critics' methodology",
+        "success_reaction": "Clémentine reveals the location of their underground projection equipment and grants access to the critics' master rating database",
+        "failure_fallback": "M. Critique provides cryptic clues about the rating system through a voice message, story continues with partial understanding",
+        "timeout_reaction": "Margot sends urgent message: 'The vendors are getting suspicious. Move to the next location - I'll analyze what you've found so far.'"
+      },
+      "is_collaborative": true,
+      "is_skill_step": true,
+      "skill_xp": 25,
+      "blockchain_event": "COLLABORATIVE_DECODE: Market Rating System Analysis",
+      "unlock_message": "You've uncovered the critics' method - they review reality using cinema theory. Every human interaction gets rated like a film performance. The line between art and life has completely dissolved."
+    },
+    {
+      "step_id": 4,
+      "title": "The Projection Manifesto",
+      "activity": {
+        "name": "Cinema Les Arcades",
+        "address": "77 Rue Félix Faure, 06400 Cannes",
+        "price_eur": 12.5,
+        "duration_minutes": 90,
+        "category": "cinema",
+        "booking_url": ""
+      },
+      "narrative_intro": "Your phone buzzes with an urgent message from Jean-Claude: \"Alex, they've infiltrated Les Arcades! The projection booth is showing unauthorized content between films - star ratings for the audience members themselves! The manager thinks it's a technical glitch, but we know better. You need to get inside and document what they're really planning.\" As you approach the Art Deco cinema facade, you notice something odd - tiny star symbols etched almost invisibly into the ornate stonework around the entrance. The Souterrain Critics have been here, and they're not just watching films anymore... they're rating the watchers.",
+      "instruction": "Purchase a ticket to the afternoon screening, but your real mission is to photograph the projection booth area and document any unusual star-rating systems you discover. Pay special attention to any hidden messages or modified equipment that might reveal the critics' projection plans for the festival venues.",
+      "player_action": "Photograph the cinema's projection booth area and any visible star-rating modifications or hidden messages, then send the images to Jean-Claude with a detailed description of what equipment appears to have been tampered with.",
+      "gps_trigger": {
+        "type": "document",
+        "character": "M. Critique",
+        "content_brief": "A leaked internal memo titled 'Operation Étoile Noire' detailing the critics' plan to simultaneously project ratings onto all major Cannes venues during the opening ceremony"
+      },
+      "camera_prompt": "The player should photograph the projection booth, focusing on any modified equipment, star symbols, or unusual technical installations. The AI will interpret these images as evidence of the critics' sophisticated projection technology and their preparation for the festival sabotage.",
+      "walking_minutes_from_previous": 4,
+      "tension": {
+        "type": "escalation",
+        "description": "The discovery that the critics have access to professional projection equipment reveals the true scale of their planned festival disruption - this isn't just underground art, it's coordinated infrastructure infiltration",
+        "resolution": "The player must decide whether to report the technical evidence immediately or gather more intelligence about the critics' artistic motivations"
+      },
+      "character_interactions": [
+        {
+          "character": "Jean-Claude",
+          "trigger": "When player sends photos of the projection booth",
+          "phone_version": "Text message: 'Mon Dieu, Alex... they've modified the entire projection system. Look at those star-pattern filters - they can overlay ratings on anything. But why Les Arcades? It's not even a festival venue. Unless... they're practicing for something bigger.'",
+          "rayban_version": {
+            "script": "Jean-Claude's voice crackles through with barely contained worry: 'Alex, these modifications are professional-grade. Whoever did this has serious technical knowledge. The star overlays, the timing systems... they could project their ratings onto the Palais itself during the opening ceremony. We need to find their main base of operations, and fast.'",
+            "duration_seconds": 25,
+            "audio_type": "urgent_whisper",
+            "camera_mode": {
+              "enabled": false,
+              "purpose": ""
+            },
+            "contextual_music": {
+              "enabled": true,
+              "track_type": "tension_building",
+              "duration_seconds": 20
+            }
+          },
+          "awaits_response": true
+        },
+        {
+          "character": "Margot",
+          "trigger": "10 minutes after entering the cinema",
+          "phone_version": "Text message: 'Alex, I've been analyzing the star patterns you've been finding. They're not random - they follow a specific aesthetic philosophy. Each rating corresponds to what they call 'authenticity metrics.' Maybe they're not trying to destroy cinema... maybe they're trying to save it?'",
+          "rayban_version": {
+            "script": "Margot's academic excitement is palpable: 'Alex, I think I'm beginning to understand their methodology. The Souterrain Critics aren't just rating for shock value - they have a complex system for measuring emotional authenticity versus commercial manipulation. What if their festival intervention isn't vandalism, but... critique in its purest form?'",
+            "duration_seconds": 30,
+            "audio_type": "thoughtful_explanation",
+            "camera_mode": {
+              "enabled": false,
+              "purpose": ""
+            },
+            "contextual_music": {
+              "enabled": true,
+              "track_type": "contemplative",
+              "duration_seconds": 25
+            }
+          },
+          "awaits_response": false
+        },
+        {
+          "character": "Clémentine",
+          "trigger": "When player sits down for the film screening",
+          "phone_version": "Mysterious text: 'The projectionist knows more than they're saying. Watch the shadows during the film - sometimes the truth hides in the spaces between frames. ⭐⭐⭐ for your dedication so far, Alex.'",
+          "rayban_version": {
+            "script": "Clémentine's voice is barely a whisper, as if she's speaking from the shadows: 'Alex, you're sitting in our laboratory. Every screening here is an experiment in genuine emotional response. Watch not just the film, but the audience... see how they really react when they think no one is watching. That's what we rate - the unguarded truth.'",
+            "duration_seconds": 28,
+            "audio_type": "mysterious_whisper",
+            "camera_mode": {
+              "enabled": true,
+              "purpose": "Capture authentic audience reactions during the screening"
+            },
+            "contextual_music": {
+              "enabled": true,
+              "track_type": "mysterious_ambient",
+              "duration_seconds": 30
+            }
+          },
+          "awaits_response": false
+        }
+      ],
+      "verification": {
+        "method": "photo_analysis",
+        "target": "Modified projection equipment or star-rating installations in the cinema",
+        "success_condition": "Player photographs clear evidence of technical modifications in the projection area",
+        "success_reaction": "Jean-Claude gains deeper trust in Alex's investigation skills and shares classified information about other compromised venues. +15 XP for uncovering crucial technical evidence.",
+        "failure_fallback": "Even without clear photos, Clémentine's message provides enough context clues about the critics' methods. Jean-Claude becomes more cautious but the investigation continues.",
+        "timeout_reaction": "Jean-Claude sends: 'Alex, the screening is starting - whatever you can document quickly will have to do. The critics are always watching, even when we can't see them.'"
+      },
+      "blockchain_event": "PROJECTION_EVIDENCE_DOCUMENTED",
+      "unlock_message": "You've discovered the technical sophistication behind the Souterrain Critics' operations. Their plan is far more elaborate than simple vandalism - they're preparing to transform the entire festival into their canvas.",
+      "skill_xp": 15,
+      "is_skill_step": false,
+      "is_collaborative": false
+    },
+    {
+      "step_id": 5,
+      "title": "The Underground Network",
+      "activity": {
+        "name": "Exploration of hidden passages and underground spaces",
+        "address": "Rue d'Antibes, near Place de l'Étang, 06400 Cannes",
+        "price_eur": 0.0,
+        "duration_minutes": 25,
+        "category": "urban_exploration",
+        "booking_url": ""
+      },
+      "narrative_intro": "The projection room at Les Arcades revealed the Critics' master plan, but M. Critique's final message was cryptic: \"The true network runs deeper than cinema, Alex. Find where the stars align beneath the festival's heart.\" Your phone buzzes with coordinates leading to a seemingly ordinary section of Rue d'Antibes, but Philippe's voice echoes in your mind: \"Look for the maintenance access points, the forgotten spaces where the city's infrastructure meets the Critics' domain.\" The festival preparations above create perfect cover as workers ignore yet another person with a phone documenting the city's hidden corners.",
+      "instruction": "Navigate to the specified location and use your urban exploration skills to identify and document hidden access points, utility passages, or forgotten architectural features that could serve as the Critics' underground network. Look for signs of recent human activity in overlooked spaces.",
+      "player_action": "Systematically explore and photograph all visible maintenance hatches, utility access panels, service tunnels entrances, and any architectural anomalies that could provide underground access, then document any evidence of the Critics' star rating system in these hidden spaces",
+      "gps_trigger": {
+        "type": "document",
+        "character": "M. Critique",
+        "content_brief": "Urban infrastructure map of Cannes with Critics' access points marked in cryptic star ratings"
+      },
+      "camera_prompt": "The player should photograph maintenance access points, utility covers, service entrances, and any hidden architectural features they discover. The AI will interpret these as potential entry points to the underground network and identify any hidden Critics' ratings or symbols that might be carved, painted, or etched on these utilitarian structures.",
+      "walking_minutes_from_previous": 3,
+      "tension": {
+        "type": "discovery",
+        "description": "Alex must use their urban exploration expertise to uncover the physical infrastructure of the Critics' network while risking exposure in broad daylight during festival preparation chaos",
+        "resolution": "Finding the access points reveals the scope of the Critics' underground organization and sets up the final confrontation"
+      },
+      "character_interactions": [
+        {
+          "character": "Philippe",
+          "trigger": "When player starts photographing utility access points",
+          "phone_version": "Text: 'Good, you're thinking like an explorer now. Look for the ones that don't quite match - the Critics modify what they use. Check the star ratings on each cover, they're coordinates.'",
+          "rayban_version": {
+            "script": "Perfect, Alex. Now you're seeing the city as we do - layers upon layers. The Critics don't just use any entrance. Look for the maintenance covers with extra wear, the panels that sit slightly wrong. They mark their routes with their ratings, but not where tourists look.",
+            "duration_seconds": 20,
+            "audio_type": "whisper",
+            "camera_mode": {
+              "enabled": true,
+              "purpose": "Enhanced detail recognition for identifying modified infrastructure"
+            },
+            "contextual_music": {
+              "enabled": true,
+              "track_type": "investigative_ambient",
+              "duration_seconds": 180
+            }
+          },
+          "awaits_response": false
+        },
+        {
+          "character": "Margot",
+          "trigger": "After player photographs 3+ access points",
+          "phone_version": "Call: 'Alex, I've been analyzing the pattern. The Critics aren't random - they're following the old drainage system from the 1920s. The city built over it but never properly sealed it. Your photos confirm it.'",
+          "rayban_version": {
+            "script": "Fascinating! Your documentation is revealing something incredible, Alex. These aren't modern utilities - you're tracing the skeleton of old Cannes, the 1920s infrastructure they built the modern city over. The Critics have been using the city's forgotten circulatory system. This is anthropological gold.",
+            "duration_seconds": 25,
+            "audio_type": "excited_academic",
+            "camera_mode": {
+              "enabled": false,
+              "purpose": ""
+            },
+            "contextual_music": {
+              "enabled": false,
+              "track_type": "",
+              "duration_seconds": 0
+            }
+          },
+          "awaits_response": true
+        },
+        {
+          "character": "M. Critique",
+          "trigger": "When player discovers evidence of Critics' markings",
+          "phone_version": "Message: 'You see them now, don't you? The stars beneath stars. Each cover tells a story of the city's true rating. Surface glamour: ★☆☆☆☆. Hidden authenticity: ★★★★★. Choose your next descent carefully.'",
+          "rayban_version": {
+            "script": "Ah, Alex. You begin to see what we see. Each utility cover, each forgotten entrance - they are the true venues of this city. Not the red carpets above, but the honest infrastructure below. We rate what matters: the foundation, not the facade. Your final choice approaches.",
+            "duration_seconds": 22,
+            "audio_type": "mysterious_revelation",
+            "camera_mode": {
+              "enabled": true,
+              "purpose": "Focus on Critics' hidden star rating symbols"
+            },
+            "contextual_music": {
+              "enabled": true,
+              "track_type": "underground_revelation",
+              "duration_seconds": 120
+            }
+          },
+          "awaits_response": false
+        }
+      ],
+      "verification": {
+        "method": "photo_analysis",
+        "target": "Hidden access points with evidence of Critics' modifications or ratings",
+        "success_condition": "Player photographs at least 4 different utility access points and identifies Critics' star rating symbols on at least 2 of them",
+        "success_reaction": "Margot confirms the discovery of the main network hub and M. Critique sends coordinates for the final confrontation. Philippe reveals the Critics' plan will activate at sunset. +50 XP bonus for thorough exploration.",
+        "failure_fallback": "Philippe guides the player to obvious access points through hints. The story continues but with less detailed intelligence about the network's scope. Margot notes the incomplete data will make the final step more challenging.",
+        "timeout_reaction": "Jean-Claude messages: 'Festival security is increasing patrols. The Critics will move soon. Whatever you're looking for down there, find it quickly.'"
+      },
+      "blockchain_event": "urban_network_mapped",
+      "unlock_message": "Network access points documented. The Critics' underground infrastructure is more extensive than anyone imagined. The final confrontation location is now revealed.",
+      "skill_xp": 75,
+      "is_skill_step": true,
+      "is_collaborative": false
+    },
+    {
+      "step_id": 6,
+      "title": "The Ancient Truth Revelation",
+      "activity": {
+        "name": "Musée des Explorations du Monde",
+        "address": "Place de la Castre, Le Suquet, Cannes",
+        "price_eur": 6.0,
+        "duration_minutes": 45,
+        "category": "museum",
+        "booking_url": "https://www.cannesticket.com/offres/musee-des-explorations-du-monde-cannes-fr-5366287/"
+      },
+      "narrative_intro": "The ancient stones of Le Suquet hold more than medieval memories. As you climb toward the Musée des Explorations du Monde, M. Critique's final message burns in your mind: \"The truth isn't underground, Alex. It's been displayed in plain sight for centuries.\" The museum's collection of Mediterranean antiquities suddenly takes on new meaning. The Souterrain Critics weren't just rating modern life—they were continuing an ancient tradition of honest evaluation that stretches back millennia. In this 11th-century fortress-turned-museum, surrounded by artifacts from civilizations that rose and fell based on their relationship with truth, you're about to discover that the film festival controversy is just the surface of something far deeper. The critics' star system isn't vandalism—it's archaeology.",
+      "instruction": "Enter the Musée des Explorations du Monde and explore the Mediterranean antiquities collection. Find the three specific artifacts that M. Critique described: the Roman amphora with merchant marks, the Byzantine evaluation tablet, and the medieval rating stone. Photograph each one and observe how ancient civilizations created their own \"review systems\" for commerce, art, and society.",
+      "player_action": "Find and photograph the three ancient artifacts in the Mediterranean collection: the Roman merchant amphora with evaluation marks, the Byzantine artistic assessment tablet, and the medieval guild rating stone. Send each photo to M. Critique with your observations about how these connect to the modern critics' star system.",
+      "gps_trigger": {
+        "type": "document",
+        "character": "M. Critique",
+        "content_brief": "A historical research document titled 'The Eternal Critics: From Ancient Amphora Marks to Modern Star Systems' revealing how evaluation and rating systems have existed throughout Mediterranean civilization"
+      },
+      "camera_prompt": "The player photographs ancient Mediterranean artifacts (Roman amphora with merchant evaluation marks, Byzantine artistic assessment tablet, medieval guild rating stone). AI interprets these as historical precedents for modern rating systems, connecting them narratively to the underground critics' mission as part of an ancient tradition of honest evaluation that predates commercial interests.",
+      "walking_minutes_from_previous": 4,
+      "tension": {
+        "type": "revelation",
+        "description": "The final twist reveals that the Souterrain Critics are not rebels but guardians of an ancient Mediterranean tradition of honest evaluation that commercial interests have tried to suppress",
+        "resolution": "Alex discovers that the critics' star system connects to millennia-old assessment methods, reframing the entire conflict as cultural preservation vs. commercial corruption"
+      },
+      "character_interactions": [
+        {
+          "character": "M. Critique",
+          "trigger": "Player sends first artifact photo",
+          "phone_version": "Now you see it, don't you Alex? That Roman amphora bears the same five-point system we use today. Merchants in 200 AD knew that reputation was everything—but they rated honestly, because survival depended on truth. The festival has forgotten this ancient wisdom.",
+          "rayban_version": {
+            "script": "Look closer at those markings, Alex. Five points maximum, just like our system. Two thousand years ago, Mediterranean traders knew that honest evaluation built lasting prosperity. The Cannes festival has abandoned this ancient wisdom for commercial glamour. We're not vandals—we're archaeologists of truth.",
+            "duration_seconds": 25,
+            "audio_type": "whispered_revelation",
+            "camera_mode": {
+              "enabled": true,
+              "purpose": "Document the ancient rating symbols"
+            },
+            "contextual_music": {
+              "enabled": true,
+              "track_type": "ancient_mystery",
+              "duration_seconds": 30
+            }
+          },
+          "awaits_response": true
+        },
+        {
+          "character": "Margot",
+          "trigger": "Player finds Byzantine tablet",
+          "phone_version": "Alex! That Byzantine tablet is the missing piece of my research! It shows how artists in Constantinople created peer review systems centuries before modern academia. The critics aren't destroying culture—they're preserving it! My thesis committee will never believe this...",
+          "rayban_version": {
+            "script": "This changes everything about my research, Alex! Byzantine artists had formal evaluation processes that prioritized artistic integrity over political favor. The Souterrain Critics are continuing this tradition. I need to document everything before—wait, someone's coming up the stairs.",
+            "duration_seconds": 22,
+            "audio_type": "excited_academic",
+            "camera_mode": {
+              "enabled": true,
+              "purpose": "Capture the Byzantine evaluation system"
+            },
+            "contextual_music": {
+              "enabled": true,
+              "track_type": "discovery_theme",
+              "duration_seconds": 25
+            }
+          },
+          "awaits_response": false
+        },
+        {
+          "character": "Philippe",
+          "trigger": "Player reaches medieval rating stone",
+          "phone_version": "The final artifact, Alex. Medieval guilds used these stones to rate craftsmen's work—no corruption, no favoritism, just honest assessment. My grandmother told me stories about these stones when I was young. The critics' war isn't against cinema—it's against the lies that cinema has become. What will you choose?",
+          "rayban_version": {
+            "script": "This stone judged the work of my ancestors, Alex. Medieval guilds demanded truth in all evaluations—no bribes, no politics, just honest assessment of craft. The film festival has forgotten this heritage. The critics remember. From this tower, you can see all of Cannes—the glittering surface and the honest depths. Choose wisely.",
+            "duration_seconds": 28,
+            "audio_type": "ancestral_wisdom",
+            "camera_mode": {
+              "enabled": true,
+              "purpose": "Document the guild rating system and panoramic view"
+            },
+            "contextual_music": {
+              "enabled": true,
+              "track_type": "climactic_decision",
+              "duration_seconds": 35
+            }
+          },
+          "awaits_response": true
+        }
+      ],
+      "verification": {
+        "method": "photo_analysis",
+        "target": "Three ancient Mediterranean artifacts showing historical rating/evaluation systems",
+        "success_condition": "Player photographs all three artifacts and demonstrates understanding of their connection to modern rating systems",
+        "success_reaction": "M. Critique reveals the critics' true plan: not to destroy the festival, but to create a parallel 'Ancient Cannes' that honors the Mediterranean tradition of honest artistic evaluation. Alex is invited to be their first official surface-world ambassador. The player gains deep cultural knowledge and becomes a bridge between two worlds.",
+        "failure_fallback": "Even if the player misses some artifacts, Philippe guides them to the tower's panoramic view where the full scope of Cannes' dual nature becomes clear. The story concludes with Alex understanding that truth and beauty can coexist, whether or not they found every historical piece.",
+        "timeout_reaction": "M. Critique sends a gentle message: 'Take your time, Alex. These artifacts have waited centuries to tell their story. A few more minutes won't matter. But remember—the festival opening is tomorrow, and decisions made in haste often echo through history.'"
+      },
+      "blockchain_event": "QUEST_COMPLETED_ANCIENT_TRUTH_REVEALED",
+      "unlock_message": "You have uncovered the Ancient Truth of Cannes - that honest evaluation is not rebellion, but tradition. The Souterrain Critics' mission is revealed as cultural preservation rather than destruction. Your urban exploration skills have led you to discover that the deepest truths often hide in plain sight, waiting in museums and ancient stones for those brave enough to look beyond the surface.",
+      "skill_xp": 150,
+      "is_skill_step": true,
+      "is_collaborative": false
+    }
+  ]
+}

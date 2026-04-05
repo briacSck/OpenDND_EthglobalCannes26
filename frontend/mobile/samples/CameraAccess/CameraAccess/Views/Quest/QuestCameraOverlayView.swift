@@ -146,18 +146,8 @@ struct QuestCameraOverlayView: View {
           }
         }
 
-        // Phone camera fallback
-        Button {
-          vm.showPhoneCameraCapture = true
-        } label: {
-          VStack(spacing: 4) {
-            Image(systemName: "iphone.camera")
-              .font(.system(size: 18))
-            Text("Phone")
-              .font(.system(size: 10))
-          }
-          .foregroundColor(.white.opacity(0.6))
-        }
+        // Spacer to balance layout
+        Color.clear.frame(width: 40, height: 40)
       }
     }
     .padding(.bottom, 40)

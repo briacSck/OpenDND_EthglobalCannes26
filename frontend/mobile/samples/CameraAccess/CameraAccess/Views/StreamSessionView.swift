@@ -28,32 +28,21 @@ struct StreamSessionView: View {
 
   var body: some View {
     ZStack {
-      if viewModel.isStreaming {
-        // Full-screen video view with streaming controls
+      if viewModel.streamingStatus == .streaming, viewModel.hasReceivedFirstFrame {
+        // Ray-Ban stream is live
         StreamView(viewModel: viewModel, wearablesVM: wearablesViewModel)
 
         // Quest overlay on top of Ray-Ban stream
         QuestCameraOverlayView(
           vm: questVM,
           onCapture: {
-            // Capture from Ray-Ban
             viewModel.capturePhoto()
           },
           rayBanPhoto: viewModel.capturedPhoto
         )
       } else {
-        // Pre-streaming: show phone camera with quest overlay
-        PhoneCameraPreview()
-          .edgesIgnoringSafeArea(.all)
-
-        QuestCameraOverlayView(
-          vm: questVM,
-          onCapture: {
-            // Open phone camera capture
-            questVM.showPhoneCameraCapture = true
-          },
-          rayBanPhoto: nil
-        )
+        // Waiting for Ray-Ban glasses
+        waitingForGlassesView
       }
     }
     .alert("Error", isPresented: $viewModel.showError) {
@@ -64,77 +53,70 @@ struct StreamSessionView: View {
       Text(viewModel.errorMessage)
     }
     .onChange(of: viewModel.hasActiveDevice) { hasDevice in
-      // Auto-start streaming when Ray-Ban glasses are detected
       if hasDevice && !viewModel.isStreaming {
         Task { await viewModel.handleStartStreaming() }
       }
     }
     .onAppear {
-      // Try to start streaming if device is already available
+      questVM.load()
       if viewModel.hasActiveDevice && !viewModel.isStreaming {
         Task { await viewModel.handleStartStreaming() }
       }
     }
     .onChange(of: viewModel.capturedPhoto) { photo in
-      // When Ray-Ban captures a photo, send it for verification
       if let photo = photo {
         questVM.verifyWithRayBanPhoto(photo)
         viewModel.dismissPhotoPreview()
       }
     }
-    .sheet(isPresented: $questVM.showPhoneCameraCapture) {
-      PhoneCameraView { image in
-        questVM.showPhoneCameraCapture = false
-        questVM.verifyWithImage(image)
+  }
+
+  // MARK: - Waiting for Glasses
+
+  private var waitingForGlassesView: some View {
+    ZStack {
+      Color.black.edgesIgnoringSafeArea(.all)
+
+      VStack(spacing: 24) {
+        Spacer()
+
+        Image(systemName: "eyeglasses")
+          .font(.system(size: 64))
+          .foregroundColor(.white.opacity(0.6))
+
+        Text("Waiting for Ray-Ban Meta...")
+          .font(.system(size: 20, weight: .semibold))
+          .foregroundColor(.white)
+
+        if viewModel.streamingStatus == .waiting {
+          HStack(spacing: 12) {
+            ProgressView()
+              .tint(.white)
+            Text("Connecting...")
+              .font(.system(size: 14))
+              .foregroundColor(.white.opacity(0.7))
+          }
+        } else {
+          Text("Open Meta AI app and connect your glasses")
+            .font(.system(size: 14))
+            .foregroundColor(.white.opacity(0.5))
+            .multilineTextAlignment(.center)
+            .padding(.horizontal, 40)
+        }
+
+        Button {
+          Task { await viewModel.handleStartStreaming() }
+        } label: {
+          Text("Retry Connection")
+            .font(.system(size: 14, weight: .medium))
+            .foregroundColor(.black)
+            .frame(width: 180, height: 44)
+            .background(Color.white)
+            .cornerRadius(12)
+        }
+
+        Spacer()
       }
     }
   }
 }
-
-// MARK: - Phone Camera Preview (live viewfinder)
-
-struct PhoneCameraPreview: UIViewRepresentable {
-  func makeUIView(context: Context) -> UIView {
-    let view = UIView(frame: .zero)
-    view.backgroundColor = .black
-
-    let session = AVCaptureSession()
-    session.sessionPreset = .high
-
-    guard let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back),
-          let input = try? AVCaptureDeviceInput(device: device) else {
-      return view
-    }
-
-    if session.canAddInput(input) {
-      session.addInput(input)
-    }
-
-    let previewLayer = AVCaptureVideoPreviewLayer(session: session)
-    previewLayer.videoGravity = .resizeAspectFill
-    view.layer.addSublayer(previewLayer)
-
-    DispatchQueue.global(qos: .userInitiated).async {
-      session.startRunning()
-    }
-
-    // Store session to keep it alive
-    context.coordinator.session = session
-    context.coordinator.previewLayer = previewLayer
-
-    return view
-  }
-
-  func updateUIView(_ uiView: UIView, context: Context) {
-    context.coordinator.previewLayer?.frame = uiView.bounds
-  }
-
-  func makeCoordinator() -> Coordinator { Coordinator() }
-
-  class Coordinator {
-    var session: AVCaptureSession?
-    var previewLayer: AVCaptureVideoPreviewLayer?
-  }
-}
-
-import AVFoundation
